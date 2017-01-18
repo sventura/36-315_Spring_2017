@@ -1,0 +1,212 @@
+---
+title: "36-315 Homework 02, Spring 2016"
+author: "Homework 2 Solutions"
+date: "Due Wednesday, January 27, 2016 (12pm ET) on Blackboard"
+output: html_document
+---
+
+#  Homework 02:  Introduction to `ggplot` and 1-D Categorical Data
+
+***General instructions for homeworks***: 
+
++  Use this file as the template for your lab submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Submit two files to Blackboard:  (1) an `R` Markdown file (named as:  [AndrewID]-HW02.Rmd -- e.g. "sventura-HW02.Rmd"), and (2) the corresponding .html file generated from `R` Markdown (named as:  [AndrewID]-HW02.html -- e.g. "sventura-Lab02.html") to Blackboard in the Homework 02 submission section on Blackboard.  You are also welcome to upload a single .zip file containing both of these.
++  Your file should contain the code/commands to answer each question in its own code block; your code should produce plots that will be automatically embedded in the output file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  For Homework 01 only, do not worry about adhering to a particular style guide.  We will cover this next week.
+
+#  Problem 1
+
+**`R` Style Guides:  Google vs. Hadley**:  
+
+One important step in facilitating reproducible research is writing easily readable, well-documented code.  To ensure that you do this, you are required (for the rest of the semester) to adhere to one of the following two `R` Style Guides:
+
+Google's `R` Style Guide:  [https://google.github.io/styleguide/Rguide.xml]
+
+Hadley Wickham's Advanced `R` Style Guide:  [http://adv-r.had.co.nz/Style.html]
+
+a.  (9 points)  What are the main differences between these two style guides?  Find at least 5 differences.
+
+**Some ideas of differences**
+
++ Hadley mentions files needing to be run in sequence
++ Hadley says variable and function names should be lowercase and always use underscores, while Google says never to use underscores and capitalize appropriately 
++ Hadley says variable names should be nouns and function names should be verbs
++ Google says spaces around ='s are optional when passing parameters into a function call, and Hadley says it is not optional
++ Hadley says not to place a space before left parentheses in a function call and Google says to do so
++ Google says always begin the body of a block on a new line and Hadley says it’s okay to leave very short statements on the same line
++ Google says entire commented lines should begin with # and one space, Hadley says use commented lines of - and = to break up your file into easily readable chunks
+
+b.  (1 point)  Specify which style guide you will be using in this assignment.
+
+Assignments not adhering to the specified style guide will be docked up to 10 points.
+
+
+#  Problem 2
+
+**Critiquing Graphs**:
+
+Find a graph from the internet (last 7 days -- e.g. a news article, blog post, etc) or from an academic journal (last 60 days).  Describe and critique your graph:
+
+a.  (5 points)  **Include the graph in your assignment**.  Two choices here:  (1) embed the graph/image in the .html file (see below for instructions) and submit it along with your other files on Blackboard, or (2) include a link to the graph in your answer to this question.
+b.  (5 points)  **Describe the graph**.  What does the graph show?  What variables are plotted on the axes, via color, or via other features of the graph?
+c.  (5 points)  **Critique the graph**.  Does the graph do a good job of achieving its goals?  Does the graph use an unnecessary amount of data ink?  Does the graph distort the actual effect/data/relationship?  What are the strengths and weaknesses (if any) of the graphic?  What would you change (if anything) about this graphic?
+d.  (5 points)  **Critique the caption and/or surrounding text**.  Does the text enhance the user's understanding of the graphic?  What else would you include in the caption/surrounding text to help the viewer understand the graphic?
+
+-
+
+a. 
+<div style="width:650px; height=600px">
+![alt text](https://s3-ak.buzzfed.com/static/enhanced/terminal01/2011/2/11/11/enhanced-buzz-22848-1297440783-6.jpg)
+</div>
+
+b. The graph shows the relationship between the days before Valentine's Day (in decreasing order) and the frequency of a few y-variables including: purchase of red roses, purchase of heart-shaped boxes of chocolate, and originality. The y-variables are plotted based on their frequency of occurrence, although there are no direct numbers on the y-axis corresponding to these frequencies.  It is a purely black and white drawn graphic with a red heart on the top, purely for aesthetics. 
+
+c. Although the graph does not necessarily adhere to the best scientific graphing qualities (no numerical values on y-axis corresponding to the variables), it definitely achieves its goals.  It finds a fun-hearted way to inform people that their "great idea" of roses and chocolate on valentines day is so totally unoriginal.  There is a little bit of unnecessary ink in the heart and "Valentine's" text in the upper right corner.  The graph may or may not distort the actual effect/data (we don't know) because it was most likely based on "fake data".  It does show a good, simple-to-understand relationship that demonstrates its goal. If I had to tell BuzzFeed what to change about this graphic, I probably wouldn't change anything. But, if I wanted to publish it on a more serious website, I would try to find data to support the ideas shown here and create a graphic with proper axes. **Strengths:** demonstrates a strong and clear point about valentine's day gifts. **Weaknesses:** uses no real data, x-axis is in decreasing order. 
+
+d. I think the text does a very good job. It is clear and to the point. The Valentine's at the top is unnecessary, but helps with aesthetics and makes the graph more appealing to the user. The text is vital to the understanding of the graphic. I would include a title.
+
+
+
+#  Problem 3
+
+**Bar Charts**:  
+
+a.  (2 points)  Load the Twitter / Airline Sentiment data from Lab02.  How many rows does the dataset have?  How many columns does the dataset have?
+
+```{r, cache = T}
+# Load and explore the airline tweets data
+tweets <- read.csv("https://dl.dropboxusercontent.com/u/18473260/Tweets.csv")
+nrow(tweets)
+ncol(tweets)
+```
+
+The dataset has 14640 rows and 15 columns. 
+
+
+b.  (5 points)  Create a bar chart of the `airline` variable.  Be that your axes are properly labeled, and that the graph has a proper title.  Make sure that each bar in the graph has the same color -- not different colors, as we did in Lab.  To do this, use `+ geom_bar(stat = "count", fill = "red", colour = "black")`.  Change the `fill` and `colour` commands.  What do each of them do?
+
+```{r}
+# Create bar chart
+library(ggplot2)
+ggplot(data = tweets, aes(x=airline)) + 
+  geom_bar(stat = "count", fill = "green", colour = "purple") + 
+  ggtitle("Distribution of how many Times Each Airline was Mentioned") +
+  labs(x = "Airline", y = "Number of Times an Airline was Mentioned")
+```
+
+The fill command changes the color inside the bars, and the colour command changes the color of the border of the bars. 
+
+
+c.  (3 points)  You can also specify HEX color values when choosing a color, e.g. `fill = "#4169E1"`.  Use a website like [http://www.w3schools.com/html/html_colorvalues.asp] to pick a color of your choice, and fill the bars with that color.
+
+```{r}
+# Create bar chart with HEX colors
+ggplot(data = tweets, aes(x=airline)) + 
+  geom_bar(stat = "count", fill = "#00BFFF", colour = "#000000") + 
+  ggtitle("Distribution of how many Times Each Airline was Mentioned") +
+  labs(x = "Airline", y = "Number of Times an Airline was Mentioned")
+```
+
+
+#  Problem 4
+
+**Spine Charts**:  
+
+Spine Charts are similar to Bar Charts.  We'll cover them in class on Monday.  
+
+With a spine chart, we have a single (vertical) bar and multiple stacked, horizontal bars.  To do this, change the `aes` arguments, e.g.:
+
+`aes(x = factor(1), fill = my_variable)`
+
+This will create a single bar on the x-axis and fill the bar in with colors corresponding to whatever categorical values are in `my_variable`.
+
+a.  (5 points)  Re-create the graph from Problem 3, but use a spine chart.  Be sure to correctly label the axes -- remember, their interpretation may have changed from Problem 3.  Include an appropriate title.
+
+```{r}
+# Create spine chart
+ggplot(data = tweets) + 
+  geom_bar() +
+  aes(x=factor(1), fill = airline) +
+  ggtitle("Distribution of how many Times Each Airline was Mentioned") +
+  labs(y = "Number of Times an Airline was Mentioned")
+```
+
+
+b.  (5 points)  In a spine chart, what are the widths of the bars proportional to (if anything)?  What are the heights of the bars proportional to (if anything)?  How is this different from a bar chart?
+
+In spine charts, the width of the bars are not proportional to anything, they are all the same. The heights are proportional to how many times each airline was mentioned. This is different from a bar chart because it is harder to measure the exact counts for each airline, but easier to see the total number of times any airline was mentioned. 
+
+c.  (BONUS:  1 point)  Remove the ugly `factor(1)` from the x-axis label, without changing the rest of the graphic.
+
+```{r}
+# Remove factor(1) from x axis
+ggplot(data = tweets) + 
+  geom_bar() +
+  aes(x=factor(""), fill = airline) +
+  ggtitle("Distribution of how many Times Each Airline was Mentioned") +
+  labs(x = "", y = "Number of Times an Airline was Mentioned") + 
+  scale_x_discrete(breaks = NULL)
+```
+
+
+
+#  Problem 5
+
+**Rose Diagrams**:  
+
+a.  (5 points)  Re-create the graph from Problem 3, but use a rose diagram.  Be sure to correctly label the axes, if necessary.  Include an appropriate title.
+
+```{r}
+ggplot(tweets) + aes(x = airline, fill = airline) + geom_bar() + coord_polar() + 
+  ggtitle("Tweet counts by airline") + labs(x = "", y = "Count")
+```
+
+b.  (5 points)  In a rose diagram, what does the radius of each rose petal correspond to (if anything)?  What does the angle associated with each rose petal correspond to (if anything)?
+
+The radius of the petal is proportional to the count - in this case the number of tweets. The angle is the same for all categories, so it does not have any meaning.
+
+
+
+#  Problem 6
+
+**Pie Charts**:  
+
+a.  (5 points)  Re-create the graph from Problem 3, but use a pie chart.  Be sure to correctly label the axes, if necessary.  Include an appropriate title.
+
+```{r}
+ggplot(tweets) + aes(x = factor(1), fill = airline) + geom_bar() + 
+  coord_polar(theta = "y") + ggtitle("Tweet counts by airline") + 
+  xlab("") + ylab("") + scale_x_discrete(breaks = NULL)
+## scale_x_discrete() removes the tick mark for the x variable
+
+```
+
+b.  (5 points)  In a pie chart, what does the radius of each pie slice correspond to (if anything)?  What does the angle associated with each pie slice correspond to (if anything)?
+
+The radius of each pie slice is equal to the radius of the circle, so it doesn't correspond to anything in the data. The angle of each pie slice is proportional to the tweet counts.
+
+c.  (5 points)  Summarize the differences between a rose diagram and a pie chart in no more than two sentences.
+
+Rose diagrams map the visualized variable to radius, leaving the angle of each petal constant. Pie charts map the visualized variable to the angle of each slice, while leaving the radii constant.
+
+d.  (20 points)  Of the four graphs we used to visualize the `airline` variable, which do you prefer?  Why?  Discuss the strengths (if any) and weaknesses (if any) of each.
+
+A bar chart is usually the best option for comparing counts between categories. Its strengths are that you can easily see the counts for each variable and compare the heights of the bars for different categories.  It's somewhat difficult to eyeball a category's proportion of the total, though.
+
+The relative weaknesses for a spine chart are that the y-axis gives only a cumulative count, so it takes some work to get the count for an individual category, and it is more difficult to compare heights for two categories when they are stacked rather than next to each other. Spine charts can be good for displaying cumulative totals when relevant.
+
+The main weakness of a rose diagram is that a viewer may find it more intuitive to compare by area than by radius, so they may perceive an exaggerated difference between large and small counts. However, this does mean that it may better for immediately picking out which category is biggest than spine charts or pie charts.
+
+The main weakness of a pie chart is that comparing areas of pie slices is not as easy as comparing length in a bar chart. Pie charts also naturally represent proportions, so it may take the viewer an extra step to convert that to a count, if that's what they're interested in.  Never make 3-D pie charts.
+
+
+#  Problem 7
+
+**Statistical Tests**:
+
+(5 points)  What kind of statistical test could you use to show that the airlines are not equally likely to be tweeted about?
+
+We could use a Chi-square test for independence.
+

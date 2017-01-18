@@ -1,0 +1,170 @@
+---
+title: "Lecture 12 + R Demo"
+author: "Sam Ventura"
+date: "October 10th, 2016"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+#  Continuing 2+ Dimensional Continuous Data
+
+***
+
+###  The graphs below don't have proper titles, axis labels, legends, etc.  Please take care to do this on your own graphs.
+
+***
+
+##  RStudio helpers:  Use cache=T to prevent delays
+
+```{r, cache = F}
+library(MASS)
+library(ggplot2)
+data(Cars93)
+#Sys.sleep(10)
+```
+
+Some notes:
+
++  `cache = T` only caches output from that particular code block
++  Only use `cache = T` when you are positive you don't want the output to change
++  If you change code within the code block, it's best to set `cache = F` and run the code once before setting `cache = T` again.
++  This is also useful if you're doing any computationally intensive operations (not much of this in 315, but lots of this in other stat courses)
+
+***
+
+
+
+#  2-D Density Estimates
+
+We're all experts in 1-D Kernel Density Estimation by now.  Let's move on to 2-D KDE.
+
+###  Contour Plots -- Geometry:  `geom_density2d`
+
+```{r, cache = F}
+ggplot(data = Cars93) + 
+  geom_density2d(aes(x = Fuel.tank.capacity, y = Price))
+```
+
+See the Lecture 13 notes from 10/12/16 for more information on contour plots.
+
+
+###  Can Mix Geometries, Add Points As Well
+
+Below is a contour plot with a scatterplot overlayed:
+
+```{r, cache = F}
+ggplot(data = Cars93) + 
+  geom_density2d(aes(x = Fuel.tank.capacity, y = Price)) + 
+  geom_point(aes(x = Fuel.tank.capacity, y = Price))
+```
+
+
+
+###  Can Use `stat_density2d` to specify additional parameters
+
+For example, we can change the fill type:
+
+```{r, cache = F}
+ggplot(data = Cars93) + 
+  stat_density2d(aes(x = Fuel.tank.capacity, y = Price, fill = ..level..), 
+                 geom = "polygon") + 
+  geom_point(aes(x = Fuel.tank.capacity, y = Price))
+```
+
+
+Note:  The default coloring scheme isn't the best.  How could you change the color scheme from default to something else?  (Think about how we changed the color schemes in other plots.)  We'll do this below.
+
+We might also want to change the bandwidth.  In 2-D KDE, we must specify two bandwidths -- one for the x-direction, one for the y-direction.
+
+
+
+###  Similarly, we can make heat maps!
+
+To do this, include `fill = ..density.., geom = "tile", contour = F` in your call to `stat_density2d`, as below:
+
+```{r, cache = F}
+ggplot(data = Cars93) + 
+  stat_density2d(aes(x = Fuel.tank.capacity, y = Price, fill = ..density..), 
+                 geom = "tile", contour = F) + 
+  geom_point(aes(x = Fuel.tank.capacity, y = Price))
+```
+
+Again, I recommend changing the default color scheme, as below:
+
+```{r, cache = F}
+ggplot(data = Cars93) + 
+  stat_density2d(aes(x = Fuel.tank.capacity, y = Price, fill = ..density..), 
+                 geom = "tile", contour = F) + 
+  geom_point(aes(x = Fuel.tank.capacity, y = Price)) +
+  scale_fill_gradient(low = "white", high = "red")
+```
+
+
+###  Density Estimation is Useful in Clustering
+
+We'll use the Fisher's Iris dataset to show this:
+
+```{r, cache = F}
+data("iris")
+head(iris)
+
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) + 
+  geom_point()
+```
+
+How many clusters are there?
+
+```{r, cache = F}
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) + 
+  geom_density2d() + 
+  geom_point()
+```
+
+How many clusters are there?
+
+```{r, cache = F}
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) + 
+  geom_density2d() + 
+  geom_point(aes(color = Species))
+```
+
+
+Where are the modes in the density estimate?  Do they correspond to any of the groups/colors (Species in the Iris data)?
+
+###  Bandwidth:  Now in 2 dimensions
+
+```{r, cache = F}
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) + 
+  geom_density2d(h = c(1, 1/2)) + 
+  geom_point(aes(color = Species))
+```
+
+Now, how many clusters are there?
+
+
+#  Pairs Plots with the `GGally` Package
+
+Pairs plot:  A matrix of scatterplots and other types of graphs, useful for getting a quick view of an entire data.frame
+
+There's a great implementation of these in the `GGally` package, called `ggpairs`.
+
+First, let's pick a few variables from the `Cars93` dataset.  Then, we'll take the appropriate subset of the data and plot it.
+
+```{r, cache = F, warning = F, message = F}
+#install.packages("GGally")
+library(GGally)
+my_vars <- c("Price", "Fuel.tank.capacity", "Passengers", "AirBags", "EngineSize")
+color_var <- "Origin"
+cars_sub <- Cars93[, c(my_vars, color_var)]
+ggpairs(cars_sub)
+
+```
+
+What information do we get out of this plot?
+
+***
+

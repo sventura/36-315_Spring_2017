@@ -1,0 +1,257 @@
+\documentclass{beamer} %[12pt]
+\usepackage{xcolor}
+%\usetheme{boadilla}
+%\usetheme{malmoe}
+%\usetheme{copenhagen}
+%\usecolortheme{rose}
+\usecolortheme{beaver}
+\usepackage{pgf, graphics}
+\usepackage{graphicx}
+%\usepackage[left=3cm,top=3cm,right=3cm,nohead,nofoot]{geometry}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage[square]{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{verbatim}
+\usepackage{color}
+\usepackage{fancyvrb}
+\usepackage{bbm}
+
+\begin{filecontents}{ref.bib}
+\end{filecontents}
+
+%\usetheme{EastLansing}
+%\usepackage{natbib}
+\bibliographystyle{apalike}
+% make bibliography entries smaller
+%\renewcommand\bibfont{\scriptsize}
+% If you have more than one page of references, you want to tell beamer
+% to put the continuation section label from the second slide onwards
+\setbeamertemplate{frametitle continuation}[from second]
+% Now get rid of all the colours
+\setbeamercolor*{bibliography entry title}{fg=black}
+\setbeamercolor*{bibliography entry author}{fg=black}
+\setbeamercolor*{bibliography entry location}{fg=black}
+\setbeamercolor*{bibliography entry note}{fg=black}
+% and kill the abominable icon
+\setbeamertemplate{bibliography item}{}
+
+
+\newcommand{\hl}[1]{\colorbox{yellow}{#1}}
+\newcommand{\hlblue}[1]{\colorbox{green}{#1}}
+\newcommand{\hlblu}[1]{\colorbox{cyan}{#1}}
+\newcommand{\hlred}[1]{\colorbox{cyan}{#1}}
+\newcommand{\hlre}[1]{\colorbox{pink}{#1}}
+\newcommand{\hlgreen}[1]{\colorbox{pink}{#1}}
+\newcommand{\hlgree}[1]{\colorbox{green}{#1}}
+
+
+
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+
+
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+
+
+%\setbeamersize{text margin left=.5cm,text margin right=.5cm}
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }%
+  \item[]}{\end{list}}
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+\usepackage{color}
+\newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
+\setbeamertemplate{footline}[page number]
+
+\begin{document}
+
+
+\title[dedup]{A History of Statistical Graphics \& \\ Critiquing Statistical Graphics}
+
+
+\author[Samuel L. Ventura]{\\
+  \large{Sam Ventura\\36-315}}
+\institute[CMU Statistics]{Department of Statistics\\Carnegie Mellon University}
+\date{\today}
+
+
+\begin{frame}
+	\maketitle
+	
+\end{frame}
+
+
+\begin{frame}\frametitle{Earliest Graphics}
+\centering
+Began with geographic maps:  \\symbols/colors on clay tablets (5000 years ago)
+
+\vskip 0.5 cm
+
+11th century China:  Map of the Tracks of Yu The Great\\coastal outline very accurate\\high precision of rivers\\scale is almost exact\\carved into 3-ft wide stone tablet
+
+\end{frame}
+
+
+
+\begin{frame}\frametitle{Map of the Tracks of Yu The Great}
+	\centering
+	\includegraphics[width=0.6\linewidth]{yu2.png}
+\end{frame}
+
+
+
+\begin{frame}\frametitle{Map of the Tracks of Yu The Great}
+	\centering
+	\includegraphics[width=0.7\linewidth]{yu.png}
+\end{frame}
+
+
+
+
+\begin{frame}\frametitle{La Verdadera Longitud por Mar y Toledo}
+	\centering
+	Shows statistical information!
+	
+	\vskip 1 cm
+	
+	\includegraphics[width=\linewidth]{longitud.jpg}
+	
+	\vskip 1 cm
+	
+	Wide range of estimates of distance from Rome to Toledo
+\end{frame}
+
+
+
+\begin{frame}\frametitle{Minard -- Exports of French Wine}
+		\centering
+	\includegraphics[width=\linewidth]{trade.jpg}
+\end{frame}
+
+
+\begin{frame}\frametitle{England's Imports and Exports}
+		\centering
+	\includegraphics[width=\linewidth]{england.png}
+\end{frame}
+
+
+\begin{frame}\frametitle{Cholera Mapping}
+		\centering
+	\includegraphics[width=0.8\linewidth]{cholera.jpg}
+\end{frame}
+
+
+\begin{frame}\frametitle{Jon Snow}
+		\centering
+	\includegraphics[width=0.8\linewidth]{jonsnow.jpg}
+\end{frame}
+
+
+\begin{frame}\frametitle{Napolean's March To Moscow}
+		\centering
+	\includegraphics[width=\linewidth]{Minard.png}
+	
+	%  This map drawn by Charles Joseph Minard portrays thelosses suffered by Napoleon's army in the Russian campaign of 1812. Beginning at the left on the Polish-Russian border near the Niemen, the thick band shows the size of hte army (422K men) as it invaded Russia.  The width of the band indicates the size of the army at each position.  In september, the army reached Moscow with 100,000 men.  The path of Napoleon's retreat from Moscow in the bitterly cold winter is depicted by the dark lower band, which is tied to temperature and time scales.  The remains of the Grande Armee struggled out of Russia with 10,000 men.  Minard's graphic tells a rich, coherent story with its multivariate data, far more enlightening than just a single number bounching along over time.  Six variables are plotted:  The size of the army, its location on a two-dimensional surface, direction of the army's movement, and temperature on various dates during the retreat from Moscow.  It may well be the best statistical graphic ever drawn.  
+\end{frame}
+
+
+\begin{frame}\frametitle{Winter Is Coming}
+		\centering
+	\includegraphics[width=0.9\linewidth]{winteriscoming.jpg}
+\end{frame}
+
+
+\begin{frame}\frametitle{Diamonds Were A Girl's Best Friend}
+		\centering
+	\includegraphics[width=\linewidth]{diamonds.jpg}
+\end{frame}
+
+
+\begin{frame}\frametitle{Fuel Economy}
+		\centering
+	\includegraphics[width=\linewidth]{fuel.jpg}
+\end{frame}
+
+
+\begin{frame}\frametitle{Gun Deaths in Florida}
+	\centering
+	\includegraphics[width=0.6\linewidth]{guns.png}
+\end{frame}
+
+
+\begin{frame}\frametitle{Fox News -- Presidential Candidates}
+	\centering
+	\includegraphics[width=0.8\linewidth]{foxnews.jpg}
+\end{frame}
+
+
+\begin{frame}\frametitle{Temperature in Arizona}
+	\centering
+	\includegraphics[width=0.9\linewidth]{temp.png}
+\end{frame}
+
+
+\begin{frame}\frametitle{Temperature in Arizona}
+	\centering
+	\includegraphics[width=0.9\linewidth]{temp2.png}
+\end{frame}
+
+
+\begin{frame}\frametitle{How Many People Have Ever Lived?}
+	\centering
+	\includegraphics[width=0.62\linewidth]{538-people.png}
+\end{frame}
+
+
+\begin{frame}\frametitle{Electric Vehicle Sales}
+	\centering
+	\includegraphics[width=0.66\linewidth]{electric.png}
+\end{frame}
+
+
+
+\begin{frame}\frametitle{Hourly Wages to Afford Two-Bedroom Apartment}
+	\includegraphics[width=\linewidth]{hourly.png}
+\end{frame}
+
+
+\begin{frame}\frametitle{NFL Blindness}
+	\centering
+	\includegraphics[width=\linewidth]{nfl1.jpg}
+\end{frame}
+
+\begin{frame}\frametitle{NFL Blindness}
+	\centering
+	\includegraphics[width=\linewidth]{nfl2.jpg}
+\end{frame}
+
+\begin{frame}\frametitle{Top 100 Tweeters}
+	\centering
+	\includegraphics[width=0.77\linewidth]{tweet.jpg}
+\end{frame}
+
+
+\begin{frame}\frametitle{Never Make 3-D Pie Charts}
+	\centering
+	\includegraphics[width=0.87\linewidth]{3dpie.png}
+\end{frame}
+
+
+\begin{frame}\frametitle{The Only Acceptable Pie Chart}
+	\centering
+	\includegraphics[width=\linewidth]{pieseaten.png}
+\end{frame}
+
+
+\end{document}

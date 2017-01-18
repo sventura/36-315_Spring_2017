@@ -1,0 +1,105 @@
+---
+title: "36-315 Lab 10"
+author: "ALL Group Member Names Here"
+date: "Due Friday, November 11th, 2016 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 10:  Static Graphics Group Project
+
+
+#  Instructions
+
+###  This week, you will work in groups to submit the assignment.  
+
+###  Each group should designate one group member to submit the assignment on Blackboard.  
+
+###  The assignment should include all group member names, regardless of whether they're in attendance in today's lab.
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+This week's oral evaluation graphic is about the US Presidential Election:
+
+<div style="width:600px">
+![](https://pbs.twimg.com/media/Cw1bPulWEAAXOsL.jpg)
+</div>
+***
+
+
+Sam Says:  Remember to first explain the graph and discuss the main results presented in the graph (what's the main takeaway?).  Only after you've done that, you should offer any criticism of the graph or suggest changes you would make to the graph.
+
+
+***
+***
+
+
+
+#  Problem 1
+
+(5 points)
+
+**Assignment**:  Get to know your group members.
+
+**What you have to turn in**:  Write at least one sentence about each group member that's in attendance today.  This could be their hometown, their major(s)/minor(s), their favorite foods/restaurants, their favorite movies/TV shows, or anything else that's appropriate.
+
+
+
+***
+***
+
+
+
+#  Problem 2
+
+(5 points)
+
+**Assignment**:  Read the Static Graphics Group Project file on Blackboard.
+
+**What you have to turn in**:  Nothing.
+
+***
+***
+
+
+#  Problem 3
+
+(70 points)
+
+**Assignment**:  Choose your dataset for the Static Graphics Group Project.  Dataset suggestions, resources, and requirements are provided in the Static Graphics Group Project file on Blackboard.
+
+**What you have to turn in**:  
+
++  A link to the dataset
++  A brief (no more than two paragraphs) description of the dataset, including number of rows, number of columns, explaining what each observation corresponds to, giving an overview of the columns, etc.
+
+
+***
+***
+
+
+
+#  Problem 4
+
+(20 points)
+
+**Assignment**:  Brainstorm at least three questions you'd like to answer with your dataset.
+
+**What you have to turn in**:  At least three ideas of questions you can anwer with your dataset, and how you might answer them graphically.  This may include specific ideas about the types of graphs you'll create, or simply sentences like "What is the relationship between the age of shark attack victims and the year in which the shark attack occured?  Does this change depending on the gender of the victim?"
+
+
+
+***
+***
+
+
+

@@ -1,0 +1,297 @@
+---
+title: "36-315 Homework 12, Fall 2016"
+author: "Your Name Here"
+date: "Due Wednesday, December 7th, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Homework 12:  Text Data, Choropleth Maps, New `ggplot2` Features
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW11.Rmd -- e.g. "sventura-HW11.Rmd") to the Homework 11 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+###  This week only, you can work on and turn in your assignment as a group!  
+
++  This does not apply to bonus problems, which must be worked on and turned in individually.
++  Most of the code is given for you below, so the assignment should be somewhat easy.
++  Only one person from each group needs to turn in the assignment.
++  Please include all group member names on the assignment.
++  When turning in bonus problems individually, please turn them in in the Bonus Problems section on Blackboard.
+
+
+***
+***
+
+<div style="width:600px">
+![alt text](http://indiemapper.com/app/images/classed_choropleth.jpg)
+</div>
+
+
+***
+***
+
+#  Easy Problems
+
+##  Problem 0
+
+(4 points)
+
+**Organization, Themes, and HTML Output**
+
+a.  For all problems in this assignment, organize your output as follows:
+
++  Organize each part of each problem into its own tab.  For Problems 2 and 5, the organization into tabs is already completed for you, giving you a template that you can use for the subsequent problems.
++  Use code folding for all code.  See [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/) for how to do this.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
+
+
+b.  For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color:
+
++  Don't use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+c.  What style guide are you using for this assignment?
+
+
+***
+***
+
+
+##  Problem 1
+
+(10 points)
+
+**World War II Data Visualization Video**
+
+Watch the interactive version of [this video](http://www.fallen.io/ww2/).  What do you like about it from a data visualization perspective (1-3 sentences)?  What do you dislike, if anything (1-3 sentences)?
+
+
+***
+***
+
+
+#  Regular Problems
+
+##  Problem 2
+
+(18 points)
+
+**Correlation Matrices for High-D Continuous Data Visualization**
+
+We've covered a few ways to visualize datasets that have many continuous variables (e.g. dimension reduction via multi-dimensional scaling, dendrograms, parallel coordinates plots, radar/spider/star charts, etc).  Another option here is a correlation heat map.  
+
+A correlation heat map provides a quick visualization of the bivariate correlations between all pairs of continuous variables in the dataset.
+
+a.  (0 points)  Code is provided for you to do the following tasks:
+
++  Load the `Cars93` dataset
++  Create a subset with only the continuous variables
+
+```{r, warning = F, message = F}
+library(MASS)
+library(dplyr)
+data(Cars93)
+cars_cont <- dplyr::select(Cars93, Price, MPG.city, MPG.highway, EngineSize, 
+                           Horsepower, RPM, Fuel.tank.capacity, Passengers,
+                           Length, Wheelbase, Width, Turn.circle, Weight)
+```
+
+b.  (5 points)  Partial code is provided for you to do the following tasks:
+
++  Follow the example [here](http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization) to create a correlation heap map of the continuous variables in the `Cars93` dataset
++  Adjust the color scheme so that correlations of -1 is shown in dark red, a correlation of 0 is shown in light grey, and a correlation of 1 is shown in dark blue.
++  Rotate the x-axis tickmark label 90 degrees
++  Add a title and adjust all axis and legend labels appropriately.
+
+```{r, warning = F, message = F}
+library(reshape2)
+library(ggplot2)
+correlation_matrix <- cor(cars_cont)
+melted_cormat <- melt(correlation_matrix)
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile()
+```
+
+c.  (5 points)  Interpret the resulting graph:  
+
++  Which pairs of variables are highly positively correlated?  
++  Which are highly negatively correlated?  
++  Which have approximately no correlation?
+
+d.  (2 points)  Explain the connection between this plot and a heat map.
+
+e.  (1 point)  Even though they are very different, what plot for examining the associations between categories of two categorical variables does this remind you of?
+
+f.  (5 points)  Recreate the graph in (b), making at least one additional adjustment to the correlation matrix (your choice):
+
++  Reorder the variables
++  Add the rounded correlation to the plot via `geom_text()`
++  Only display the upper or lower triangle of the graph
+
+
+##  Problem 3
+
+(6 points each; 42 points total)
+
+**Choropleth Maps**
+
+
+Choropleth maps are maps in which geographic regions (e.g. countries, states, counties, tracts, etc) are colored by a measured/statistical quantity.  We'll create some choropleth maps here.
+
+a.  Code is provided for the following tasks:
+
++  Read the 2009 Unemployment data from this [link](http://datasets.flowingdata.com/unemployment09.csv).
++  Adjust the column names of the dataset
++  Manipulate the `state` and `county` columns
+
+
+```{r, warning = F, message = F}
+library(data.table)
+unemp <- fread("http://datasets.flowingdata.com/unemployment09.csv")
+names(unemp) <- c("id", "state_fips", "county_fips", "name", "year", 
+                  "unknown1", "unknown2", "unknown3", "rate")
+unemp <- mutate(unemp,
+                county = tolower(gsub(" County, [A-Z]{2}", "", name)),
+                state = gsub("^.*([A-Z]{2}).*$", "\\1", name))
+```
+
+
+b.  Code is provided for the following tasks:
+
++  Create two data.frames with the results of `map_data()` for US counties and for US states
++  Adjust the column names of the county data.frame
++  Use R's `state.abb` and `state.name` objects to add proper abbreviations to a new variable, called `state`, in the county data.frame
+
+
+```{r, warning = F, message = F}
+library(ggmap)
+county_df <- map_data("county")
+names(county_df) <- c("long", "lat", "group", "order", "state_name", "county")
+county_df <- county_df %>%
+  mutate(state = state.abb[match(county_df$state_name, tolower(state.name))]) %>%
+  select(-state_name)
+
+state_df <- map_data("state")
+```
+
+
+c.  Code is provided for the following tasks:
+
++  Merge or left-join the `county_df` and `usemp` data.frames using the `state` and `county` variables.
++  Add a new variable to the merged data.frame, called `rate_discrete`, that partitions the existing `rate` variable into 9 groups.
++  Sort the data.frame by the `order` variable, so that you can plot the map correctly.
+
+```{r}
+choropleth_df <- county_df %>%
+  left_join(unemp, by = c("state", "county")) %>%
+  arrange(order) %>%
+  mutate(rate_discrete = cut_interval(rate, 9))
+
+#choropleth_df <- choropleth_df[order(choropleth_df$order), ]
+#choropleth_df$rate_discrete <- cut_interval(choropleth_df$rate, 9)
+```
+
+d.  Use `ggplot()` to create a choropleth map of US counties.  The code is started for you below.
+
++  Fill each county with a color corresponding to the discretized unemployment rate variable.
++  Use an appropriate color gradient.
++  Draw borders corresponding to the state and county borders.
++  Include an appropriate title and a legend
+
+```{r}
+#ggplot(choropleth_df, aes(long, lat, group = group)) +
+#  geom_polygon(fill_this_in) +  #  County borders and fill
+#  geom_polygon(data = state_df, fill_this_in) + ...  #  State borders
+```
+
+e.  Interpret your graph.  In what areas of the United States is unemployment highest?  In what areas is it lowest?  Are there any noticeable geographic trends or patterns?  Does anything else stick out to you in the graph?
+
+f.  Look at the help file for the `coord_map()` function.  Name at least 5 different map projections that are available to be used, and include the description of each one.  (Note:  You'll have to also look at the help documentation for the `mapproject()` function.)
+
+g.  Recreate your graph from (d) twice, each time with a different map projection.  Comment on any noticeable differences.
+
+
+***
+***
+
+
+
+##  Problem 4
+
+(16 points)
+
+a.  (2 points)  Read Sections 2, 2.1, and 3.5 of the Tidy Text Mining book from the Lecture 23 R Demo.  What does the `unnest_tokens()` function do?
+
+b.  (4 points)  Load the Airline Tweets dataset from one of the first assignments.  What column contains the text of the tweets?  Run the following code and give an interpretation of the resulting word cloud (you may need to install the `tidytext` and `wordcloud` packages first):
+
+```{r, warning = F, message = F}
+#install.packages("tidytext")
+#install.packages("wordcloud")
+library(tidytext)
+library(wordcloud)
+library(dplyr)
+library(data.table)
+data(stop_words)
+
+airline_tweets <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+
+my_tweets <- dplyr::select(airline_tweets, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100))
+```
+
+c.  (10 points)  Create a separate wordcloud for each airline.  Arrange the results into a 2x3 grid.  Interpret the results:  Are there any words that are more/less common for certain airlines?
+
+
+***
+***
+
+##  Problem 5
+
+(5 points each)
+
+**Zoom in with the New `ggplot2`**
+
+See the Lecture 25 R Demo and the use of `facet_zoom()`.
+
+a.  Recreate any scatterplot that we created throughout the year, and zoom in on a section of the graph via the `facet_zoom()` feature in the new version of the `ggplot2` package.  Include a title, subtitle, and caption in the resulting graph.  The caption should just state the data source, and the subtitle should explain what are of the plot is being enhanced via zooming.
+
+b.  Interpret the resulting graph:  Describe some feature of the new version of hte graph that you may not have been able to see very well in the previous version of the same graph (without zooming).
+
+
+***
+***
+
+
+#  Bonus Problems
+
+See BonusProblems.html on Blackboard for five bonus problems you can turn in for extra credit on HW 12.
+
+
+***
+***
+***
+***
+***
+***
+
+

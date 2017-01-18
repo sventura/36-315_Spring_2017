@@ -1,0 +1,232 @@
+---
+title: "36-315 Homework 01"
+author: "SOLUTIONS"
+date: "Due Wednesday, January 20, 2016 (12pm ET) on Blackboard"
+output: html_document
+---
+
+#  Homework 01:  Introduction to R, RStudio, Data Types, and Critiquing Graphics
+
+***General instructions for homeworks***: 
+
++  Upload an R Markdown file (named as:  [AndrewID]-[HW01].Rmd -- e.g. "sventura-HW01.Rmd") to Blackboard in the Homework 01 submission section on Blackboard
++  Your file should contain the code/commands to answer each question in its own code block, which will also produce plots that will be automatically embedded in the output file
++  Each answer must be supported by written statements (unless otherwise specified) as well
++  Include the name of anyone you collaborated with at the top of the assignment
++  For Homework 01 only, do not worry about adhering to a particular style guide.  We will cover this next week.
+
+#  Problem 2
+
+(20 points)
+
+**Critiquing Graphs**:
+
+**Example description**
+
+The graph can be found [here](https://espnfivethirtyeight.files.wordpress.com/2016/01/paine-shooters-1.png).
+
+<div style="width:400px">
+![alt text](https://espnfivethirtyeight.files.wordpress.com/2016/01/paine-shooters-1.png)
+</div>
+
+
+The graph shows a comparison of three players and an average of top three-point shooters over the last 19 years. The players are compared by the quartiles they lie in for five different statistics. Each statistic is represented as a wedge out of a circle; the player's quartile is represented by the radius of the filled in part of the wedge.
+
+The graph is very effective and easy to understand. It is very easy to see which quartile each player falls in for each statistic, and the circular representation makes for visually striking comparisons. There is no unnecessary data ink. In fact, the graph's simplicity is its main strength.
+
+One weakness of the graph is that it is most natural for the viewer to compare by area, but the areas in each wedge are not directly meaningful. As the radius of the shaded area increases, the area shaded increases non-linearly, which may exaggerate the difference (distorting the true effect). 
+
+Another weakness of the graph is that the quantile each player sits in is a continuous variable, but the graph only presents a discretized version. This reduces the amount of information the graph presents. It may be better to represent each player using a rectangle shaded according to a continuous representation of the quantiles for each statistic. 
+
+Finally, it would be helpful to use different colors to represent each statistic.  This will allow the viewer to more easily compare the players according to the five different measures.
+
+There is not too much text. The main title does a good job explaining the purpose of the graph, and the statistics are adequately labeled.  The explanatory text is in the surrounding text in the actual article.
+
+
+
+#  Problem 3
+
+**Writing R Functions and Working with Vectors**:  
+
+Read section 5 of Wasserman's R Intro document on Blackboard about writing functions in R.  Functions help us reuse code and enhance the reproduciblity of our code.
+
+a.  (5 points)  Write an R function called `quadratic` that computes the quadratic formula.  That is, write a function that has four inputs -- ```a```, ```b```, ```c```, and ```x``` and returns the quantity $ax^2 + bx + c$.
+
+```{r}
+quadratic <- function(a, b, c, x) {
+  return(a * x^2 + b * x + c)
+}
+```
+
+b.  (2 points)  Test your function out and demonstrate that it works for at least there different combinations of the parameters.
+
+```{r}
+# example tests
+all(
+  quadratic(1, 5, 2, 0) == 2,
+  quadratic(0, 5, 2, 1) == 7,
+  quadratic(1, 0, 1, 10) == 101,
+  quadratic(2, 3, 0, 5) == 65,
+  quadratic(-1, 5, 5, 5) == 5
+)
+# note:  the all() function returns TRUE if all input expressions are true, and FALSE otherwise
+```
+
+Our function works correctly on a variety of examples, as demonstrated above.
+
+c.  (2 points)  Type `quadratic(x=2)` into your code block.  What happens when you only specify one argument?
+
+We get an error message: `Error in quadratic(x = 2) : argument "a" is missing, with no default Calls`.
+
+d.  (2 points)  Create a new function, `quadratic2`, that has default values for ```a=1```, ```b=1```, and ```c=1```.  Type `quadratic2(x=2)` into your code block.  What happens when you only specify one argument?
+
+```{r}
+quadratic2 <- function(a=1, b=1, c=1, x) {
+  return(a * x^2 + b * x + c)
+}
+quadratic2(x=2)
+```
+Since the other arguments were given default values, R uses the default values along with the one specified argument and runs successfully.
+
+e.  (2 points)  Type `1:10` at the command line in R.  What happens?  
+```{r}
+1:10
+```
+We get a vector with all of the integers between 1 and 10, inclusive.
+
+f.  (2 points)  What happens when you call the function with the following input:  `quadratic2(x = 1:10)`.  Why does this happen?
+```{r}
+quadratic2(x = 1:10)
+```
+We get a vector with the output of `quadratic2` for each of the values in `1:10` (and the given default values for the coefficients). This happens because R does element-wise arithmetic on vectors.
+
+g.  (5 points)  Type `plot(1:10, quadratic2(x=1:10))` into your code block.  Describe the graph that shows up.
+```{r fig.width=5, fig.height=5, fig.align='center'}
+plot(1:10, quadratic2(x = 1:10))
+```
+The graph is a scatterplot, with x values from the vector `1:10` and the output of `quadratic2` as the corresponding y values.  The graph does not have appropriate axis labeling or a descriptive title.
+
+
+
+#  Problem 4
+
+**Introduction to ggplot2**:  
+
+In R, there are several libraries or packages/groups of programs that are not used enough to have them permanently stored in R.  One that will be particularly useful in our class is called `ggplot2`.
+
+a.  (2 points)  Type `library(ggplot2)` at the command line.  Is the `ggplot2` package installed on your computer?  If not, type `install.packages("ggplot2")`, then repeat the `library(ggplot2)` command above.
+
+```{r}
+library(ggplot2)
+```
+
+
+b.  (2 points)  The Comprehensive R Archive Network, or CRAN, stores most publicly accessible, open-source R packages for anyone to use.  Find CRAN's documentation on the `ggplot2` package (e.g. by searching "ggplot2 in R" on the internet).  You should find a PDF document that has 198 pages of documentation about `ggplot2`.  What does the "gg" in `ggplot2` stand for?
+
+<https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf>
+
+**GG:** Grammar of Graphics
+
+c.  (2 points)  Who are the authors of the `ggplot2` package?  Who is the maintainer of the `ggplot2` package?  Search this person's name on the internet.  What are some other R packages this person has written?
+
+**Authors:** Hadley Wickham, Winston Chang, RStudio
+
+**Maintainer:** Hadley Wickham <hadley@rstudio.com>
+
+**Some packages:** classifly, clusterfly, meifly, DescribeDisplay, rggobi, plyr, testthat, profr, reshape <http://had.co.nz>
+
+d.  (2 points)  Type `library(datasets)`. Load the `trees` dataset into R by typing `data(trees)`.  Type `head(trees)` to view the first few rows of this dataset.  How many columns does the dataset have?  What are the names of the columns?
+
+```{r}
+library(datasets)
+data(trees)
+head(trees)
+```
+
+**Number of columns**
+
+```{r}
+ncol(trees)
+```
+
+**Number of rows**
+
+```{r}
+nrow(trees)
+```
+
+**Names of columns**
+
+```{r}
+names(trees)
+```
+
+
+e.  (12 points)  Make your first `ggplot2` graphic:  
+
+    +  Type `my.plot <- ggplot(data = trees, aes(x = Girth, y = Height))`.  This will create the graph object.
+    +  Type `my.plot <- my.plot + geom_point(data = trees, aes(colour = Volume), size = 4)`.  This will add points to the graph object, colored by Volume.
+    +  Type `my.plot <- my.plot + ggtitle("Title Here") + labs(x = "x axis label here", y = "y axis label here")`
+    +  Change the above code to give the graph an informative title and informative axis labels.  Include units in the axis labels if possible.  See `help(trees)` for more information about the units.
+    +  Critique your own graph.  What do you like?  What do you dislike?  What would you change in the future?
+    +  Is there any unnecessary data ink used in this graph?
+
+
+```{r, fig.height=3.3, fig.width=11}
+my.plot <- ggplot(data = trees, aes(x = Girth, y = Height))
+#  Note that if you try to view this plot there are no layers which is alright, so we will add some!
+my.plot <- my.plot + geom_point(data = trees, aes(colour = Volume), size = 4)
+my.plot1 <- my.plot
+
+my.plot <- my.plot + ggtitle("Title Here") + labs(x = "x axis label here", y = "y axis label here")
+my.plot2 <- my.plot
+
+my.plot3 <- my.plot1 + ggtitle("Girth vs. Height by Volume in Cubic Feet") + labs(x = "Girth - Diameter in Inches", y = "Height in Feet")
+
+library(gridExtra)
+grid.arrange(my.plot1, my.plot2, my.plot3, ncol=3) #plot ggplot graphs side by side
+
+```
+
+Note: these are just examples but you must put something down for each
+
+**Likes:** Blue's a pretty good color, plot is very neat and professional
+
+**Dislikes:** Not enough ticks along the y-axis -- especially at the minimum and maximum values.
+
+**Changes:** Could change colors, size of dots, number of ticks in axes, size of font in axes, change x vs. y
+
+**Unnecessary data ink:** Unnecessary grid lines/background shading
+
+
+#  Problem 5
+
+**Cornell Tuition**:  
+
+Read the Cornell Tuition document (cornell.pdf) in the Homework 01 section on Blackboard.  
+
+a.  (5 points)  What are the main issues outlined by the author in the document?  
+
+This is taken directly from the document.
+
++  The ranking graph covers an 11 year period, the tuition graph 35 years, yet they are shown simultaneously (the same apparent width) on the same horizontal "scale".
++  The vertical scale for tuition and ranking could not possibly have common units, but the ranking graph is placed under the tuition graph creating the impression that cost exceeds quality.
++  The differing time units are cleverly disguised by printing them rotated 90 deg.
++  And here is the masterstroke: the sharp "drop" in the ranking graph over the past few years actually represents the fact that Cornell's rank has IMPROVED from 15th TO 6th
+    
+b.  (5 points)  What would you change about the graph?
+
+**Note:** This is not an exhaustive list, just a few ideas:
+
++  It is most important here to indicate that a decrease in ranking is actually good!
++  We could create two plots of year (x) vs. ranking (y) and year (x) vs. tuition (y) side-by-side
++  We could create a plot of tuition (x) vs. ranking (y) and label each point with the corresponding year
++  We could adjust the horizontal axis to include the same years, preferably all 35
++  We should ensure that the vertical scaling is correct and accurate
++  The time units should be uniform
++  No matter what, our graphic and explanation should be consistant
++  We could make some type of comparison of tuition to GDP or the economy
++  We could add lines for multiple schools to compare Cornell to other universities
++  Here is a recent example of a similarly misleading graphic (associated with planned parenthood court case):  <http://reverbpress.com/wp-content/uploads/2015/09/Abortion-chart-used-by-House-Oversight-Committee.jpg>
+
+

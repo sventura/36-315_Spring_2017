@@ -1,0 +1,303 @@
+---
+title: "36-315 Homework 08, Fall 2016"
+author: "Your Name Here"
+date: "Due Wednesday, November 2nd, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Homework 08:  Higher Dimensional Continuous Data
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW08.Rmd -- e.g. "sventura-HW08.Rmd") to the Homework 08 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+
+
+
+#  Problem 0
+
+**Organization, Themes, and HTML Output**
+
+(5 points)
+
+a.  For all problems in this assignment, organize your output as follows:
+
++  Organize each part of each problem into its own tab.  For Problems 2 and 3, the organization into tabs is already completed for you, giving you a template that you can use for the subsequent problems.
++  Use code folding for all code.  See [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/) for how to do this.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
+
+
+b.  For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color:
+
++  Don't use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+c.  What style guide are you using for this assignment?
+
+
+***
+***
+
+
+#  Problem 1
+
+(3 points each)
+
+**Text Annotations on Graphs**
+
+Often, it can be nice to add text to graphs instead of more traditional geometries like points, bars, etc.  Let's learn how to do this in the context of scatterplots.
+
+Read the help documentation for `geom_text()` [here](http://docs.ggplot2.org/0.9.3.1/geom_text.html) to help you solve the problems below.
+
+a.  Plot the `MPG.city` (y-axis) vs. the `Fuel.tank.capacity` (x-axis) in the `Cars93` dataset from Lab 08.  This time, use the `geom_text()` function instead of `geom_point()`, so that instead of points showing up in the scatterplot, text shows up instead.  Do this so that `Model` of the car shows up as the text in the graph.
+
+b.  Recreate the graph from (a), but this time, display the text at a 30 degree angle, and color the text according to the `Type` of car.  Use a non-default color scheme to do this.
+
+c.  Recreate the graph from (b), but this time, size the text according to the `RPM`, and use a non-default font family.
+
+d.  Interpret your graph from (c).  How many variables are included in this graph?  What can you say about the relationships between any of the variables used in this graph?  Summarize the main findings / takeaways from this graph in 2-4 sentences.
+
+***
+***
+
+
+#  Problem 2 {.tabset}
+
+(3 points each)
+
+**More Text Annotations on Graphs**
+
+Load the Olive Oil data from Lab 08.
+
+##  Part (a)
+
+Create a bar chart of the `region` variable.  Use the `geom_text()` function to add the counts in each bar **above** each bar in the bar chart.  E.g., `ggplot(...) + ... + geom_text(stat = "count", aes(y = ..count.., label = ..count..))`.  Adjust the `vjust` parameter in `geom_text()` in order to place the numbers in a more appropriate place.  Use a single non-default color for the bars.
+
+```{r, warning = F, message = F}
+#  Your code for part (a) here
+```
+
+##  Part (b)
+
+Create a bar chart of the `area` variable.  Use the `geom_text()` function to add the counts in each bar **in the middle** of each bar (i..e halfway up each bar) in the bar chart.  Use a larger-than-default font size for the text.  Use a single non-default color for the bars, and change the color of the text so that it contrasts well with the color of the bars.  
+
+```{r, warning = F, message = F}
+#  Your code for part (b) here
+```
+
+##  Part (c)
+
+Repeat part (b), but use `label = scales::percent((..count..)/sum(..count..)))` to put percentages on the plot instead of the raw count scale.  This is nice, since it allows you to quickly see both the percentages and the counts (height of the bars) in each category.
+
+```{r, warning = F, message = F}
+#  Your code for part (c) here
+```
+
+***
+***
+
+
+
+#  Problem 3  {.tabset}
+
+(3 points each; 21 points total)
+
+**2D-KDEs with Contour Plots and Adjusted Bandwidths**
+
+##  Part A
+
+Repeat the process outlined in Lab 08:
+
++  Load the Olive Oil dataset into R.  
++  Ensure that `area` and `region` are stored as factors.
++  Create the subset of continuous variables.
++  Scale the continuous variables so that they have equal variance (and standard deviation).
++  Create the distance matrix corresponding to the scaled continuous variables in the dataset.
++  Create a 2-dimensional projection (`olive_mds`) of the scaled olive dataset (using the distance matrix you created) via multi-dimensional scaling.
++  Rename the columns as you did in Lab 08.
++  Add the `area` and `region` variables to `olive_mds`.
+
+Now that we've reduced the dimensionality of our original dataset into something more manageable, we can complete some additional visualization tasks.
+
+
+##  Part B
+
+Visualize the 2D Kernel Density Estimate of `mds_coordinate_1` and `mds_coordinate_2` with a contour plot.  See the Lecture 12 R Demo for how to do this.  Use the default bandwidth.
+
+##  Part C
+
+Repeat part (b), but this time, overlay the points, color by `area`, and change the point type according to the `region` ID number, as you did in Lab 08, Problem 2, part (e).
+
+##  Part D
+
+Repeat part (c), but this time, use a smaller bandwidth in each direction with `+ geom_density2d(h = c(1,1))`.
+
+##  Part E
+
+Repeat part (d), but this time, use a larger bandwidth in each direction with `+ geom_density2d(h = c(5,5))`.
+
+##  Part F
+
+Which bandwidth do you prefer for this problem?  The default (parts (b) and (c)), the the smaller bandwidth (part (d)), or the larger bandwidth (part (e))?  Why?
+
+##  Part G
+
+Repeat part (e), but this time, adjust the bandwidths in each direction as you see fit.  In particular, choose a different, non-default bandwidth for each direction.  Comment on why you chose these bandwidths.
+
+***
+***
+
+
+#  Problem 4
+
+(10 points)
+
+**2D-KDEs with Heat Maps and Three-Color Gradients**
+
+a.  (6 points)  Create a heat map (`+ stat_density2d(aes(fill = ..density..), geom = "tile", contour = F)`) of the MDS coordinates from the previous problem.
+
++  Use a non-default bandwidth in both directions, as you did in the previous problem.  Try a few different bandwidths in both directions.  Choose bandwidths that you think properly show where the high-density and low-density areas of the graph are.
++  Use a custom color gradient that uses three colors:  one as the "low density" color, one as the "high density" color, and one as the "medium density" color.  
++  To do this, use `scale_fill_gradient2()` and be sure to specify the `mid` parameter in addition to the `low` and `high` parameters.  See [the help file](http://docs.ggplot2.org/0.9.3.1/scale_gradient2.html) for how to do this.
++  Note that you'll have to manually pick an appropriate `midpoint` parameter as well.  This parameter specifies the value of the density to which the `mid` color should correspond.  The default value is zero, which will not work for this problem (since zero is the minimum possible density).
+
+b.  (2 points)  Comment on your choice of colors.  Also, comment on your choice for the `midpoint` parameter -- why did you choose it?  What happens when you increase or decrease it?  
+
+c.  (2 points)  Do you prefer the graph you created here to the contour plots in the previous problem?  Explain why or why not.  (There's not necessarily a right or wrong answer here.  Just explain your reasoning.)
+
+
+***
+***
+
+
+
+#  Problem 5
+
+**Hierarchical Clustering and Dendrograms**
+
+There are several ways to create dendrograms in R.  Regardless of which dendrogram package you use, you'll first need to create the distance matrix corresponding to your dataset, and submit that distance matrix to hierarchical clustering.
+
+a.  (1 point)  Create a subset of only the continuous variables (no `area` or `region`) from the `olive` dataset, called `olive_cont`.  Scale the dataset so that all of the variables are treated equally in the distance calculation (`olive_cont_scale`).  Now, create the distance matrix on this scaled version of the continuous variables (`dist_olive`).  
+
+b.  (2 points)  Submit your distance matrix to hierarchical clustering with the `hclust()` function.  Use complete linkage to determine when groups of observations should be linked:  `hclust(dist_olive, method = "complete")`.  Store this in an object called `hc_olive_complete`.  Type `names(hc_olive_complete)`.  What information is stored in the hierarchical clustering object?  What is `hc_olive_complete$method`?
+
+c.  (2 points)  Plot your `hc_olive_complete` object using base R graphics:  `plot(hc_olive_complete)`.  One nice thing (or not-so-nice thing, depending on how you look at it) about base R graphics is that `plot()` will adapt to whatever kind of object it takes as input and show the corresponding plot in (what it deems to be) an appropriate way.  What kind of structure does `plot()` use to visualize hierarchical clustering results?
+
+d.  (2 points)  As will be discussed in class on Monday, the resulting dendrogram specifies the distance at which groups of observations are linked in the hierarchical clustering results.  Groups linked at lower distances (lower heights on the dendrogram) are closer together / highly similar; groups linked at higher distances (higher heights on the dendrogram) are farther apart / highly dissimilar.  What, roughly, is the maximum distance at which two groups of observations are linked in this dataset?  The maximum distance at which two groups are linked represents the final link being completed in hierarchical clustering.  
+
+e.  (2 points)  Dendrograms are tree-like structures.  Starting at the top of a dendrogram, if you follow the branches down to the "leaves" of the tree, you see a hierarchy of clustering results.  Each leaf in the tree represents a single observation in the dataset, so that there a total of $n$ leaves in the dendrogram (where $n$ is the number of observations in the dataset).  Roughly what proportion of the observations are in the two groups being linked at the final iteration of hierarchical clustering?  (An exact answer is not necessary here; just look at the graph and give a rough estimate of the number of leaves on the tree under each branch.)
+
+f.  (2 points)  With hierarchical clustering, remember:  We actually have a _hierarchy_ of clustering results.  So, how do we actually get the clustering results?   There are two approaches with hierarchical clustering.  The first approach involves selecting the number of clusters that you want, and then "cutting" the tree an an appropriate height.  All observations linked below that height are considered to be in the same cluster.  All observations linked above that height are considered to be in different clusters.  To do this in R, use the `cutree()` function ("cut tree").  Return the cluster labels corresponding to the two-cluster solution by using `cutree(hc_olive_complete, k = 2)`, and store this in an object called `labels_complete_2`.  What type of object is `labels_complete_2`?  How many elements are contained in `labels_complete_2`?
+
+g.  (2 points)  Now, let's get the exact answer from part (e).  Type `table(labels_complete_2) / nrow(olive)`.  What proportion of the observations are in the two groups being linked at the final iteration of hierarchical clustering?
+
+h.  (8 points)  Okay, now let's visualize how good the clustering results are.  Create a new vector, called `labels_complete_3`, that corresponds to the three-cluster solution.  Create the 2-dimensional projection of `dist_olive` via multi-dimensional scaling.  Convert the MDS results to a data.frame (`olive_mds`), and add the `area` and `region` variables **as factors** to the `olive_mds` data.frame, as you did in a previous assignment.  Now, add the `labels_complete_3` variable (**as a factor**) to the `olive_mds` data.frame as well.  Finally, create a scatterplot with:
+
++  x = the first MDS coordinate
++  y = the second MDS coordinate
++  color = `area`
++  shape = `labels_complete_3`
+
+That is, we're plotting the two MDS coordinates, coloring by the `area` variable, and changing the type of points so that they are integers corresponding to the labels from the three-cluster solution.  If you prefer to do this with `geom_text()` instead of the `shape` parameter in `geom_point()`, please feel free to do so!  (It's actually easier that way anyways!)
+
+Do your cluster labels correspond to the `area` variable?  That is, is it common for points with the same color (`area`) to also have the point type (cluster label)?  Are there any particular `area` categories that are split apart in the clustering results?
+
+i.  (8 points)  Finally, let's plot a nicer-looking dendrogram, as we did in Lab 08.  Using code similar to what was given to you in Lab 08, Problem 3, part (d), create a dendrogram of the `hc_olive_complete` object.  Color the leaves according to their clustering label for the three-cluster solution.  Change the text of the leaves to be the region name.  (NOT the region ID number, but the name of the region itself.  These are given in the Description section of the [Olive Oil Dataset Help File](http://artax.karlin.mff.cuni.cz/r-help/library/pdfCluster/html/oliveoil.html).)  Notice that the resulting plot is a `ggplot()` object.  As such, add an appropriate title and label the appropriate axis as "Pairwise Euclidean Distance".  (Which axis you label will depend on if you make a vertical or horizonatal dendrogram, as we did in Lab 08.)  
+
+j.  (4 points)  Read Section 5 of [this tutorial on dendrograms in R](http://www.sthda.com/english/wiki/beautiful-dendrogram-visualizations-in-r-5-must-known-methods-unsupervised-machine-learning).  Recreate your dendrogram from part (i), and incorporate at least one more use of the `set()` function from the `dendextend` package.  See Section 5.3 of this tutorial for more details.
+
+
+***
+***
+
+
+#  Problem 6
+
+(2 points each)
+
+**Read Your Lab Exam Feedback On Blackboard**
+
+a.  Write at least one sentence about what you did well on in the exam.
+
+b.  Write at least one sentence about what you did wrong in the exam.
+
+
+***
+***
+
+
+#  Problem 7
+
+(2 points each)
+
+**Criticize the Lab 08 Oral Evaluation Graphic**
+
+On Lab 08, the Oral Evaluation Graphic was something called a "Spider Chart" or "Radar Chart" or "Star Plot".  You can read more about this type of chart [here](http://www.datavizcatalogue.com/methods/radar_chart.html).
+
+Critique the chart from the Lab 08 Oral Evaluation:
+
+a.  Describe at least two good qualities of the chart.
+
+b.  Describe at least two bad qualities of the chart.
+
+c.  Is there any distortion in radar charts?  If so, explain how.
+
+
+***
+***
+
+
+
+
+#  BONUS
+
+(BONUS:  10 points)
+
+**Beyond Default Pairs Plots**
+
+Create a subset of the `olive` dataset.  Include the `area` and `region` variables in your subset, and pick three continuous variables to include in your subset (your choice).  Call this subset `olive_sub`.  In your subset, overwrite the `area` and `region` variables so that they are treated as factor variables.
+
+Create a pairs plot of your subset.  Within the `ggpairs()` function, manually specify the `upper` triangle of plots to change type of information shown.
+
+It may help to use the following code as an outline of your solution:
+
+```{r}
+#library(GGally)
+#ggpairs(data = olive,
+#        upper = list(continuous = ...,
+#                     discrete = ...,
+#                     combo = ...),
+#        title = "hey this is a title"
+#)
+```
+
+In the upper triangle:
+
++  Use a 2-D density estimate for pairs of continuous variables
++  Show the ratio for pairs of discrete variables
++  Use a faceted density estimate for a combination of a discrete and a continuous variable
+
+See the [examples in the help documentation](http://www.inside-r.org/packages/cran/GGally/docs/ggpairs) for how to do this.
+
+***
+***

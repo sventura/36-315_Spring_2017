@@ -1,0 +1,215 @@
+---
+title: "36-315 Lab 09"
+author: ""
+date: "Due Friday, November 4, 2016 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 09:  Time Series
+
+#  Graph Evaluation
+
+The image below comes from NASA:
+
+<div style="width:600px">
+![](http://climate.nasa.gov/system/charts/15_co2_left_061316.gif)
+</div>
+***
+
+For more information, click below:  [here](http://climate.nasa.gov/vital-signs/carbon-dioxide/).
+
+***
+***
+
+#  Problem 0
+
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(data.table)
+library(devtools)
+library(MASS)
+
+my_theme <- theme(
+    axis.text = element_text(size = 12, family = 'mono', colour = 'black'),
+    axis.title = element_text(size = 12, family = 'mono', colour = 'black'),
+    legend.title = element_text(size = 10, family = 'mono', colour = 'black'),
+    plot.title = element_text(size = 14,  family = 'mono', colour = 'black'),
+    legend.text = element_text(size = 8, family = 'mono', colour = 'black'),
+    legend.key = element_rect(fill = "white"),
+    legend.background = element_rect(fill = "white"),
+    panel.grid.major = element_line(colour = "grey"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "white")
+  )
+
+```
+
+
+
+***
+***
+
+
+#  Problem 1 {.tabset}
+
+
+**Time Series and Dates in `ggplot()`**
+
+## Part A   
+
+```{r, warning = F, message = F}
+
+library(data.table)
+library(dplyr)
+big_bike <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/big_bike.csv")
+
+#  Add start_date variable to big_bike, and a bunch of other variables
+big_bike <- mutate(big_bike,
+                   start_date = as.Date(start_date),
+                   birth_decade = paste0(substr(`birth year`, 1, 3), "0s"),
+                   hour_of_day = as.integer(substr(time_of_day, 1, 2)),
+                   am_or_pm = ifelse(hour_of_day < 12, "AM", "PM"),
+                   day_of_week = weekdays(start_date),
+                   less_than_30_mins = ifelse(tripduration < 1800, "Short Trip", "Long Trip"),
+                   weekend = ifelse(day_of_week %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
+
+dim(big_bike)
+
+min(big_bike$start_date)
+max(big_bike$start_date)
+
+```
+
+**Data Summary**
+There are 105,984 rows and 24 columns in the result. The minimum bike trip start date is `"2013-07-01"` and the maximum trip date is `"2016-09-30"`. 
+
+
+## Part B
+
+**Time Series Visualization**
+```{r, warning = FALSE, message = FALSE, fig.width = 7, fig.height = 4}
+
+#  Summarize the big_bike, creating a new data.frame that includes the number 
+#  of trips taken on each day
+by_date <- dplyr::group_by(big_bike, start_date)
+trips_per_day <- dplyr::summarize(by_date, n_trips = n())
+
+#  Create a time series plot with the dates on the x-axis and the number of
+#  trips per day on the y-axis
+ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + 
+    geom_line() + 
+    scale_x_date() + 
+    geom_point() + 
+    my_theme + 
+    labs(x = "Start Date from 2013 to 2016", y = "Number of Trips") + 
+    ggtitle("Time Series Plot - Number of Bike Trips Over Time")
+
+trips_per_day_data <- as.data.frame(trips_per_day)
+trips_per_day_data[which.max(trips_per_day_data[, 2]), 1]
+trips_per_day_data[which.max(trips_per_day_data[, 2]), 2]
+
+```
+
+
+## Part C 
+
+**Time Series Analysis** 
+Removing the `geom_point()` from the code, removes the points on the time series graph so the lines are more visible.  For most of the data, it seems that there are more bike rides during the warmer months and in the middle of the year and fewer bike rides at the end of each year (winter months). So the number of bike rides has a cyclic pattern.  The seasonality remained consistent until 2016, during which the trend became more volatile and we are notice a spike in the number of users even into September.
+
+## Part D
+
+
+```{r, warning = FALSE, message = FALSE}
+
+cbbPalette <- c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", 
+                "#0072B2", "#D55E00", "#CC79A7")
+
+#  Summarize the big_bike, creating a new data.frame that includes the number 
+#  of trips taken on each day, split by usertype
+by_date_usertype <- dplyr::group_by(big_bike, start_date, usertype)
+trips_per_day_usertype <- dplyr::summarize(by_date_usertype, n_trips = n())
+
+#  Create a time series plot with the dates on the x-axis and the number of
+#  trips per day on the y-axis, split by usertype
+ggplot(trips_per_day_usertype, aes(x = start_date, y = n_trips)) +  
+    geom_line(aes(color = usertype)) + 
+    scale_x_date() + 
+    my_theme + 
+    ggtitle("Time Series Plot of Number of Trips over Time") + 
+    labs(x = "Start Date", y = "Number of Trips", color = "User Type") +
+    scale_colour_manual(values=cbbPalette)
+```
+
+**Comparing Fluctuation** 
+
+Subscriber's time series appear to have more fluctuation based on our output.
+
+
+***
+***
+
+
+#  Problem 2 {.tabset}
+
+**Understanding Autocorrelations and Autocorrelation Plots**
+
+## Part A 
+
+```{r, message=FALSE, warning=FALSE}
+rand_ts <- rnorm(1000)
+acf(rand_ts, plot = FALSE)
+```
+
+**Summary**
+
+Most of the autocorrelations are just zero. At 0, the autocorrelation is 1.000. This makes sense because autocorrelation is the correlation of a time series with itself at different lags. When time is 0, we are calculating the correlation with itself without any change. 
+
+## Part B 
+
+```{r, message=FALSE, warning=FALSE}
+acf(rand_ts, plot = TRUE) 
+```
+
+**Analysis** 
+The autocorrelations are mostly not significantly different from zero in my plot because our data are randomly generated. 
+
+## Part C
+
+```{r, message=FALSE, warning=FALSE}
+bike_acf <- acf(trips_per_day$n_trips, plot = FALSE)
+names(bike_acf)
+# bike_acf$acf
+# bike_acf$lag
+```
+
+In the autocorrelation results, we have included `acf`, `type`, `n.used`, `lag`, `series` and `snames`. `bike_acf$lag`, according to the help documenttion, is a "three dimensional array containing the lags at which the acf is estimated" and `bike_acf$acf` is "an array with the same dimensions as lag containing the estimated acf". 
+
+
+## Part D
+
+```{r, message=FALSE, warning=FALSE}
+par(mfrow = c(1, 2))
+acf(filter(trips_per_day_usertype, usertype == "Customer")$n_trips, main = "Autocorrelation Plot \n Of Customer")
+acf(filter(trips_per_day_usertype, usertype == "Subscriber")$n_trips, main = "Autocorrelation Plot \n Of Subscriber")
+```
+
+Subscriber Time Series has higher autocorrelations.
+
+## Part E
+
+**Description** 
+The plots show the estimated autocorrelation function for the time series of daily bike trips for Customers and Subscribers.  The autocorrelation is periodic, peaking every 7th day, indicating periodicty in the time series itself.  
+
+Having statistically significant positive autocorrelation means that the time series for number of bike rides has a tendency to remain the same state from one observation to the next.  We see high autocorrelations for lags that are multiples of 7 (or close to multiples of 7) because the distribution of the number of bike trips per day is generally cyclical with a period of a week. Or in other words, the number of bike trips taken per day depends on what day of the week it is.
+
+
+***
+***
+***
+***

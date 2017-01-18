@@ -1,0 +1,170 @@
+---
+title: "36-315 Lab 01"
+author: "Your Name Here"
+date: "Due Friday, September 2, 2016 (6:30pm)"
+output: html_document
+---
+
+
+##  Lab 01:  Hello, world!  Introduction to R, RStudio, & RMarkdown
+
+***General instructions for labs***: 
+
++  Use this file as the template for your lab submission.  Delete the unecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload two files:  (1) an `R` Markdown file (named as:  [AndrewID]-Lab01.Rmd -- e.g. "sventura-Lab01.Rmd"), and (2) the corresponding .html file generated from `R` Markdown (named as:  [AndrewID]-Lab10.html -- e.g. "sventura-Lab10.html") to Blackboard in the Lab 10 submission section on Blackboard.  You are also welcome to upload a single .zip file containing both of these.
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the lab assignment
++  Include the style guide you used at the top of the lab assignment
+
+
+Todays lab will introduce different aspects of R.  We will reference a long handout on the Blackboard site under Labs (Rintro-wasserman.pdf).
+
+
+***
+***
+
+
+###  Oral Evaluation Graphic
+
+This week, you do not have to do an oral evaluation.  Instead, Sam will do an example oral evaluation for everyone in lab.  We'll use this graphic:
+
+<div style="width:750px">
+![alt text](https://pbs.twimg.com/media/CqAAH9yW8AA2Jj6.jpg)
+</div>
+
+
+###  Before You Start
+
+This lab is an introduction to R.  This will be review for many of you, and it will be brand new to many others.  **If you have trouble completing the lab on time, don't worry.**
+
+Let your TA (Brendan, Christie, or Andersen) know what you're having trouble with, and they will help you.
+
+If you still are unable to complete the lab on time, let Sam know.  This lab is for your benefit; we're most concerned about you learning and understanding `R` and `R Markdown`.
+
+
+###  Problem 1
+
+**Storing Your Work and Storing Your R Commands**:  
+
+First, open the RStudio program on your computer.  
+
+With R Markdown, you can simultaneously store your commands, execute your commands, and generate an output file automatically.  Because of this, we will use R Markdown files (.Rmd) to store our code and answers for all Lab and Homework assignments.
+    
+Use the Lab01.Rmd file as a template for your submission.  Click "Knit HTML" at the top (or Command+Shift+K on Mac).  This should produce an HTML page with the knitting procedure executing your code blocks.  You can edit this new file to produce your lab submission.
+
+Notice how the text you write in the .Rmd file shows up in the output HTML file each time you click "Knit HTML".  
+
+For more tips/tricks on how to format things in R Markdown, [see here](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+
+
+**Code Blocks**:  
+
+When you open a new R Markdown file, you should see a block of code (beginning with three [grave accent marks](https://en.wikipedia.org/wiki/Grave_accent) -- similar to apostrophes, but located next to the 1 key on a standard keyboard -- then an "`{r}`", then three more accent marks).  This block should have a light gray background color in R Studio.  This is a code block!  You can type commands into this block, and they will be executed by `R` and included in your output.
+
+Let's test out the following command, the following command:
+
+```{r}
+print("Hello, World!")
+```
+
+
+**Code Comments**:  
+
+Comments should be used frequently when writing code to give insight into what each piece of code is doing.  To add a comment to your code, start a new line with the `#` symbol.  
+
+Add a comment in your first code block that says "I am printing 'Hello, World!' in R Markdown".
+
+Add another comment that says what your major is.  
+
+Notice that the text in the comments shows up in the code block in the output file, but not in the actual output when you click "Knit HTML".  Comments exist to help you and others who read your code.
+
+
+**Where is my output file?**
+
+Find where you stored your [AndrewID]-Lab01.Rmd file on your computer.  
+
+In the same directory, there should be a file called [AndrewID]-Lab01.html.  
+
+Open it.  It should automatically open in a browser, and it should contain the output.  
+
+In the future, you'll submit these .html files along with your .Rmd files for homeworks and labs.
+
+
+###  Problem 2
+
+**Getting Started**:  Create a single code block that contains R commands to do all of the following:
+
+a.  $(6+3)*4 - 5$
+b.  $4^2$
+c.  $e^{-5}$  (hint:  type ```help(exp)``` at the command line in R Studio
+d.  Let $y=8$.  Let $x = 5-6y$.  Print $x$.
+e.  Repeat (d) for $y=0$, $y=1$, and $y=5/6$.
+
+###  Problem 3
+
+**Built-in Help and Documentation**:  Using the ```help()``` and ```help.search()``` functions at the command line, use R to do the following:
+
+a.  Find the help documentation for the ```quantile``` function.  This function takes a vector of numbers and computes quantiles for the vectors.  What is the description of the ```probs``` argument?
+b.  Find the help docuemntation for the ```mean``` function.  This function takes a vector of numbers and computes their average.  What is the example code at the bottom of the help page?
+c.  Use the help pages to find the name of hte function in R that finds the standard deviation of a vector.
+
+Note that because everything is online, you can use online search engines to achieve many of these same goals. Feel free to do so for all your future assignments. 
+
+
+###  Problem 4
+
+**Loading a library in R**:  In R, there are many libraries or packages/groups of programs that are not permanently stored in `R`, so we have to load them when we want to use them.  We can load the library into R by typing `library(library-name)` at the command line.  (Sometimes we need to download the library first; more on this later.)
+
+a.  Load the ```MASS``` library into R.  Open the help documentation for the MASS package.  What is the official name of this `MASS` package?  It may help to use `library(help=MASS)` to solve this problem.
+b.  Load the ```datasets``` library.  Find the help documentation for its ```trees``` dataset.  Describe this dataset using information from the help pages.
+c.  Load the ```graphics``` library into `R` and open its help documentation.  This library is full of graphics/visualization functions that we may use in this class.  Find a function that creates a 1-D Scatterplot. Describe its argument `x`.
+
+
+###  Problem 5
+
+**Reading in Data**:  We will use ```read.table``` to read in a data set from the internet.  We'll use the dataset at [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/lab1.txt] for this lab.
+
+(Note that this data is in a GitHub repository called "315-code-and-datasets".  We'll use this repository for sharing various datasets and code snippets throughout the semester.)
+
+a.  Start a new code block.  Read this dataset into R by typing: ```lab1data <- read.table("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/lab1.txt", header = T)```.  Type ```head(lab1data)```.  What does the ```head``` function do?
+b.  How many rows does ```lab1data``` have?  Hint:  ```help(nrow)```
+c.  What happens when you add ```, nrows = 10``` inside the parentheses in the line of code in (a)?  (Hint:  See ```help(read.table)```.)
+d.  How many columns does ```lab1data``` have?  Hint:  ```help(ncol)```
+e.  How can you get the number of rows and columns simultaneously?  Hint:  ```help(dim)```
+
+
+###  Problem 6
+
+**Data Management**:  
+
+a.  The ```c()``` function concatenates numbers into a vector.  For example, ```myvector <- c(1,3,6,9)``` creates a vector that has four elements.  Use ```c()``` to create a vector called myvector that contains all the perfect squares (1,4,9,16, ...) less than 200.  
+
+b.  We can access specific rows of a matrix with ```[,]```.  For example, ```lab1data[2,]``` will present the second row of the matrix, and ```lab1data[c(2,4),]``` will yield a new matrix with the second and fourth rows of the original only.  Assign the fourth row of ```lab1data``` to a variable named ```row4```.  Use the ```min()``` and `max()` functions to find the minimum and maximum of this row.  Type `help(min)` if you don't know how these work.
+
+c.  We can use the same operator to access columns of a matrix – for example, ```lab1data[,2]``` will present the second column of the matrix, and ```lab1data[,c(2,4)]``` will yield a new matrix with the second and fourth columns of the original only. Assign the fourth column of ```lab1data``` to a variable named ```column4```. se the ```min()``` and `max()` functions to find the minimum and maximum of this column.
+
+d.  To get a single element in a matrix, we use row and column numbers, such as ```lab1data[r,c]```.  This will also extract a submatrix if multiple entries are used for each.  Obtain and display the element in ```lab1data```’s 5th row, 3rd column. Then obtain and display the submatrix ```lab1data[c(1,2),c(3,4)]```.
+
+e.  We can also ask questions about our data/variables.  The ``==`` operator is a True/False test of equality.  For example, ```row4==1``` returns ```TRUE``` for every element in ```row4``` that is equal to 1, and ```FALSE``` for elements different than 1.  We can do similar things with the symbols ```<```, ```<=```, ```>```, ```>=```.  You can also combine two conditions with the AND (```&```) and OR (```|```) operators: 
+
+    +  ```col1>=100 & col4==100```:  ```col1``` is greater than or equal to 100 AND ```col4``` is equal to 1. 
+    +  ```col1==1 | col4<100```:  ```col1``` is equal to 2 OR ```col4``` is less than 100.
+    +  ```sum(row4==1)```:  counts how many 1s there are in ```row4```.
+    +  ```which(row4==1)```:  tells you the positions of the elements in ```row4``` that are equal to 1.
+
+
+    We can use these conditions to select and analyze subsets.
+
+    +  ```col1[col4==1]```:  lists ONLY the values in ```col1``` if the corresponding values of ```col4``` equal 1.
+(The third value of ```col1``` is only returned if the third value of ```col4``` is equal to 1.)  
+    +  ```mean(col1[col4==1])```: computes the average of only the ```col1``` values for whom the corresponding ```col4``` values are 1.
+
+
+    **Complete the following tasks**:
+    +  Create a variable for the first column in lab1data named ```col1```
+    +  Find the mean of the values in ```col4``` whose ```col1``` values are equal to 1
+    +  Find the minimum of the values in ```col1``` whose ```col4``` values are less than 100
+
+    NOTE: when your data values are text, i.e. letters or words, to use the ```==``` operator, you need to put quotes around the text.  For example, ```col1==”A”```.
+

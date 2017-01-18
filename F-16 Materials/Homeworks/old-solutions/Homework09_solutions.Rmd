@@ -1,0 +1,481 @@
+---
+title: "36-315 Homework 09, Spring 2016"
+author: "Solutions"
+date: "Due Wednesday, March 30, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  hide
+---
+
+***
+***
+
+#  Homework Nine, You Make Me Feel So Fine
+
+#  Problem 1:  Organization, Themes, and Output
+
+(7 points)
+
+See the header above for how to use a floating table of table of contents and code folding; see below for how to use tabs for each part of each problem.
+
+
+#  Problem 2:  2D-KDEs with Contour Plots and Adjusted Bandwidths {.tabset}
+
+(4 points each; 28 points total)
+
+##  Part A
+
+Repeat the process outlined in Lab 09:
+
++  Load the Olive Oil dataset into R.  
++  Ensure that `area` and `region` are factors.
++  Create the subset of continuous variables.
++  Scale the continuous variables so that they have equal variance (and standard deviation).
++  Create the distance matrix corresponding to the scaled continuous variables in the dataset.
++  Create a 2-dimensional projection (`olive_mds`) of the scaled olive dataset (using the distance matrix you created) via multi-dimensional scaling.
++  Rename the columns as you did in Lab 09.
++  Add the `area` and `region` variables to `olive_mds`.
+
+Now that we've reduced the dimensionality of our original dataset into something more manageable, we can complete some additional visualization tasks.
+
+
+```{r, cache=TRUE, warning=FALSE}
+library(gsheet)
+olive <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1OfAR-K-KnYAYvPUCgm-c1WYhBBe746eeboQpVPAZuj8/pubhtml")
+olive <- as.data.frame(olive)
+olive$region <- as.factor(olive$region)
+olive$area <- as.factor(olive$area)
+olive_cont <- olive[,-c(1, 2)]
+
+olive_cont_scale <- scale(olive_cont)
+dist_olive <- dist(olive_cont_scale)
+
+olive_mds <- cmdscale(dist_olive, k = 2)
+olive_mds <- as.data.frame(olive_mds)
+colnames(olive_mds) <- c("mds_coordinate_1", "mds_coordinate_2")
+olive_mds$area <- olive$area
+olive_mds$region <- olive$region
+
+```
+
+
+##  Part B
+
+Visualize the 2D Kernel Density Estimate of `mds_coordinate_1` and `mds_coordinate_2` with a contour plot.  See the Lecture 15 R Demo for how to do this.  Use the default bandwidth.
+
+```{r, warning=FALSE}
+
+library(ggplot2)
+ggplot(data = olive_mds) + 
+  geom_density2d(aes(x = mds_coordinate_1, y = mds_coordinate_2)) +
+  ggtitle("Contour Plot:  2-D Multimensional Scaling of Olive Dataset") + 
+  xlab("MDS Coordinate 1") + ylab("MDS Coordinate 2")
+
+```
+
+
+##  Part C
+
+Repeat part (b), but this time, overlay the points, color by `area`, and change the point type according to the `region` ID number, as you did in Lab 09, Problem 3, part (e).
+
+
+```{r, warning=FALSE}
+
+ggplot(data = olive_mds, aes(x = mds_coordinate_1, y = mds_coordinate_2)) + 
+  geom_density2d() +
+  geom_point(aes(color=area,
+                 shape=region,
+                 size=2)) +
+  scale_shape_manual(values = as.character(sort(unique(olive_mds$region)))) +
+  scale_size(guide=FALSE) +
+  guides(color=guide_legend(title="Area"), shape=guide_legend(title="Region")) +
+  ggtitle("Contour Plot:  2-D Multimensional Scaling of Olive Dataset by Area and Region") + 
+  xlab("MDS Coordinate 1") + ylab("MDS Coordinate 2")
+
+```
+
+
+
+##  Part D
+
+Repeat part (c), but this time, use a smaller bandwidth in each direction with `+ geom_density2d(h = c(1,1))`.
+
+
+```{r, warning=FALSE}
+
+ggplot(data = olive_mds, aes(x = mds_coordinate_1, y = mds_coordinate_2)) + 
+  geom_density2d(h=c(1, 1)) +
+  geom_point(aes(color=area,
+                 shape=region,
+                 size=2)) +
+  scale_shape_manual(values = as.character(sort(unique(olive_mds$region)))) +
+  scale_size(guide=FALSE) +
+  guides(color=guide_legend(title="Area"), shape=guide_legend(title="Region")) +
+  ggtitle("Contour Plot:  2-D Multimensional Scaling of Olive Dataset by Area and Region") + 
+  xlab("MDS Coordinate 1") + ylab("MDS Coordinate 2")
+
+```
+
+
+
+##  Part E
+
+Repeat part (d), but this time, use a larger bandwidth in each direction with `+ geom_density2d(h = c(5,5))`.
+
+
+```{r, warning=FALSE}
+
+ggplot(data = olive_mds, aes(x = mds_coordinate_1, y = mds_coordinate_2)) + 
+  geom_density2d(h=c(5, 5)) +
+  geom_point(aes(color=area,
+                 shape=region,
+                 size=2)) +
+  scale_shape_manual(values = as.character(sort(unique(olive_mds$region)))) +
+  scale_size(guide=FALSE) +
+  guides(color=guide_legend(title="Area"), shape=guide_legend(title="Region")) +
+  ggtitle("Contour Plot:  2-D Multimensional Scaling of Olive Dataset by Area and Region") + 
+  xlab("MDS Coordinate 1") + ylab("MDS Coordinate 2")
+```
+
+
+
+##  Part F
+
+Which bandwidth do you prefer for this problem?  The default (parts (b) and (c)), the the smaller bandwidth (part (d)), or the larger bandwidth (part (e))?  Why?
+
+I prefer the smaller bandwidth (or even the default), because the larger bandwidth returns an extremely smooth density estimate that doesn't provide any useful information about the underlying empirical distribution in this problem.  That is, the density is highest in an area where the points are a bit sparse, and not as high where the points are more closely clustered.  In general, the peaks of the density estimates should correspond to the actual locations of the points (ideally in areas where there are lots of points), and the valleys in the density estimate should correspond to areas of the feature space where there are few observations.  The large bandwidth prevents this from happening.
+
+If we are just trying to represent the density of **this** data then the smaller the bandwidth the better, because it will give more details that we can use to interpret **this** data.  But, if we are trying to apply our findings to future wine data, we wouldn't want our bandwidth to be too small because we may **overfit** to our particular data.  (If you haven't learned about overfitting yet, no big deal!  You'll learn this in 36-401 and 36-402.)
+
+
+##  Part G
+
+Repeat part (e), but this time, adjust the bandwidths in each direction as you see fit.  In particular, choose a different, non-default bandwidth for each direction.  Comment on why you chose these bandwidths.
+
+
+```{r, warning=FALSE}
+
+ggplot(data = olive_mds, aes(x = mds_coordinate_1, y = mds_coordinate_2)) + 
+  geom_density2d(h=c(1.5, 1.6)) +
+  geom_point(aes(color=area,
+                 shape=region,
+                 size=2)) +
+  scale_shape_manual(values = as.character(sort(unique(olive_mds$region)))) +
+  scale_size(guide=FALSE) +
+  guides(color=guide_legend(title="Area"), shape=guide_legend(title="Region")) +
+  ggtitle("Contour Plot:  2-D Multimensional Scaling of Olive Dataset by Area and Region") + 
+  xlab("MDS Coordinate 1") + ylab("MDS Coordinate 2")
+```
+
+I thought that (1, 1) was slightly too detailed and I wanted a broader picture of the density.  But, I also felt that the default was a bit too large so I chose somewhere in between to capture the most information about the density, without overfitting to our particular data.
+
+
+***
+***
+
+
+#  Problem 3:  2D-KDEs with Heat Maps and Three-Color Gradients {.tabset}
+
+(10 points)
+
+## Part A
+
+(6 points)  Create a heat map (`+ stat_density2d(aes(fill = ..level..), geom = "polygon")`) of the MDS coordinates from the previous problem.
+
++  Use a non-default bandwidth in both directions, as you did in the previous problem.  Try a few different bandwidths in both directions.  Choose bandwidths that you think properly show where the high-density and low-density areas of the graph are.
++  Use a custom color gradient that uses three colors:  one as the "low density" color, one as the "high density" color, and one as the "medium density" color.  
++  To do this, use `scale_fill_gradient2()` and be sure to specify the `mid` parameter in addition to the `low` and `high` parameters.  
++  Note that you'll have to manually pick an appropriate `midpoint` parameter as well.  This parameter specifies the value of the density to which the `mid` color should correspond.  The default value is zero, which will not work for this problem (since zero is the minimum possible density).
+
+```{r, warning=FALSE}
+
+ggplot(data = olive_mds) + 
+  stat_density2d(aes(x = mds_coordinate_1,
+                     y = mds_coordinate_2,
+                     fill = ..density..), 
+                 geom = "tile",
+                 contour = F,
+                 h = c(2, 2)) + 
+  geom_point(aes(x = mds_coordinate_1,
+                     y = mds_coordinate_2)) +
+  scale_fill_gradient2(low="white", mid="mediumaquamarine", high="navy", midpoint = .045) +
+  ggtitle("Heat Map:  2-D Multimensional Scaling of Olive Dataset") + 
+  xlab("MDS Coordinate 1") + ylab("MDS Coordinate 2")
+```
+
+Note that if you specify the `midpoint` to be 0 (the minimum possible density value, since probabilities are always positive), then you will get a two-color gradient between your `mid` and `high` colors.  It's best to pick a `midpoint` that's somewhere between 0 and the highest density value.  See below for more detail.
+
+
+## Part B
+
+(2 points)  Comment on your choice of colors.  Also, comment on your choice for the `midpoint` parameter -- why did you choose it?  What happens when you increase or decrease it?  
+
+I chose **colors** that have a nice, easy-on-the-eyes flow from light to dark.  White worked well for the low color because it both decreases the amount of ink and is intuitive because white is often associated with lowness/no information. I chose colors on the same spectrum (blue/green) because of color blindness.  That is, a colorblind person would still see the resulting density estimate on a grayscale that makes sense given my choice of colors.  You should have your low and high colors be very dark and very light in order to show the most contrast but could do either low/high = light/dark or low/high = dark/light.  The first option has the advantage of using less ink, while the second option is often used in practice, where white is the highest density value.  You should not use a color scale involving both red and green because of colorblindedness (a large proportion of the population is red-green colorblind), or one that uses multiple shades of the same color in the low and high (e.g. low = light blue, medium = red, high = dark blue), since this is very confusing for the viewer.
+
+It was important to change the bandwidth before we chose our **midpoint** because if you change one, the effect of the other changes. I chose (2, 2) because it properly shows where the high-density and low-density areas of the graph are.  I then changed my midpoint to .045.  I first started with -1 (everything was navy) and 1 (everything was navy) and realized I needed to adjust.  I liked both .05 (but it wasn't dark enough in areas of high density) and .04 (but it had a light density in outer areas that should be white), so I thought something in between would be best.  Your midpoint should be something between 0 and the maximum density value.  Something closer to zero than to the max is better.
+
+There are, of course, more scientific ways to choose the `midpoint` value, but these can be dependent on the data/problem.  Often, an informed guess-and-check method is best.
+
+
+
+## Part C
+
+(2 points)  Do you prefer the graph you created here to the contour plots in the previous problem?  Explain why or why not.
+
+Pros/cons of contour plot:  We get information about both region and area, and some information on density, although I think that the density isn't shown as clearly as it could be. 
+
+Pros/cons of heat map:  Density is shown very clearly but there isn't information about region and area.
+
+Both are decently interpretable.  The contour plot may be a bit confusing since there is a lot of information, but I don't think it's impossible and still clearly displays information. 
+
+
+***
+***
+
+
+#  Problem 4:  What Makes Red Wine So Good?  (Open-ended) {.tabset}
+
+(55 points)
+
+For the remainder of the semester, we will be transitioning towards completing more open-ended types of problems on all course assignments.  This is the first example of this type of problem.  Here, I'm going to guide you through the process of completing an open-ended exploratory data analysis to give you an idea of the types of issues/ideas you should be considering when you're faced with real-world data analysis problems.
+
+Load the Red Wine dataset from the University of California-Irvine's Machine Learning Repository.  To do this, you can use the following line of code:  `wine_red <- read.csv("http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv", sep = ";")`
+
+For more information on the dataset, see [here](http://archive.ics.uci.edu/ml/datasets/Wine+Quality).
+
+**Your goal is to answer the following two questions:**
+
++  Which characteristics of red wine are associated with higher or lower quality wines?
++  Are there any "groups" of wine in our dataset?  Do these groups correspond to particular qualities of wine?
+
+I like to use the following approach when tackling these open-ended types of questions:
+
+1.  Understand/visualize your response variable.
+2.  Understand/visualize your explanatory variables.
+3.  Examine (graphically) which explanatory variables influence the response.
+4.  Complete any additional / miscellaneous tasks required to answer the question at hand (e.g. identifying group structure)
+
+<div style="width:400px">
+![alt text](http://www.kissyourworld.com/wp-content/uploads/2016/02/red-wine-1.jpg)
+</div>
+
+***
+
+##  (a)
+
+(5 points)  
+
+***
+
+**Sam's Advice**:
+
+The "response variable" is the quantity of interest in a particular problem.  Response variables, like all variables, can be either categorical or continuous. 
+
+If the response variable is continuous, I recommend:
+
++  Using `summary()` to get a quick summary of important statistics (min, max, mean, median, etc).
++  Creating a one-dimensional graph of the response variable (e.g. histogram or density estimate).
+
+If the response variable is categorical, I recommend:
+
++  Using `table()` to get a quick tabulation of how common each category is in our dataset.
++  Creating a one-dimensional graph of the response variable (e.g. a bar chart).
+
+In this problem, the response variable is wine `quality`, which is an ordered categorical variable taking values between 1 and 10.
+
+
+***
+
+**Your Assignment**:
+
+Get to know your response variable by taking the appropriate steps given what type of variable `quality` is.  Write a few sentences summarizing what you found.
+
+```{r}
+library(ggplot2)
+# Load in the data
+wine_red <- read.csv("http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv", sep = ";")
+# Determine type of response variable (categorical or continuous)
+summary(wine_red$quality)
+table(wine_red$quality)
+# Since the response variable (quality) is categorical, 
+# we will make a 1D graph to display the univariate distribution
+
+# Create a bar chart
+ggplot(wine_red, aes(x = quality)) +
+  geom_bar(fill = "darkblue") +
+  ggtitle("Frequency of Each Wine Quality") +
+  labs(x = "Wine Quality", y = "Count") + 
+  scale_x_continuous(breaks = c(3, 4, 5, 6, 7, 8))
+```
+
+From our table of the frequencies of each quality level of wine, we can see that the qualities range from 3 to 8, with a small number of wines in each of the extremes.  From our bar chart, we can see that the majority of the wines have quality 5 or 6, with no more than 200 wines in any of the other quality categories. 
+
+***
+
+##  (b)
+
+(10 points)
+
+***
+
+**Sam's Advice**:
+
+The "explanatory variables" are anything else in your dataset that you can use to explain differences/changes in your response variable.  In the `wine_red` dataset, this means the first 11 variables in the dataset are all potential explanatory variables.
+
+When getting to know your explanatory variables, I recommend:
+
++  Exploring the univariate distributions of each explanatory variable, in order to get a sense of the center, spread/range, skewness, and modality of each.
++  Exploring pairwise relationships between these variables, in order to see if any of them are highly correlated with each other.
+
+When completing these exploratory analyses, try to pick a small subset of graphs that you find "interesting" for this particular problem.  By "interesting", I mean that you should only include graphs that you think provide some information that will help you in answering the question(s) asked.  For example:
+
++  A pairs plot of a few interesting variables may be useful.  
++  A scatterplot of two correlated (or uncorrelated) variables may be of interest.
++  Plots of the univariate distributions of some of the explanatory variables may be interesting if they are heavily skewed or have multiple modes (since we are specifically interested in group structure).
+
+***
+
+**Your Assignment**:
+
+Get to know your explanatory variables by following the advice above.  In your solution, include 3 graphs that you find "interesting" for this particular problem.  Write 1-3 sentences summarizing each graph.  What are the important takeaways for the viewer?
+
+```{r}
+# Pairs plot of correlated explanatory variables
+library(GGally)
+# Subset of data for pairs plot
+wine_subset <- wine_red[,c("fixed.acidity", "chlorides", "density", "pH")]
+ggpairs(data = wine_subset, 
+        upper = list(continuous = "density", 
+                     discrete = "ratio", 
+                     combo = "facetdensity"),
+        title = "Relationships between Red Wine Characteristics")
+
+# Histogram of alcohol variable
+ggplot(data = wine_red, aes(x = alcohol)) + 
+  geom_histogram(binwidth = .3, fill = "darkblue", color = "black") + 
+  ggtitle("Distribution of Alcohol Content in Red Wine") +
+  labs(x = "Alcohol", y = "Count")
+
+# Histogram of citric acid variable
+ggplot(data = wine_red, aes(x = citric.acid)) + 
+  geom_histogram(binwidth = .06, fill = "darkblue", color = "black") + 
+  ggtitle("Distribution of Citric Acid in Red Wine") +
+  labs(x = "Citric Acid", y = "Count")
+```
+
+In order to explore the bivariate relationships between our explanatory variables, we made a pairs plot of all the explanatory variables. We chose to display a subset of the interesting variables here, including fixed acidity, chlorides, density, and pH. This pairs plot not only displays the univariate distributions of the chosen variables, which are all unimodal, but also the scatterplots and density plots of their relationships. Some interesting things that we can see from this graph are that fixed acidity and density are strongly positively correlated. Fixed acidity also has a negative relationship with pH, which is expected since a larger pH means the wine is less acidic. Another interesting feature to note is that fixed acidity, density, and pH are symmetric and bell shaped, while chlorides is very skewed right. 
+
+In order to explore the univariate distributions of our explanatory variables, we made histograms of all of them and have chosen to display two interested features here. Our first plot of the distribution of alcohol in wine is interesting because it is very skewed right, and has a range of values from about 8 to 15. This variable is unimodal, with most of the data concentrated around an alcohol content of 10. Around an alcohol of 11 the frequency of wines with more alcohol steeply drops off.  
+
+We have also shown a histogram of the citric acid variable. This distribution is also skewed right and has a range from 0 to 1. We chose to display this variable because it was one of the few that did not appear to be unimodal. There is a mode around 0, and then there is a drop in frequency as the citric acid content decreases, and then there are spikes at citric acids of 0.25 and 0.50, and then after this third spike, the frequency of wines with higher citric acid contents decreases sharply. This is interesting because it is not a linear relationship. 
+
+Note that while the pairs plot shows these univariate distributions on the diagonal, these are often difficult to visualize, which is why we use univariate plots here.
+
+
+***
+
+##  (c)
+
+(20 points)
+
+***
+
+**Your Assignment**:
+
+Which explanatory variables influence your response variable (wine `quality`)?  In your solution, include 3 graphs that show interesting relationships (or an interesting lack of a relationship) with your response variable.  Write 1-3 sentences summarizing each graph.  What are the important takeaways for the viewer?
+
+***
+
+```{r, message=FALSE}
+wine_red$above_average <- factor(wine_red$quality > 5, 
+                                 labels = c("Below Average", "Above Average"))
+wine_red$quality <- as.factor(wine_red$quality)
+
+ggplot(wine_red) + geom_histogram(aes(x = alcohol), binwidth = .1) + 
+  facet_grid(quality ~., margins = T, scales = "free") +
+  labs(x = "Alcohol (%)") + theme_bw() +
+  ggtitle("Alcohol Content by Wine Quality")
+```
+
+This graph shows histograms for alcohol content of the wine, faceting on the response variable, wine quality. We can see from the graph that wines with higher alcohol content tend to be higher quality, though most high alcohol wines are rated a 6 or 7 because wines rated an 8 are so rare in general.  
+
+We include the overall distribution (bottom graph) for comparison purposes; we allow flexible y-axes in this case, because we are primarily concerned with the conditional distributions of alcohol content given each wine quality, and less concerned about the number of observatiosn in each wine quality category (since we already visualized that above).
+
+```{r, message=FALSE}
+ggplot(wine_red) + geom_histogram(aes(x = volatile.acidity), binwidth=.02) + 
+  facet_grid(quality ~., margins = T, scales = "free") + 
+  theme_bw() + labs(x = "Volatile Acidity") +
+  ggtitle("Volatile Acidity by Wine Quality")
+```
+
+This graph shows histograms for volatile acidity of the wine, faceting on the response variable, wine quality. We can see from the graph that the wines with lowest volatile acidity, lower than about 0.3, tend to be higher quality. Again, wines at the extremes of quality are rare, so the vast majority of wines in the 0.4 to 0.8 volatile acidity range are rated a 5 or 6.
+
+We made similar choices in this graph as we did in the above graph.
+
+
+```{r, message=FALSE}
+ggplot(wine_red, aes(x=alcohol, y=volatile.acidity)) + geom_point(alpha=.5) +
+  facet_wrap(~ quality) + theme_bw() + labs(x="Alcohol", y="Volatile Acidity") +
+  ggtitle("Volatile Acidity vs. Alcohol Content, Grouped By Quality")
+```
+
+We can see from this graph that alcohol content and volatile acidity do not appear to be redundant when determining wine quality. The highest quality wines tend to show both a low volatile acidity and high alcohol content, while below average wines tend to be missing at least one of those characteristics. However, while a wine rated an 8 could be easily distinguished from a 3, 4 or 5, it would be difficult to pick out an 8 amongst 6's and 7's given how much common the latter are overall.
+
+***
+
+##  (d)
+
+(20 points)
+
+***
+
+**Your Assignment**:
+
+In your solution, include 2 graphs that help to answer the following questions:
+
++  Is there any group structure in the `wine_red` dataset?  
++  Do the groups correspond to particular categories of the wine `quality` variable?
++  Are similar wine qualities (e.g. `quality = 4` and `quality = 5`) close together?  Are very different qualities (e.g. `quality = 4` and `quality = 8`) far apart?
++  How many groups / clusters would you say there are in this dataset?  Explain.
+
+Write 1-3 sentences summarizing each graph.  What are the important takeaways for the viewer?
+
+```{r, message=FALSE}
+wine_cont <- wine_red[,-ncol(wine_red)]
+for(ii in 1:ncol(wine_cont))  wine_cont[,ii] <- as.numeric(wine_cont[,ii])
+wine_exp <- scale(wine_cont)
+wine_dist <- dist(wine_exp)
+wine_mdscale <- as.data.frame(cmdscale(wine_dist, k = 2))
+wine_mdscale$quality <- wine_red$quality
+
+ggplot(wine_mdscale, aes(x = V1, y = V2)) + 
+  stat_density_2d(aes(fill = ..density..), geom = 'tile', contour = F) + 
+  theme_bw() + scale_fill_distiller(palette = "Greys", direction = 1) +
+  labs(x = "MDS Coordinate 2", y = "MDS Coordinate 1", 
+       title = "Heat Map Using 2-D Multidimensional Scaling of Wine Data")
+```
+
+This heat map shows the locations of wines based on projecting all explanatory variables into two dimensions using multidimensional scaling. There is one obvious mode in the graph. There is possibly a second group centered near coordinates (2.5, 2), but if it truly is a distinct cluster it's relatively small and not very well separated.
+
+```{r, message=FALSE}
+ggplot(wine_mdscale, aes(x = V1, y = V2)) + geom_point(alpha=.4) + 
+  facet_wrap(~quality) + labs(x="First Coord.", y="Second Coord.") +
+  ggtitle("2-D Multidimensional Scaling Grouped By Quality")
+```
+
+This scatterplot shows the same projection using multidimensional scaling, this time split according to wine quality. Each level of wine quality seems to heavily overlap with similar levels of wine quality. The smaller potential group seen in the heat map appears to be mostly made up of wine rated above average, though most wines rated a 6 seem to be in the main group.
+
+Overall, it seems like it would be difficult to predict the exact wine rating from the explanatory variables, but there does appear to be some relationship between the explanatory variables and quality.
+
+Now that you have the tools to do so, you might also consider representing the wines as a dendrogram.
+
+
+
+***
+***
+***
+***
+***
+

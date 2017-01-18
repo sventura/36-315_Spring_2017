@@ -1,0 +1,166 @@
+---
+title: "36-315 Lab 01 Solutions"
+author: "Solutions"
+date: "Due Friday, September 2, 2016 (6:30pm)"
+output: html_document
+---
+
+
+##  Lab 01:  Hello, world!  Introduction to R, RStudio, & RMarkdown
+
+Style Guide: Google's R Style Guide
+
+###  Problem 1
+
+```{r}
+print("Hello, World!")
+# I am printing 'Hello, World!' in R Markdown.
+```
+
+###  Problem 2
+
+```{r}
+#a. 
+(6+3)*4-5
+
+#b. 
+4^2
+
+#c.
+exp(-5)
+
+#d.
+y <- 8
+x <- 5-6*y
+x
+
+#e.
+y <- 0
+x <- 5-6*y
+x
+
+y <- 1
+x <- 5-6*y
+x
+
+y <- 5/6
+x <- 5-6*y
+x
+```
+
+
+###  Problem 3
+
+a.  By using help(quantile), the description of the ```probs``` argument is "numeric vector of probabilities with values in [0,1]. (Values up to 2e-14 outside that range are accepted and moved to the nearby endpoint.)".  
+
+b.  By using help(mean) in the command line, the code at the bottom of the help page for the 'mean' function is:   
+
+```{r, eval = FALSE} 
+x <- c(0:10, 50)  
+xm <- mean(x)  
+c(xm, mean(x, trim = 0.10))
+```
+
+c. The name of the function to find the standard deviation is ```sd```.
+
+
+###  Problem 4
+
+a.  
+```{r}
+library(MASS)
+library(help = MASS)
+```
+The official name of the ```MASS``` package is "Support Functions and Datasets for Venables and Ripley's MASS".  
+
+b.  
+```{r}
+library(datasets)
+library(help = "datasets")
+```
+The ```trees``` dataset has information about the girth, height and volume for black cherry trees.  
+
+c.  
+```{r}
+library(graphics)
+library(help = "graphics")
+```
+
+The function that creates a 1-D scatterplot is ```stripchart``` and using the ```help(stripchart)``` command, the argument ```x``` is "the data from which the plots are to be produced".
+
+
+###  Problem 5
+
+a.  
+```{r}
+lab1data <- read.table("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/lab1.txt", header = T)
+head(lab1data)
+```  
+
+The function ```head``` displays the first six rows of the dataset.
+
+b.  
+```{r}
+nrow(lab1data)
+```  
+
+```lab1data``` has 27 rows.
+
+c.  
+```{r}
+lab1data <- read.table("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/lab1.txt", header = T, nrows = 10)
+```
+
+Adding ```nrow = 10``` allows you to specify the number of rows to read from the dataset.
+
+d.  
+```{r}
+ncol(lab1data)
+```
+
+```lab1data``` has 10 columns.
+
+e.  
+```{r}
+dim(lab1data)
+```
+
+The ```dim``` function returns both the number of rows and columns.
+
+###  Problem 6
+
+a.  
+```{r}
+myvector <- c(1,4,9,16,25,36,49,64,81,100,121,144,169,196)
+```
+
+b.
+```{r}
+row4 <- lab1data[4,]
+min(row4)
+max(row4)
+```
+
+
+c.  
+```{r}
+column4 <- lab1data[,4]
+min(column4)
+max(column4)
+```
+
+
+d.  
+```{r}
+lab1data[5,3]
+lab1data[c(1,2),c(3,4)]
+```
+
+
+e.  
+```{r}
+col1 <- lab1data[,1]
+mean(column4[which(col1 == 1)])
+min(col1[which(column4 < 100)])
+```
+

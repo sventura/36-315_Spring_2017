@@ -1,0 +1,103 @@
+---
+title: "36-315 Lab 07"
+author: ""
+date: "Due Friday, October 14, 2016 (9:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+Style Guide: http://adv-r.had.co.nz/Style.html
+
+
+
+#  Problem 1
+```{r, cache = T}
+library(data.table)
+
+olive <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/olive_oil.csv")
+```
+
+
+#  Problem 2
+
+a.  
+```{r, warning = F, message = F}
+library(dplyr)
+olive_sub <- dplyr::select(olive, palmitic, stearic, linoleic, area, region)
+```
+   
+b.  
+```{r}
+olive_sub$area <- as.factor(olive_sub$area)
+olive_sub$region <- as.factor(olive_sub$region)
+```
+   
+c.  
+```{r, warning = F, message = F, fig.height = 24, fig.width = 12}
+library(GGally)
+ggpairs(olive_sub)
+```
+  
+There is a moderately strong positive correlation between `linoleic` and `palmitic`. Further, it's interesting that the medians of `stearic` when conditioned on `area` are roughly similar, but when conditioned on `region` they become much more spread out and random (even between regions in the same area). 
+
+    
+d.  
+```{r}
+#Mapping from https://www.researchgate.net/publication/239459050_Classification_of_olive_oils_from_their_fatty_acid_composition
+library(ggplot2)
+my_theme <-  theme_bw() + # White background, black and white theme
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+
+levels(olive_sub$area) <- c("South Italy", "Sardinia", "North Italy")
+levels(olive_sub$region) <- c("North Apulia", "Calabria", "South Apulia", "Sicily", "Inland Sardinia", "Coast Sardinia", "East Liguria", "West Liguria", "Umbria")
+
+ggplot2::ggplot(data = olive_sub, aes(x = stearic, y = palmitic)) + 
+  geom_point(aes(col = region, shape = area)) + 
+  ggtitle("Palmitic vs. Stearic Acid in Olive Oil\nwith Area and Region") + 
+  labs(x = "Stearic Acid Content", y = "Palmitic Acid Content", 
+  col = "Region", shape = "Area") + 
+  my_theme
+```
+   
+   
+e.     
+There seems to be a cluster of points from region 3 in the upper left corner (high palmitic acid content and low stearic acid content). There also seems to be a cluster of points from region 9 in the bottom left of the graph (low stearic acid and palmitic acid content). Lastly, the olive oils from area 2 and 3 have low palmitic acid content (they tend to be in the bottom half of the graph), and oils from area 1 have high palmitic acid content (they tend to be in the upper half of the graph). There doesn't seem to be a relationship between area and stearic content, however. 
+
+
+#  Problem 3
+
+
+a.  
+```{r}
+ggplot2::ggplot(data = olive_sub, aes(x = stearic, y = palmitic)) + 
+  geom_point(aes(col = region, shape = area)) + 
+  ggtitle("Palmitic vs. Stearic Acid in Olive Oil\nwith Area and Region") + 
+  labs(x = "Stearic Acid Content", y = "Palmitic Acid Content", 
+  col = "Region", shape = "Area") +
+  guides(color = guide_legend(override.aes = list(linetype = 0))) + 
+  geom_density2d(aes(x = stearic, y = palmitic)) +
+  my_theme
+  
+```
+    
+b.  
+There are two modes in the data. They both occur with roughly 225 units of Stearic Acid. The first group occurs at around 1050 units of Palmitic Acid, and the second with 1350 units of Palmitic Acid. The lower group (with the lesser amount of Palmitic Acid) corresponds with areas 2 and 3, whereas the top group (with greater Palmitic Acid) corresponds with area 1. 
+     
+
+c.  
+```{r}
+ggplot2::ggplot(data = olive) + 
+  stat_density2d(aes(x = stearic, y = palmitic, fill = ..density..), 
+                 geom = "tile", contour = F) + 
+  geom_point(aes(x = stearic, y = palmitic)) +
+  scale_fill_gradient(low = "white", high = "red") + 
+  ggtitle("Heat Map of Palmitic vs. Stearic Acid Content") + 
+  labs(x = "Stearic Acid Content", y = "Palmitic Acid Content", fill = "Density") +
+  my_theme
+```
+
+

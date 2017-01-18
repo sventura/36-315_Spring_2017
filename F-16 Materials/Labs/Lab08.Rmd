@@ -1,0 +1,232 @@
+---
+title: "36-315 Lab 08"
+author: "Your Name Here"
+date: "Due Friday, October 28, 2016 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 08:  Visualizing High-Dimensional Data
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab08.Rmd -- e.g. "sventura-Lab08.Rmd") to the Lab 08 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+This week's oral evaluation graphic:  Comparing soccer players (from [StatsBomb](http://statsbomb.com/) / Ted Knutson / [@mixedknuts](https://twitter.com/mixedknuts))
+
+<div style="width:500px">
+![](http://i4.mirror.co.uk/incoming/article3184450.ece/BINARY/Messi_Ronaldo_Suarez_Overlay_2014.png)
+</div>
+
+
+***
+
+Sam Says:  Remember to first explain the graph and discuss the main results presented in the graph (what's the main takeaway?).  Only after you've done that, you should offer any criticism of the graph or suggest changes you would make to the graph.
+
+
+***
+***
+
+
+#  Data:  Italian Olive Oils
+
+Load the Italian olive oils dataset into R from the following location on the course GitHub page, and store it in a `data.frame` called `olive`:  [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/olive_oil.csv]
+
+Brief data description:  
+
++  Groups:  Two choices -- three macro-areas and nine specific regions in Italy
++  Covariates:  Eight variables (chemical measurements on acid components of oil)
+
+[For more information on the data, see here.](http://artax.karlin.mff.cuni.cz/r-help/library/pdfCluster/html/oliveoil.html)
+
+
+<div style="width:500px">
+![](http://photos.wikimapia.org/p/00/00/37/62/83_big.jpg)
+</div>
+
+***
+***
+
+
+#  Problem 0
+
+(5 points)
+
+Use your theme.  Do not directly copy the instructors' theme.
+
+
+***
+***
+
+
+#  Problem 1
+
+(5 points each)
+
+**Distance Matrices**
+
+A distance matrix is a data structure that specifies the "distance" between each pair of observations in the original $n$-row, $p$-column dataset.  For each pair of observations (e.g. $x_i, x_j$) in the original dataset, we compute the distance between those observations, denoted as $d(x_i, x_j)$ or $d_{ij}$ for short.
+
+A variety of approaches for calculating the distance between a pair of observations can be used.  The most commonly used approach (when we have continuous variables) is called "Euclidean Distance".  The Euclidean distance between observations $x_i$ and $x_j$ is defined as follows:  $d(x_i, x_j) = \sum_{l = 1}^p (x_{i,l} - x_{j,l}) ^ 2$.  That is, it is the sum of squared differences between each column ($l \in \{1, ..., p\}$) of $x_i$ and $x_j$ (remember, there are $p$ original columns / variables).
+
+Note that if some variables in our dataset have substantially higher variance than others, the high-variance variables will dominate the calculation of distance, skewing our resulting distances towards the differences in these variables.  As such, it's common to scale the original continuous dataset before calculating the distance, so that each variable is on the same scale.
+
+a.  Load the Olive Oil dataset into R, and store it in a data.frame called `olive`.  Ensure that the `area` and `region` variables are stored as `factor` variables in R.  Create a subset of the `olive` dataset (called `olive_cont`) that contains only the continuous variables (i.e., no `area` or `region`).  
+
+b.  Let's examine the columns of `olive_cont` to determine if the variables in our dataset have (roughly) equal variance (or standard deviation).  To do this, type `apply(olive_cont, 2, sd)` to calculate the standard deviation (`sd`) of the data stored in each column of `olive_cont`.  Comment on the resulting standard deviations of each column.  Are any of them substantially larger or smaller than the others?  Do you recommend scaling the variables before calculating the distances?
+
+c.  Look up the help documentation for the `scale()` function.  What does it do?  Use the `scale()` function to create a scaled version of `olive_cont`.  Store this in a data.frame called `olive_cont_scale`.  Calculate the standard deviation of each column of `olive_cont_scale`, similar to how you did this in part (b).  What changed after scaling the variables?
+
+d.  Look up the help documentation for the `dist()` function.  What does this function do?  What is the default method for calculating the distance between each observation?
+
+e.  Create a distance matrix for the `olive_cont_scale` dataset using the Euclidean distance method.  Store this in an object called `dist_olive`.  Note that since we are comparing all $n$ pairs of observations in the original dataset, there are $n \choose 2$ comparisons.  Verify that this is what happened:  Type `length(dist_olive)` and `choose(nrow(olive_cont_scale), 2)`.  Are they the same?  Does this make sense?  Why or why not?
+
+
+***
+***
+
+
+#  Problem 2
+
+(10 points each)
+
+**Multi-Dimensional Scaling**
+
+As discussed in class last week, multi-dimensional scaling (MDS) tries to find the "best" $k$-dimensional projection of the original $p$-dimensional dataset ($k < p$).  
+
+By "best", we mean that our resulting projection (which will have $n$ rows and $k$ columns/variables) will maintain the important features of the original $p$-dimensional dataset (e.g. group structure).  
+
+As such, MDS tries to preserve the _order_ of the pairwise distances stored in our distance matrix.
+
+
+a.  Look up the help documentation for the `cmdscale()` function.  What is the first input parameter required for the function?  What type of object does this input require?  What is the second input parameter?  What is its default?  What other dimension reduction method is similar to MDS?  (Hint:  What does the help file say MDS is also known as?)
+
+b.  Use MDS to create a 2-dimensional projection of the `olive_cont_scale` dataset.  To do this, use `cmdscale(dist_olive, k = 2)`.  Store this in a variable called `olive_mds`.  What is the dimensionality (use the `dim()` function) of the resulting dataset?  Compare this to the dimensionality of `olive_cont_scale`.
+
+c.  Wow!  All of those steps from the last two problems, and we _finally_ have a low-dimensional projection of our original dataset that we can work with.  Let's visualize it.  
+
++  First, we'll need to convert our MDS results to a data.frame using `olive_mds <- as.data.frame(olive_mds)`.  
++  Next, we'll need to give some names to the columns, e.g. `colnames(olive_mds) <- c("mds_coordinate_1", "mds_coordinate_2")`.  Our resulting data.frame has 2 columns.  
++  Finally, add the `area` and `region` to the data.frame using lines of code like `olive_mds <- mutate(olive_mds, area = as.factor(olive$area), region = as.factor(olive$region))`, so that it now has four columns.
++  What is the dimensionality of our `olive_mds` data.frame now?
+
+
+d.  Create a scatterplot with the first MDS "coordinate" on the x-axis, the second MDS "coordinate" on the y-axis.  Describe the resulting graph.  Does there appear to be any group structure?  If so, how many groups do you think there are?  To which areas of the graph do the groups correspond?  
+
+e.  Repeat part (d), but this time:
+
++  Color the points by their `area`.  
++  Use a non-default color scheme.  
++  Change the point type according to the `region` variable.  
++  Use the `scale_shape_manual()` function to change the point types so that they correspond to the region ID number, i.e. `+ scale_shape_manual(values = as.character(sort(unique(olive_mds$region))))`.
++  Adjust the `size` of the points as necessary in order to make the graph easier to read.  
++  Describe the resulting graph.  Does the group structure in the olive oil dataset correspond to any of the categories of `area` and/or `region`?  
+
+f.  From your graph in (e):  Which `area` categories are closely clustered together?  Which are not as tightly clustered?  Which `region` categories are closely clustered together?  Which are not as tightly clustered?  
+
+g.  (BONUS:  2 points):  How many "clusters" of observations would you say that there are in this dataset?  In general, when looking at graphs like this, how can/should we determine the number of clusters?  No need to include a detailed mathematical answer here.  A qualitative answer (that demonstrates that you've given some thought to this problem) is fine.
+
+
+***
+***
+
+
+#  Problem 3
+
+(10 points)
+
+**Dendrograms and Enhancing the User Experience**
+
+_Code is provided for you for all of the following problems.  All you have to do is edit your R Markdown document so that the resulting graphs are displayed in tabs, as specified below._
+
+The ability to create statistical reports that are clear, concise, and easy for the user to view and understand is essential for modern statisticians / data scientists.  There are a few additional tricks in R Markdown and R Studio that you can use to enhance your user's experience when viewing your reports and graphics.
+
+Remember, R Markdown output is typically stored as an HTML file (though other formats are also possible).  As such, it's common to post the resulting HTML file to the web for users to view and interact with.  Read about the recent updates to R Markdown [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/).  In that article, you'll learn about:
+
++  Floating tables of contents -- we have already used these throughout the year.
++  Code folding -- we have already used this in our assignments and solutions.
++  Tabbed output -- we have NOT used this yet, but we will today.
+
+**Your assignment for this problem is to put the HTML output in tabs for parts (a) through (d) below.**  To do this, you may first need to install the `dendextend` package, which helps improve dendrograms -- a specific type of plot for hierarchical clustering / visualizing high-dimensional structure.  We'll learn more about dendrograms over the next few days.
+
+```{r, warning = F, message = F}
+library(dendextend)
+library(dplyr)
+library(MASS)
+library(ggplot2)
+data(Cars93)
+colorblind_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+cars_cont <- dplyr::select(Cars93, Price, MPG.city, MPG.highway, EngineSize, 
+                           Horsepower, RPM, Fuel.tank.capacity, Passengers,
+                           Length, Wheelbase, Width, Turn.circle, Weight)
+
+hc <- cars_cont %>% scale %>% dist %>% hclust 
+dend <- hc %>% as.dendrogram
+
+get_colors <- function(x, palette = colorblind_palette) palette[match(x, unique(x))]
+```
+
+a.  Create a dendrogram of some of the continuous variables in the `Cars93` dataset.
+
+b.  Recreate the graph from (a), but this time, color the leaves of the dendrogram according to the `Type` of the car.
+
+c.  Recreate the graph from (b), but this time, change the leaf labels in the dendrogram to say the `Type` of the car.
+
+d.  Recreate the graph from (c), but this time, change the leaf labels in the dendrogram to say the `Origin` of the car instead of the `Type` of the car.
+
+
+##  Part (a)
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 10}
+ggplot(dend, horiz = T)
+```
+
+
+
+##  Part (b)
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 10}
+dend %>% set("labels_col", get_colors(Cars93$Type)[hc$order]) %>% ggplot(horiz = T)
+```
+
+
+
+##  Part (c)
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 10}
+dend %>% set("labels", Cars93$Type[hc$order]) %>% 
+  set("labels_col", get_colors(Cars93$Type)[hc$order]) %>% ggplot(horiz = T)
+```
+
+
+
+##  Part (d)
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 10}
+dend %>% set("labels", Cars93$Origin[hc$order]) %>% 
+  set("labels_col", get_colors(Cars93$Type)[hc$order]) %>% ggplot(horiz = T)
+```
+
+
+***
+***
+***
+***

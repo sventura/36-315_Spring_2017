@@ -1,0 +1,193 @@
+---
+title: "36-315 Lab 05"
+author: ""
+date: "Due Friday, September 30, 2016 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 05:  Contingency Tables, Chi-Square Tests, Mosaic Plots, Continuous Data, and New Geometries
+
+***General instructions for all assignments***: 
+
++  Hadley's style guide
+
+***
+***
+
+
+#  Problem 1
+
+**1-D Kernel Density Estimation for Continuous Data in R**
+
+a. The `density()` function calculates kernel density estimates given kernel and bandwidth. The `x` value it returns is the coordinates of the points where the density is estimated. The `y` value returns the estimated density values.
+
+b. `adjust` is a way to change the bandwidth from the default. The `bw` is `adjust`*`bw` so we can `adjust` to use a proportion or multiple of the default bandwidth.
+
+c. The possible kernels within the `density()` function are "gaussian", "rectangular", "triangular", "epanechnikov", "biweight", "cosine" or "optcosine".
+
+```{r}
+library(data.table)
+pitt_bridges <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv")
+summary(pitt_bridges$length)
+```
+
+d. `summary()` provides minimum, 1st quartile, median, mean, 3rd quartile, and maximum.
+
+e.
+```{r}
+dens_prob_1 <- density(pitt_bridges$length)
+names(dens_prob_1)
+```
+
+The `density()` function provides information on `x`, `y`, `bw`, `n`, `call`, `data.name`, `has.na`.
+
+```{r}
+dens_prob_1$bw
+```
+
+The bandwidth used was 285.5428.
+
+***
+***
+
+#  Problem 2
+
+(5 points each)
+
+**Estimating Continuous Densities**
+
+(For parts (a) -- (d), arrange the graphs into a 2x2 grid.)
+
+```{r}
+# A
+library(ggplot2)
+length_hist_density_scale <- ggplot(data = pitt_bridges, aes(x = length)) +
+  geom_histogram(aes(y = ..density..), binwidth = 300, col = "black", fill = "#009977") + 
+  coord_cartesian() + 
+  ggtitle("Density Scale Histogram of Pittsburgh Bridge Lengths (ft)") + 
+  labs(x = "Bridge Length (ft)", y = "Density")
+
+# B
+length_density_plot <- ggplot(data = pitt_bridges, aes(x = length)) +
+  geom_density(color = "blue") + 
+  coord_cartesian() + 
+  ggtitle("Density of Pittsburgh Bridge Lengths (ft)") + 
+  labs(x = "Bridge Length (ft)", y = "Density")
+
+# C 
+length_hist_and_density <- ggplot(data = pitt_bridges, aes(x = length)) +
+  geom_histogram(aes(y = ..density..), binwidth = 300, col = "black", fill = "#009977") + 
+  geom_density(color = "blue", size = 2) + coord_cartesian() + 
+  ggtitle("Density of Pittsburgh Bridge Lengths (ft)") + 
+  labs(x = "Bridge Length (ft)", y = "Density")
+```
+
+This makes the density line a blue color. The `size` parameter changes the thickness of the line.
+
+```{r, fig.height=10, fig.width=12}
+# D
+c_plus_avg_line <- length_hist_and_density + 
+  geom_vline(aes(xintercept = mean(length)), color = "red", linetype = "dashed", size = 2)
+
+library(gridExtra)
+grid.arrange(length_hist_density_scale, length_density_plot, length_hist_and_density, c_plus_avg_line, ncol = 2)
+```
+
+e.
+```{r}
+length_hist_and_density + geom_rug()
+```
+
+f. 
++ Graph E contains the most information, since the rug plot shows us each individual data point to supplement the histogram and density. 
+
++ Graph C is the easiest to read, since the histogram and the density are meant to be on the same scale. It is easy to digest because there aren't other measures, like the average line or the rug plot, on display. 
+
++ However, I think Graph D is the most effective graph. It shows the histogram and density, as well as the average length line, providing a well-rounded summary of the distribution, without the clutter of a rug plot. 
+
++ Graph E, the rug plot, contains redundant information. The histogram and density plot are meant to provide someone with a summary of the distribution without having to look at each data point. While it may be useful in some contexts, the rug plot seems like overkill in this situation.
+
+g.
+```{r}
+ggplot(data = pitt_bridges, aes(x = length)) + geom_histogram(aes(y = ..density..), binwidth = 300, col = "black", fill = "#009977") + 
+  geom_density(color = "blue", size = 2, adjust = 1/2) + 
+  coord_cartesian() + 
+  ggtitle("Density of Pittsburgh Bridge Lengths (ft)") + 
+  labs(x = "Bridge Length (ft)", y = "Density")
+```
+
+As we reduce the `adjust` parameter, the density line becomes more jagged -- it has more ups and downs to fit with the histogram. As we increase `adjust`, the density line becomes smoother -- it doesn't fit the data as well.
+
+h.
+```{r}
+ggplot(data = pitt_bridges, aes(x = length)) + 
+  geom_histogram(aes(y = ..density..), binwidth = 300, col = "black", fill = "#009977") + geom_density(color = "blue", size = 2, kernel = "biweight") + 
+  coord_cartesian() + 
+  ggtitle("Density of Pittsburgh Bridge Lengths (ft)") + 
+  labs(x = "Bridge Length (ft)", y = "Density")
+```
+
+The rectangular kernel creates the density curve using rectangles and so is very jagged.
+
+***
+***
+
+
+#  Problem 3
+
+(8 points each)
+
+**Histograms and Density Plots for Conditional Distributions**
+
+For parts (a), (b), (c), and (d), arrange the graphs into a 2x2 grid.  For all parts, be sure to use proper titles, labels, colors, etc.
+
+```{r}
+# A
+erected_material_stacked_hist <- ggplot(data = pitt_bridges, aes(x = when.erected, fill = material)) + geom_histogram(col = "black", binwidth = 5) + 
+  ggtitle("Histogram of Pittsburgh Bridge Contruction Years and Material") + 
+  labs(x = "Year Erected", y = "Number of Bridges")
+
+# B
+erected_material_overlap_hist <- ggplot(data = pitt_bridges, aes(x = when.erected, fill = material)) + geom_histogram(alpha = 0.5, position = "identity", col = "black", binwidth = 5) +
+  ggtitle("Histogram of Pittsburgh Bridge Contruction Years and Material") + 
+  labs(x = "Year Erected", y = "Number of Bridges")
+```
+
+The alpha parameter changes the transparency of the bars.
+
+```{r}
+# C
+erected_material_density1 <- ggplot(data = pitt_bridges, aes(x = when.erected, fill = material)) + 
+  geom_density(alpha = 0.5) + 
+  ggtitle("Density of Pittsburgh Bridge Contruction Years and Material") + 
+  labs(x = "Year Erected", y = "Density")
+
+# D
+erected_material_density2 <- ggplot(data = pitt_bridges, aes(x = when.erected, color = material)) + 
+  geom_density(size = 1.5) + 
+  ggtitle("Density of Pittsburgh Bridge Contruction Years and Material") + 
+  labs(x = "Year Erected", y = "Density")
+```
+
+The densities are shown as colored lines rather than filled in areas.
+
+```{r, fig.height = 10, fig.width = 12}
+grid.arrange(erected_material_stacked_hist, erected_material_overlap_hist, erected_material_density1, erected_material_density2, ncol = 2)
+```
+
+e. The graphs all show the same information in different ways. The density plots give the most information about the conditional distribution, since they shows individual areas/lines rather than several separate bars. The first graph (A) is easiest to read and most effective. It shows the information clearly, and there is no confusion with the overlapping bars and densities, like in the other plots.   
+
+
+
+***
+***
+
+
+
+
+

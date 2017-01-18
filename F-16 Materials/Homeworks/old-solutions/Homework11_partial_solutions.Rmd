@@ -1,0 +1,362 @@
+---
+title: "36-315 Homework 11, Spring 2016"
+author: "Your Name Here"
+date: "Due Wednesday, April 13th, 2016 (12pm ET) on Blackboard"
+output: 
+html_document:
+toc:  true
+toc_float:  true
+code_folding:  hide
+---
+
+***
+***
+
+#  Homework 11:  Time to Network
+
+**Time Series, Networks, Animation**
+
+This week, we'll calculate our own moving averages for time series, continue with network analysis, and create animated plots in `ggplot()`.
+
+<div style="width:400px">
+![alt text](https://upload.wikimedia.org/wikipedia/commons/9/9b/Social_Network_Analysis_Visualization.png)
+</div>
+
+***
+***
+
+***General instructions***:
+
++  Use this file as the template for your submission.  Delete the unecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc.
++  **Submit two files to Blackboard:**  (1) an `R` Markdown file (named as:  [AndrewID]-Homework11.Rmd -- e.g. "sventura-Homework11.Rmd"), and (2) the corresponding .html file generated from `R` Markdown (named as:  [AndrewID]-Homework11.html -- e.g. "sventura-Homework11.html") to Blackboard in the Lab Exam 1 submission section on Blackboard.  You are also welcome to upload a single .zip file containing both of these.
++  Your file should contain the code/commands to answer each question in its own code block; your code should produce plots that will be automatically embedded in the output file.
++  Each answer must be supported by written statements (unless otherwise specified).
++  Include the style guide you used at the top of the file.
+
+***
+***
+
+#  Problem 1:  Organization, Themes, and Output
+
+(7 points)
+
+**For all problems in this assignment, organize your output as follows**:
+
++  Organize each part of each problem into its own tab.
++  Use code folding for all code.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
+
+
+**For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color**:
+
++  Don't use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+
+***
+***
+
+#  Problem 2:  Moving Average Plots
+
+(5 points each; 35 points total)
+
+In Problem 3 of Lab 11, we created a time series plot of the NYC bike dataset, visualizing the number of trips per day in December 2015 as a function of time.  Here, we're going to add a moving average line to the plot.
+
+a.  Moving averages are calculated as follows:  Given a "window width" `ww`, the moving average at time point `tt` in the time series is:  `mean(my_time_series[(tt-ww+1):tt]`.  Write a function, called `moving_average` that calculates the moving average of a time series vector at a single time point.  The function should take three inputs:  the time series, the window width, and the time point at which you want the moving average.  The code is started for you below.
+
+```{r}
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+#  tt:  The point at which 
+moving_average <- function(tt, time_series, ww) {
+  #  Throw an error if the window width is too big
+  if (ww > length(time_series))  
+    stop("Window width is greater than length of time series")
+  
+  #  If the window width is greater than the time point, return NA
+  if (tt < ww)  return(NA)
+  
+  #  Your code here!
+  return (mean(time_series[(tt-ww+1):tt]))
+}
+```
+
+
+b.  Write a second function, called `get_moving_averages`, that calculates _all_ moving averages for a given time series vector.  Your function should take two inputs:  the time series and the window width.  This function should call your function from part (a).  The code is started for you below.
+
+```{r}
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+get_moving_averages <- function(time_series, ww) {
+  #  Throw an error if the window width is too big
+  if (ww > length(time_series))  
+    stop("Window width is greater than length of time series")
+  
+  #  Your code here!
+  return (sapply(1:length(time_series), moving_average, time_series, ww))
+}
+```
+
+
+c.  Use your function in (b) to calculate a moving average vector for the `n_trips` variable in `trips_per_day` (use a window width of 3), and store this in a vector called `bike_moving_average_3`.  Print the vector out.  What do you notice about the first two observations?
+
+d.  Add the `bike_moving_average_3` variable to the `trips_per_day` dataset.  Recreate the plot from Problem 3 in Lab 11.  Now, add a second line showing the moving average in blue, with no points on the line.
+
+e.  Interpret the plot in (d).  Does the moving average tend to line up closely with the actual observations?  Are there any systematic differences?  Why or why not?  
+
+f.  Write two new functions, `weighted_moving_average` and `get_weighted_moving_averages`, that mimic the functions in (a) and (b), but use a weighted moving average instead.  Your functions should take the same parameters as their counterparts in parts (a) and (b), plus an additional parameter for the weighting scheme that should be used.  The code is started for you below.
+
+
+```{r}
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+#  tt:  The point at which 
+#  weights:  the weights to be used in the moving average
+#  Note:  length(weights) should always equal ww!
+weighted_moving_average <- function(tt, time_series, ww, weights = NULL) {
+  #  Throw an error if the window width is too big
+  if (ww > length(time_series))  
+    stop("Window width is greater than length of time series")
+  
+  #  If weights are not specified, use standard weights
+  if (is.null(weights))  weights <- rep(1/ww, ww)
+  
+  #  Throw an error if the window width is too big
+  if (length(weights) != ww)  
+    stop("Weights should have the same length as the window width")
+  
+  #  If the window width is greater than the time point, return NA
+  if (tt < ww)  return(NA)
+  
+  #  Standardize the weights so they sum to 1
+  weights <- weights / sum(weights)
+  
+  #  Your code here!
+  return (sum(weights * time_series[(tt-ww+1):tt]))
+}
+
+
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+#  weights:  the weights to be used in the moving average
+#  Note:  length(weights) should always equal ww!
+get_weighted_moving_averages <- function(time_series, ww, weights) {
+  #  Throw an error if the window width is too big
+  if(ww > length(time_series))  stop("Window width is greater than length of time series")
+  
+  #  If weights are not specified, use standard weights
+  if (is.null(weights))  weights <- rep(1/ww, ww)
+  
+  #  Throw an error if the window width is too big
+  if (length(weights) != ww)  
+    stop("Weights should have the same length as the window width")
+  
+  #  Standardize the weights so they sum to 1
+  weights <- weights / sum(weights)
+  
+  #  Your code here!
+  return(sapply(1:length(time_series), weighted_moving_average, time_series, ww, weights))
+}
+```
+
+g.  Calculate the weighted moving average (window width = 3) of the number of trips per day.  Use a weighting scheme that weights the most recent observation 3 times as much as the other two observations, e.g. `weights = c(1,1,3)`.  Add the result to the `trips_per_day` data.frame.  Recreate your plot from (d), and add a red, dashed line (specify `linetype`) showing the weighted moving average on the plot.
+
+h.  Describe the plot from (g).  In paricular, comment on any differences between the two moving averages.
+
+\ 
+&nbsp;
+\ 
+&nbsp;
+
+
+#  Problem 3:  Networks, `igraph`, and `ggnetwork`
+
+(5 points each)
+
+The `igraph` package makes network analysis easy!  Install and load the `igraph` and `igraphdata` packages.  Load the `UKfaculty` network into R.
+
+```{r, warning = FALSE, message = FALSE}
+#install.packages("igraph")
+#install.packages("igraphdata")
+library(igraph)
+library(igraphdata)
+data(UKfaculty)
+plot(UKfaculty)
+```
+
+
+a.  Try out some of the built-in functions in the `igraph` package in order to summarize the UK faculty network.  How many nodes ("vertices") are in the network?  (Use `vcount()`.)  How many edges ("links") are in the network?  (Use `ecount()`.)  
+
+b.  The `igraph` package has some built-in functions for analyzing specific nodes/vertices in the network.  Use the `neighbors()` function to find both the in-degree and out-degree of the 11th UK faculty member.  How many friends does faculty #11 claim to have?  How many other faculty members claim that #11 is their friend?  (See Professor Rodu's notes for how to use the `neighbors()` function).
+
+c.  Write a function, called `get_degree`, that calculates the in-degree or out-degree (number of neighbors) that a given node in a network has.  Your function should take three inputs:  the network, the node index/number, and the degree type (in or out).  The code is started for you below.
+
+```{r}
+#  node:  The node index in the network
+#  network:  The network to use in the degree calculations
+#  type:  The degree type; must be either "in" or "out"
+get_degree <- function(node, network, type) {
+  #  Your code here
+  return(length(neighbors(network, node, mode = type)))
+}
+```
+
+d.  Write a new function, `get_all_degrees`, that calculates the in- or out-degree of an entire network.  Your function should call the function you wrote in part (c).
+
+```{r}
+#  network:  The network to use in the degree calculations
+#  type:  The degree type; must be either "in" or "out"
+get_all_degrees <- function(network, type) {
+  #  Your code here
+  return(sapply(1:vcount(network), get_degree, network, type))
+}
+```
+
+e.  Apply your function to the UK faculty dataset for both degree types.  Create a new, two-column (one for the in-degrees, one for the out-degrees) data.frame to store the results.  Add a third column for the node index/number.  
+
+f.  Create a scatterplot of the in-degrees vs. the out-degrees, and change the point type to be their node index/number.  Describe the graph in (e).  Which nodes are "overconfident" in their popularity (i.e. they claim to have many friends, but not as many others claim that they are friends with this person)?  Which nodes are "underconfident" (i.e. many others claim that they are friends with this person, but this person does not claim to have many friends)?  
+
+```{r}
+library(ggplot2)
+inn <- get_all_degrees(UKfaculty, "in")
+out <- get_all_degrees(UKfaculty, "out")
+df <- data.frame(inn = inn, out = out, index = 1:length(inn))
+ggplot(df, aes(x = inn, y = out)) + geom_text(aes(label = index)) + 
+  geom_abline(intercept = 0, slope = 1)
+```
+
+g.  Finally, let's actually visualize the network itself!  Install and load the `ggnetwork` package.  This package is _brand new_ -- it was just released on March 28th.  You can read more about how to use it [here](http://www.r-bloggers.com/ggnetwork-network-geometries-for-ggplot2/).  Visualize the UK faculty network.  The code below should get you started (be sure to add a title and remove the x- and y-axis labels and tick marks).  Feel free to adjust the graph as you see fit -- see the article at the link above for more ideas (not required).  Finally, note that you'll also need to install and load the `intergraph` package:
+
+```{r}
+#install.packages("intergraph")
+#install.packages("ggnetwork")
+library(intergraph)
+library(ggnetwork)
+
+uk_data <- fortify(UKfaculty)
+node_degrees <- igraph::degree(UKfaculty, mode = "in")
+uk_degrees <- node_degrees[match(uk_data$vertex.names, 1:length(node_degrees))]
+uk_data$degree <- uk_degrees
+ggplot(uk_data, 
+       aes(x, y, xend = xend, yend = yend)) +
+  geom_edges(arrow = arrow(length = unit(0.3, "lines")), 
+             aes(color = as.factor(Group)), alpha = 0.5) +
+  geom_nodetext(aes(label = vertex.names, size = degree), 
+                color = "blue", fontface = "bold")
+
+```
+
+h.  Describe the network.  How many groups ("cliques") do there appear to be?  In the above graph, to what does the size of the nodes correspond?  To what does the color of the edges correspond?  Is the graph a directed or an undirected graph?
+
+
+\ 
+&nbsp;
+\ 
+&nbsp;
+
+
+#  Problem 4:  Animation -- NEED TO CHECK IF CMU CLUSTER COMPUTERS HAVE IMAGEMAGICK
+
+Install the `gganimate` package from the following GitHub repository:  
+
+To do this, you can use `devtools::install_github("dgrtwo/gganimate")`.  You'll need the `devtools` library installed.
+
+```{r}
+library(MASS)
+library(ggplot2)
+library(gganimate)
+library(gapminder)
+data(Cars93)
+test <- ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price, frame = Type)) + geom_point()
+#gg_animate(test)
+
+theme_set(theme_bw())
+p <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, 
+                           color = continent, frame = year)) +
+  geom_point() +
+  scale_x_log10()
+
+gg_animate(p)
+```
+
+
+
+\ 
+&nbsp;
+\ 
+&nbsp;
+
+
+#  Problem 5:  Gun Sales (Open-Ended)
+
+(30 points)
+
+Install and load the `gunsales` package.  This is a very new package, and its described in detail (here)[http://www.r-bloggers.com/new-cran-package-gunsales/].  For some related reading to familiarize yourself with other work that's been done using this data, see [here](http://www.nytimes.com/interactive/2015/12/10/us/gun-sales-terrorism-obama-restrictions.html?_r=1).
+
+The package's `analysis()` function will give you very detailed dataset on gun sales in the US:
+
+```{r, cache = T}
+#install.packages("gunsales")
+library(gunsales)
+gun_data <- analysis()
+```
+
+We'll be analyzing this dataset from a time series perspective.  As such, it may help to create a new date variable to help with time series plotting:
+
+```{r}
+gun_data$year_month <- as.Date(paste0(gun_data$year, 
+                                      ifelse(nchar(gun_data$month) == 2, 
+                                             "-", "-0"),
+                                      gun_data$month, "-01"), 
+                               format = "%Y-%m-%d")
+```
+
+**Your task:  Create three graphs that you find interesting using the `gun_data` dataset.**  Here are a few constraints to get you started:
+
++  Make at least one time-series graph (e.g. visualizing the time series, showing moving averages, looking at autocorrelations, looking at lags, identifying potential periodic trends or lack thereof, etc)
++  Make at least one graph that compares at least three of the six states in the dataset.
++  All of your graphs should be new and unique!  You are not permitted to create any graphs that are already done in the articles linked to above.
+
+Other than that, what graphs you create are up to you!
+
+**For each of your three graphs, write 2-4 sentences describing the main results that you want your viewer to understand from the graph.**  Why is the graph interesting?  What do you want your viewer to understand from the graph?  Etc.
+
+
+
+\ 
+&nbsp;
+\ 
+&nbsp;
+
+
+
+#  BONUS:  Create `geom_acf()`
+
+(15 points)
+
+In lab, we learned about the `acf()` function and autocorrelation plots.  `acf()` uses base-R graphics.  Your task in this problem is to create a new `ggplot()` geometry called `geom_acf()`.  When used in conjunction with `ggplot()`, your function should render a graph that looks like what you get with `acf()`.
+
+Be sure to include the blue, dotted lines that indicate statistical significance.  See `help(acf())` to see how these are calculated.  You are allowed (and encouraged!) to use the `acf()` function to calculate the autocorrelations.
+
+Demonstrate that your function works on the `gun_data` dataset.  Compare your graph to the base-R `acf()` graph.  In particular, after writing the function and filling in the appropriate parameters, the following code should work using your function:  `ggplot(gun_data, ...) + geom_acf(...)`.
+
+Hint / Note:  In this problem, you don't _quite_ have to make an entirely new geometry.  Your function _can_ simply call existing existing geometries (e.g. `geom_line()`, `geom_hline()`, `geom_segment()`, etc) and return those pieces of the plot to be used with `ggplot()`.  (This is how many geometries work.)
+
+\ 
+&nbsp;
+\ 
+&nbsp;
+\ 
+&nbsp;
+\ 
+&nbsp;
+\ 
+&nbsp;
+\ 
+&nbsp;

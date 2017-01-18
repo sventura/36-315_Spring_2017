@@ -1,0 +1,157 @@
+---
+title: "36-315 Homework 06, Spring 2016"
+author: "Solutions"
+date: "Due Wednesday, February 24, 2016 (12pm ET) on Blackboard"
+output: html_document
+---
+
+#  Homework 06:  Practice Lab Exam
+
+#  Problem 1
+
+(10 points)
+
+**Build your #brand**
+
+Since you already have plenty of example code to use for themes, I'm going to introduce the `ggthemes` package, which allows you to very quickly create graphs in the styles of many of your favorite media sources or academic journals (e.g. WSJ, 538, Economist, xkcd, etc).
+
+```{r}
+#install.packages("extrafont")
+#install.packages("ggthemes")
+library(extrafont)
+library(ggthemes)
+library(gridExtra)
+library(gsheet)
+library(ggplot2)
+
+solutions_315_theme <- theme_economist_white()
+```
+
+#  Practice Exam Problems
+
+
+**Load the Food Facts dataset into R.**  This is a carefully chosen, modified subset of the data provided [here](https://www.kaggle.com/openfoodfacts/world-food-facts) by Kaggle.  Documentation for all of the variables is available at that link as well.
+
+The Food Facts data is available for download at the following link:  [https://docs.google.com/spreadsheets/d/1whSuwNAl1a58mdxAa4Q_b2ui9WbsYUWoc-D_83wRKPE/pub?gid=0&single=true&output=csv]
+
+When you read it into R, store it in an object called `food`.
+
+```{r, cache = T}
+food <- as.data.frame(gsheet2tbl("https://docs.google.com/spreadsheets/d/1whSuwNAl1a58mdxAa4Q_b2ui9WbsYUWoc-D_83wRKPE/pub?gid=0&single=true&output=csv"))
+```
+
+
+
+#  Problem 2
+
+(20 points)
+
+**Food Additives**
+
+
+```{r}
+tab_additives_country <- table(food$additives_n, food$countries_en)
+mosaicplot(tab_additives_country, shade = T, las = 1, 
+           xlab = "Additives in Food?", ylab = "Manufacturing Country",
+           main = "Food Manufacturing Country vs. Presence of Additives")
+```
+
+**Answer:**  The presence of additives is NOT independent of the manufacturing country of the food.  This is clearly demonstrated in the mosaic plot, where we can clearly see that US foods are more likely to have additives than what would be expected under independence, while German foods are less likely to have additives than what would be expected under independence.  We can gather this information from the shaded mosaic plot, where the cell corresponding to the conditional probability of US given the presence of additives is dark blue, indicating a highly significant positive deviation from expected, while the corresponding "absence of additives" cell is dark red, indicating a highly significant negative deviation from expected.  We see the opposite relationship for German foods, while for Spanish and UK foods, there is no deviation from expected (as we see from the white cells in the mosaic plot).
+
+**Describing My Graphical Choices:**  I chose a mosaic plot here because the question asks about the ***relationship*** between additives and country, and mosaic plots give us statistical information about the association between two variables via the colors/shading.  Additionally, I can get (a less effective version of) all of the information that I could get, e.g., in a stacked or side-by-side bar chart.  The widths of the bars in the mosaic plot are proportional to the marginal distribution of the first variable (here, presence of additives), while the heights are proportional to the conditional distribution of the second variable given the first (here, country given presence of additives).
+
+
+
+#  Problem 3
+
+(25 points)
+
+**Give Me Some Sugar**
+
+
+```{r, fig.height = 12, fig.width = 7}
+plot1 <- ggplot(food) + aes(x = sugars_100g, color = countries_en) + 
+  geom_density() + 
+  solutions_315_theme + labs(x = "Amount of Sugar per 100 grams") + 
+  labs(y = "Density") + 
+  ggtitle("Amount of Sugar per 100 grams by Country") + 
+  geom_density(aes(x = sugars_100g), color = "black", size = 1.5, linetype = 2) + 
+  guides(color = guide_legend(title = "Country"))
+
+plot2 <- ggplot(food) + aes(x = sugars_100g, color = additives_n) + 
+  geom_density(adjust = 1.5) + 
+  solutions_315_theme + labs(x = "Amount of Sugar per 100 grams") + 
+  labs(y = "Density") + 
+  ggtitle("Amount of Sugar per 100 grams \nby Presence of Additives") + 
+  geom_density(aes(x = sugars_100g), color = "black", size = 1.5, linetype = 2) + 
+  guides(color = guide_legend(title = "Additives"))
+
+grid.arrange(plot1, plot2)
+
+ks.test(jitter(food$sugars_100g), "pexp", rate = 1/mean(food$sugars_100g))
+```
+
+**Answer:**  The distribution of the amount of sugars per 100 grams of food has one large mode around 0-5 grams of sugar, and is skewed right.  There are smaller modes in the distribution (e.g. around 25g and 45g), but these are likely due to random variation, rather than some additional group of foods.
+
+The distribution changes slightly depending on country.  For example, US and UK foods have a much smaller mode around 0-5 grams, and a heavier tail to the right of the distribution, indicating that they are more likely to have large amounts of sugars than other countries.  The German foods distribution is very similar to the overall distribution, save for some minor variations that are likely random.  The Spanish foods have the largest 0-5 gram mode, but otherwise do not deviate from the overall distribution too much.
+
+The distribution of the amount of sugar per 100 grams changes quite substantially depending on the presence or absence of additives.  Specifically, foods with more additives are much more likely to have large amounts of sugars than those without additives.  The additives group has two modes -- one large mode around 0-10 grams, and one smaller mode around 45-50 grams.  The "no additives" group has a very large mode near 0-5 grams, and is heavily skewed right, with very low density for amounts of sugar greater than about 20 grams.
+
+It's difficult to characterize the center of these distributions given their heavy skew, but it's possible that some of these distributions follow an exponential or gamma shape.  I have provided the results of a KS-test, testing the equivalence of the observed distribution of sugar amount vs. a theoretical exponential distribution with the same mean; the results of the test indicate that the two distributions are significantly different.
+
+**Describing My Graphical Choices:**  I chose to use two density plots (arranged into a 2x1 grid) here because density plots allow me to plot a large number of density curves in succinct, easy to compare plots (with a histogram, I found it difficult to distinguish between the subtle differences in the conditional distributions).  I added the overall marginal distribution of sugar amount (thick, black, dotted line) on top of the conditional distributions of sugar amount given country or additive presence (colored lines) to allow for easy comparison of each of the conditional distributions to the corresponding marginal distribution of sugar amount.  I increased the default bandwidth for the density estimates in the second graph in order to smooth out some of the bumps that I observed after using the default bandwidth.
+
+
+#  Problem 4
+
+(20 points)
+
+**Meat and Potatoes**
+
+```{r, fig.height = 7, fig.width = 10}
+my_colors <- c(a = "darkgreen", b = "lightgreen", c = "lightgrey", 
+               d = "darkgrey", e = "black")
+
+ggplot(food) + aes(x = pnns_groups_1, fill = nutrition_grade_fr) + 
+  geom_bar() + labs(x = "Food Type", y = "Frequency") + 
+  ggtitle("Conditional Distribution of Nutrition Grade given Food Type") + 
+  solutions_315_theme + 
+  scale_fill_manual(values = my_colors) + 
+  theme(axis.text=element_text(size=8)) + 
+  guides(fill = guide_legend(title = "Nutrition Grade"))
+```
+
+
+**Answer:**  The marginal distribution of food type is somewhat alarming given the high proportion of sugary foods!  Sugary foods, fruits and vegetables, and cereals/potatoes are the most frequent food types, each with frequencies between 400 and 500.  Fish/meat/eggs had the fewest observations with about 130 observations, whlie the salty snacks, fats/sauces, beverages, and milk/dairy products all had roughly the same frequency of foods in our dataset.
+
+Looking at the conditional distributions of nutrition grade given food type, the healthiest food types appear to be the cereals/potatoes food type and the fruits/vegetables food type, as evidenced by the large proportion of green in their bars (A or B nutrition grades).  The least healthy food types appear to be the fats/sauces, salty snacks, and sugary snacks, as these have virtually no green (A or B grades), and a high proportion of grey and black (C, D, and E) grades.  
+
+
+**Describing My Graphical Choices:**  I chose to use a stacked bar chart here because it allows me to better visualize the marginal distribution of food type, and because there are so many categories that a side-by-side bar chart would be very difficult to read.  I chose a black-to-green color gradient, because green typically is indicative of "healthy" in the context of food, while black doesn't seem that healthy in the context of food (originally, I used a red-to-green color scale, but switched because of potential color blindedness issues).
+
+
+#  Problem 5
+
+(25 points)
+
+**Build Some Muscle**
+
+```{r, fig.height = 7, fig.width = 10}
+ggplot(food) + aes(x = proteins_100g, fill = pnns_groups_1) + 
+  geom_density(position = position_stack(), adjust = 1.5) + xlim(0, 40) + 
+  labs(x = "Amount of Protein per 100 grams") + 
+  labs(y = "Density") + 
+  ggtitle("Amount of Protein per 100 grams by Food Type") + solutions_315_theme + 
+  guides(fill = guide_legend(title = "Food Type"))
+```
+
+**Answer:**  The distribution of protein per 100 grams of food has (roughly) three modes.  The distribution is also skewed right.  It's difficult to characterize the center of the distribution given the heavy skew.
+
+The first mode is near 0-5 grams of protein, where the common food types in this mode are beverages, fruits/vegetables, and fats/sauces.  Each of these makes sense on context (e.g. we would not expect most beverages to be high in protein).
+
+The second mode occurs around 10g, where the proportion of cereals and potatoes in this group is quite high relative to other areas.  We can see this from examining the distribution of colors near 10g, where there is a large proportion of the orange/brown color in the bars, corresponding to cereals and potatoes.
+
+The third mode occurs around 20g, where fish/meat/eggs is the prominent food type.  We can see this from examining the distribution of colors near 20g, where we see a high proportion of green.
+
+**Describing My Graphical Choices:**  I used a stacked density estimate here, partially because I wanted you to have an example of how to do this, and partially because it is a very effective way to answer the specific question asked here.  Since we are specifically asked about modality and what food types are common in each mode, the stacked histogram does a decent job of showing this.  I chose to adjust the default bandwidth upwards, in order to smooth out some of the rigid features of the density.
+

@@ -1,0 +1,326 @@
+---
+title: "36-315 Homework 03, Spring 2016"
+author: "Solutions"
+date: "Due Wednesday, February 3, 2016 (12pm ET) on Blackboard"
+output: html_document
+---
+
+#  Homework 03:  1-D and 2-D Categorical Data; Incorporating Statistical Information into Graphs and Discussions
+
+***General instructions for homeworks***: 
+
++  Use this file as the template for your homework submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Submit two files to Blackboard:  (1) an `R` Markdown file (named as:  [AndrewID]-HW03.Rmd -- e.g. "sventura-HW03.Rmd"), and (2) the corresponding .html file generated from `R` Markdown (named as:  [AndrewID]-HW03.html -- e.g. "sventura-HW03.html") to Blackboard in the Homework 03 submission section on Blackboard.  You are also welcome to upload a single .zip file containing both of these.
++  Your file should contain the code/commands to answer each question in its own code block; your code should produce plots that will be automatically embedded in the output file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+#  Problem 1
+
+**Critiquing Graphs**:
+
+This graph appeared in the January edition of the Journal of the American Statistical Association: http://www.tandfonline.com/doi/pdf/10.1080/01621459.2015.1106790
+
+<div style="width:400px">
+![alt text](http://i.imgur.com/UBsGS1x.png)
+</div>
+
+The graph shows changes in the number of statistics degrees granted annually over time. The x-axis indicates year, the y-axis indicates count, and four lines are plotted in different colors to indicate the type of degree granted.
+
+The graph's main goal is to show there's been an increase in completion of Statistics programs, and to that end it does a decent job. There is a clear upward slope in most of the lines. Unfortunately, the graph has many serious problems. Probably the worst aspect of the graph is that the x-axis is not evenly spaced in time. This means that the slopes distort the actual rate of change and it's unclear when data was actually collected. It would probably be clearer to use a faceted scatterplot. This would preserve time increments, make it clear when data was collected, and visually separate the four categories.
+
+The graph also uses many unnecessary visual effects. Using a color gradient for the background is distracting and serves no purpose. The lines in the chart also have a gradient for no discernable reason. The axes use a gradient too. All of these gradients should be removed.
+
+The graphic's text only adds to the confusion. Neither of the axes are labeled. The title does not help indicate the purpose of the plot. Two of the categories are given the same name, and the differences are clarified in small print elsewhere on the graph. This problem comes from the fact that one of the categories is actually a subset of the other. It could be clarified by splitting them into two distinct sets.
+
+
+#  Problem 2
+
+(3 points each)
+
+**2-D Bar Charts and (Empirical) Conditional Distributions**
+
+Do Problem 5 of Lab 03.  The text from that problem is copied here:
+
+a.  Recreate the graph from problem 1 (of Lab 03), but color each bar by the `airline_sentiment` variable.  As always, make sure your graph is properly labeled/titled/colored and has a legend.
+
+```{r}
+# Load in the airline data
+library(ggplot2)
+airline_tweets <- read.csv("https://dl.dropboxusercontent.com/u/18473260/Tweets.csv")
+# Create a bar chart of the airline variable colored by airline sentiment
+ggplot(data = airline_tweets, aes(x = airline)) +
+  geom_bar() +
+  aes(fill = airline_sentiment) +
+  ggtitle("Bar Chart of Tweets about Airlines Colored by Sentiment") +
+  labs(x = "Airline", y = "Count") +
+  scale_fill_discrete(guide = guide_legend(title = "Airline Sentiment"))
+```
+
+
+b.  Where on the graph would we find the (empirical) conditional distribution of `airline_sentiment` given that our `airline` is US Airways?
+
+The conditional distribution of airline sentiment is in each stacked bar. Given US Airways, the distributions of each sentiment are colored on the US Airways bar and we can compare the heights of each. 
+
+
+c.  Create a new graph that shows the conditional distribution of `airline` given `airline_sentiment`.  That is, you should now have three vertical bars, each of which is colored by the `airline` variable.
+
+```{r}
+# Create graph to show conditional distribution of airline given airline sentiment
+ggplot(data = airline_tweets, aes(x = airline_sentiment)) +
+  geom_bar() +
+  aes(fill = airline) +
+  ggtitle("Bar Chart of Airline Sentiments Colored by Airline") +
+  labs(x = "Airline Sentiment", y = "Count") +
+  scale_fill_discrete(guide = guide_legend(title = "Airline"))
+```
+
+
+d.  Create a side-by-side version of the chart in (c).  To do this, specify `position = position_dodge()` in your call to `geom_bar()`.  This tells `ggplot` to reposition the bars to be side-by-side.
+
+```{r}
+# Create side by side bar charts
+ggplot(data = airline_tweets, aes(x = airline_sentiment)) +
+  geom_bar(position = position_dodge()) +
+  aes(fill = airline) +
+  ggtitle("Bar Chart of Airline Sentiments Colored by Airline") +
+  labs(x = "Airline Sentiment", y = "Count") +
+  scale_fill_discrete(guide = guide_legend(title = "Airline"))
+```
+
+
+e.  Which graph to you prefer -- the graph in (c), or the graph in (d)?  Why?  Discuss the advantages and disadvantages of both.
+
+The advantages of stacked bar charts are the you can see the proportion of all positive tweets comprised by each airline compared to the others.  You can also easily compare total quantities of tweets for each sentiment (i.e. the marginal distribution of `airline_sentiment`).  The disadvantages are that it is hard to compare two different sentiment amounts for the same airline (i.e. comparing across conditional distributions).  It's also difficult to compare the heights of each stacked bar within each conditional distribution (e.g. the relative proportions of US Airways and United in one of the sentiments). 
+
+The advantages of the side-by-side bar charts are that you can see the individual counts for each sentiment by airline (the conditional distributions of `airline` given each `airline_sentiment` cateogry), and it is easy to compare actual counts both within and across these conditional distributions.  The biggest disadvantage is that it's difficult to determine the marginal distribution of the first variable (`airline_sentiment` in this case).
+
+
+#  Problem 3
+
+**Reading Data from Google Sheets**:  
+
+In this homework, we'll be working with a dataset from New York City's "Citi Bike" program.  The dataset contains information about all bike trips in NYC that ended at Central Park West and 72nd St in December 2015.
+
+The data is stored in [this Google Sheet](https://docs.google.com/spreadsheets/d/143-u41MokWNU6w4_hptUypQ_sIc4ZIfEDsABq4MzDhA/edit?usp=sharing).
+
+To read it from the Google Sheet automatically into R:
+
++  First, you'll need the `gsheet` package.  Install it.
++  Second, just run the following code:
+
+```{r}
+library(gsheet)
+bike_data <- gsheet2tbl("https://docs.google.com/spreadsheets/d/143-u41MokWNU6w4_hptUypQ_sIc4ZIfEDsABq4MzDhA/edit?usp=sharing")
+bike_data <- as.data.frame(bike_data)
+```
+
+a.  (3 points)  How many rows and columns does the dataset have?
+
+```{r}
+# Find dimensions of dataset
+nrow(bike_data)
+ncol(bike_data)
+```
+
+
+b.  (2 points)  What are the column names?
+
+```{r}
+# Find column names 
+names(bike_data)
+```
+
+
+c.  (BONUS:  1 point)  All of these bike trips end at Central Pack West and 72nd St.  What nearby landmark do you think riders may be visiting?
+
+Strawberry Fields and/or The Dakota
+
+
+
+#  Problem 4
+
+(3 points each)
+
+**Statistical Information in Bar Charts**
+
+Let's explore the `birth.year` variable.  First, we want to remove any NAs from our birthyear data.
+
+a.  Use the `na.omit()` function to remove any row that has an NA in any column.  Store the subset of data with no NAs in a new object called `bike_data_no_NA`.  How many rows does the dataset have now?
+
+```{r, cache = TRUE}
+bike_data_no_NA <- na.omit(bike_data)
+nrow(bike_data_no_NA)
+```
+There are `r nrow(bike_data_no_NA)` rows.
+
+b.  Create a new variable called `birth_decade` that specifies the rider's decade of birth.  There are several ways to do this, but for now, take the substring of the first three characters of birth-year, e.g.:  `bike_data_no_NA$birth_decade <- substr(bike_data_no_NA$birth.year, 1, 3)`.  This will add a column to your `data.frame` called `birth_decade`, where, e.g., "196" represents "1960s".
+
+```{r, cache=TRUE}
+bike_data_no_NA$birth_decade <- substr(bike_data_no_NA$birth.year, 1, 3)
+```
+
+c.  Look up the help documentation for the `paste()` function.  How can you use the `paste()` function to add the string "0s" to the end of your decade variable so the decades are properly formatted?  Do this.
+```{r, cache=TRUE}
+bike_data_no_NA$birth_decade <- paste(bike_data_no_NA$birth_decade, "0s",
+                                      sep="")
+```
+The `paste` function takes a vector and pastes the string in the second argument to the end of each element of the vector, separated by the given argument `sep`.
+
+d.  Make a bar chart of the decade variable.  Make sure that the decades are displayed in a logical order.  Make sure you use a proper title and axis labels.
+
+```{r, cache = TRUE}
+base_plot <- ggplot(bike_data_no_NA, aes(x=birth_decade))
+base_plot + geom_bar() + ggtitle("Counts of Bikers From Each Decade") + 
+  labs(x="Decade", y="Count")
+```
+
+e.  Describe the distribution of `birth_decade` in your bar chart.  Which decades are most common?  Which are least common?  Are there any chronological trends (linear or otherwise)?
+
+The most common decade is the 1980's. The least common is the 1930's. The number of bikers generally increases for younger age groups until a steep drop off in the 1990's. There's also an apparent dip in the 1970's, which suggests the age distribution may be bimodal. 
+
+f.  Recreate the same graph, but use proportions instead of counts/frequencies on the y-axis.  Add error bars corresponding to an approximate 95% confidence interval around the proportion of observations in each category.  Describe any relationships you see.
+
+```{r, cache=TRUE}
+counts <- table(bike_data_no_NA$birth_decade)
+decades <- names(counts)
+proportions <- as.numeric(counts/sum(counts))
+error_widths <- sqrt(proportions*(1-proportions)/sum(counts))
+lower <- proportions - 1.96 * error_widths
+upper <- proportions + 1.96 * error_widths
+prop_data <- data.frame(decades, proportions, lower, upper)
+ggplot(prop_data, aes(x=decades, y=proportions)) + geom_bar(stat="identity") +
+  geom_errorbar(aes(ymin=lower, ymax=upper)) + 
+  ggtitle("Proportions of Riders by Decade") + labs(x="Decade", y="Proportion")
+```
+
+The error bars suggest that many of the proportions by decade are significantly different from each other. For example, the dip in the 1970's appears to be significant since its error bar does not overlap with those of the 1960's and 1980's. We could use a chi-square test to control for making many implicit comparisons. We also don't seem to have evidence of a difference in proportion between the 1960's and 1980's.
+
+g.  Run a chi-square test where the null hypothesis is that all decades in your data have an equal proportion of observations.  What is the resulting p-value?  What do you conclude regarding the null hypothesis?
+
+```{r, cache=TRUE}
+chisq.test(counts)
+```
+The p-value is very 0 close to zero, indicating that there is evidence to reject the null hypothesis at any reasonable level of statistical significance (e.g. alpha = 0.001).  We can conclude that the distribution of biker counts by birth decade is not uniform.
+
+h.  Repeat parts (f) and (g), but using a subset of riders born in the 1960s, 1970s, and 1980s.  To do this, you can use the following code to get the correct subset of data:  `bike_data_60s_70s_80s <- subset(bike_data_no_NA, birth_decade %in% c("1960s", "1970s", "1980s"))`.  Do any of your conclusions change?
+
+```{r, cache=TRUE}
+bike_data_60s_70s_80s <- subset(bike_data_no_NA, 
+                                birth_decade %in% c("1960s", "1970s", "1980s"))
+counts <- table(bike_data_60s_70s_80s$birth_decade)
+decades <- names(counts)
+proportions <- as.numeric(counts/sum(counts))
+error_widths <- sqrt(proportions*(1-proportions)/sum(counts))
+lower <- proportions - 1.96 * error_widths
+upper <- proportions + 1.96 * error_widths
+prop_data <- data.frame(decades, proportions, lower, upper)
+ggplot(prop_data, aes(x=decades, y=proportions)) + geom_bar(stat="identity") +
+  geom_errorbar(aes(ymin=lower, ymax=upper)) + 
+  ggtitle("Proportions of Riders by Decade") + labs(x="Decade", y="Proportion")
+
+chisq.test(counts)
+```
+The p-value is now 0.0007518. This is still small enough to reject the null hypothesis at almost any common significance level. Therefore we can conclude that the distribution is not uniform even among this subset of decades. The error bars still indicate that a significantly smaller proportion of riders were born in the 1970's.
+
+
+
+
+
+
+
+
+#  Problem 5
+
+(5 points each)
+
+**2-D Bar Charts**
+
+For parts (a) and (b), use the `grid.arrange` function to arrange your graphs into a 1x2 grid.  For all parts, be sure to use the `bike_data_no_NA` version of our dataset -- NOT the subset from the 1960s, 70s, and 80s.
+
+a.  Create a stacked bar chart that shows the (empirical) conditional distributions of `gender` given each `birth_decade`.  Be sure to use a proper title, proper labels, and easily understandable and labeled colors.  Describe your graph.  Which gender is more common?  Does this change depending on the decade?  Feel free to reference the [online Citi Bike documentation](http://www.citibikenyc.com/system-data) to help you decode the genders.
+
+(See graph below.)  With this graph, we can examine both the marginal distribution of birth decade, and the conditional distribution of gender by birth decade.  Most riders were born in the 1960s, 70s, and 80s.  Generally, as we get into later decades (younger riders), the number of riders increases.  This continues until the 1990s, when there is a steep drop-off (likely due to an age requirement for riders).  
+
+Male riders are more common than female riders.  There are more men (gender = 1) for each birth decade except for the 1940s where there are more women (gender = 2).  We notice that gender is split into three categories and that there is an unknown gender observation coded as a 0 from the 1950s decade.  If this were a real report, we may consider this observation as erroneously recorded and exclude it from final analyses or graphs.  That said, the observation may be informative.  In cases such as these, we should be careful before removing the observation from the graphic until we have researched the issue in more detail.
+
+
+b.  Create a side-by-side bar chart that shows the (empirical) conditional distributions of `gender` given each `birth_decade`.  Be sure to use a proper title, proper labels, and easily understandable and labeled colors.  Describe your graph.  
+
+We gain similar insight from this plot. We see that there are more women from the 1940s than men, but more men in every other decade. Overall the patterns are similar. We still a slightly normal distribution of birth decade, but it is harder to see.
+
+
+```{r, warning=FALSE, message=FALSE, fig.height=4, fig.width=12}
+library(gridExtra)
+
+bike_data_no_NA$gender <- factor(bike_data_no_NA$gender, labels=c("Unknown", "Male", "Female")) # make sure gender is a factor and change the categores from 0, 1, 2, to the more meaningful unknown, men, women
+
+plot1 <- ggplot(bike_data_no_NA, aes(birth_decade, fill=gender)) + geom_bar() + xlab("Birth Decade") + ylab("Count") + ggtitle("Distribution of Birth Decade by Gender")
+
+plot2 <- ggplot(bike_data_no_NA, aes(birth_decade, fill=gender)) + geom_bar(position = "dodge") + xlab("Birth Decade") + ylab("Count") + ggtitle("Comparison of Birth Decade Distribution by Gender")
+
+grid.arrange(plot1, plot2, ncol=2)
+
+```
+
+
+c.  Which graph do you prefer?  Why?  Justify your choice.
+
+**No right answer, as long as it is justified properly.**  It depends what you are looking for.  If you are interested in the marginal distribution of birth decade, the first graph is a little better, since this information can be easily obtained by comparing the heights of the bars to the y-axis.  If you are interested in the differences between gender for each birth decade (i.e. the conditional distributions of `gender` given `birth_decade`), the second graph is better.  In general, with a stacked bar chart, it's easier to see the marginal distribution of the first variable although it's hard to compare the sizes of the stacked bars.  With the side-by-side bar chart, it's easier to compare the heights of the bars in the conditional distribution of variable 2 given variable 1. 
+
+One additional disadvantage of the side-by-side bar chart, in this case, is in the handling of the "unknown" gender (`gender == 0`).   Since the unknown gender only appears in the 1950s portion of the graph, the vertical bars in this portion are squeezed into the same horizontal space.  This distorts the perceived conditional distributions when comparing to other decades, since the areas are smaller.  The stacked bar chart does a much better job of handling this.
+
+(Note:  There are ways to avoid this issue, which we may get to later in the semester.)
+
+
+#  Problem 6
+
+(3 points each)
+
+**More 2-D Bar Charts**
+
+Now, we'll flip the variables in the conditional distributions from Problem 5.  For the graphs in parts (a), (b), and (g), use the `grid.arrange` function to arrange your graphs into a 2x2 grid.  For all parts, be sure to use the `bike_data_no_NA` version of our dataset -- NOT the subset from the 1960s, 70s, and 80s.
+
+a.  Create a stacked bar chart that shows the (empirical) conditional distributions of `birth_decade` given each `gender`.  Be sure to use a proper title, proper labels, and easily understandable and labeled colors.
+
+b.  Create a side-by-side bar chart that shows the (empirical) conditional distributions of `birth_decade` given each `gender`.  Be sure to use a proper title, proper labels, and easily understandable and labeled colors.
+
+c.  Describe the (empirical) marginal distribution of `gender`  In which graph -- (a) or (b) -- is it easier to obtain information about the marginal distribution of `gender`?
+
+d.  Describe the (empirical) conditional distribution of `birth_decade` given that the rider is female.  In which graph -- (a) or (b) -- is it easier to obtain information about the conditional distribution of `birth_decade` given gender?
+
+e.  Describe the conditional distribution of `birth_decade` given that the rider is male.
+
+f.  Compare the two conditional distributions.  Are there any similarities?  Are there any differences?
+
+g.  Flip the axes on the graphs from (a) and (b) so that the bars are horizontal.  Do you prefer the vertical bar charts or the horizontal bar charts?
+
+```{r, fig.height=8, fig.width=12}
+plot.a <- ggplot(bike_data_no_NA, aes(gender, fill=birth_decade)) + geom_bar() + xlab("Gender") + ylab("Count") + ggtitle("Distribution of Gender by Birth Decade")
+
+plot.b <- ggplot(bike_data_no_NA, aes(gender, fill=birth_decade)) + geom_bar(position = "dodge") + xlab("Gender") + ylab("Count") + ggtitle("Comparison of birth decade distribution for each gender")
+
+plot.ga <- plot.a + coord_flip()
+
+plot.gb <- plot.b + coord_flip()
+
+grid.arrange(plot.a, plot.b, plot.ga, plot.gb, ncol=2)
+```
+
+a. above
+
+b. above
+
+c. There are more males than females by over 300 people, or nearly three times as many.  Gender is often coded as a binary variable (male/female), but in this case it is categorical (with 3 levels) because of the rider in the "unknown" category.  It is easier to see this in graph (a) because the bars are stacked.
+
+d. There is a roughly equal number of female riders born in the 1940s as there are in the 50s and 60s.  The 1980s was the decade with the most female riders, while the 1950s and 1990s had the fewest riders.  It is much easier to gather this information visually in graph (b).
+
+e. The 1960s and 1980s were the two most common decades for male riders, followed by the 1970s and the 1950s.  The 1930s, 1940s, and 1990s were substantially less common birth decades than these other decades, which makes sense given the ages of potential riders born in these decades.  
+
+f. The most obvious similarities are that the 1960s, 70s, and 80s were the most common birth decades for both genders, while the 1930s and 1990s were among the least common for both.  One interesting difference in these two conditional distributions is that the relative proportion of riders born in the 1940s is substantially larger for women than for men.  Note that when comparing these conditional distributions, we should not comment on or compare the magnitudes of each category across these conditional distributions.  This is because these magnitudes depend in large part on the marginal distribution of `gender`.  Instead, we should only compare the relative proportions of each `birth_decade` across the genders.  Later in the semester, we'll learn how to scale the y-axis by proportion instead of count, which would make these conditional distributions more easily comparable.
+
+g. **No right answer,** but I personally prefer vertical bar charts (a, b).  As far as deciding between a stacked vs. a side-by-side bar chart, this depends on the purpose of the graph.  Please refer to the discussion in Problem 5 part (c) for more information.
+
+
+

@@ -1,0 +1,156 @@
+---
+title: "36-315 Lab 04"
+author: ""
+date: "Friday, September 23, 2016"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+Style Guide: Wickham's `R` Style Guide
+
+##  Lab 04:  Contingency Tables, Chi-Square Tests, Mosaic Plots, Continuous Data, and New Geometries
+
+***
+***
+
+#  Problem 1
+
+**Chi-Square Tests for Independence in `R`**:  
+
+```{r, warning = F, message = F}
+library(data.table)
+library(reshape2)
+library(dplyr)
+bike_data <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv")
+date_time <- colsplit(bike_data$starttime, " ", c("date", "time"))
+bike_data <- mutate(bike_data, 
+                    birth_decade = paste0(substr(`birth year`, 1, 3), "0s"),
+                    date = as.vector(date_time$date),
+                    time_of_day = as.vector(date_time$time),
+                    hour_of_day = substr(time_of_day, 1, 2),
+                    am_or_pm = ifelse(as.integer(hour_of_day) < 12, "AM", "PM"),
+                    day_of_week = weekdays(as.Date(date, format = "%m/%d/%Y")),
+                    less_than_30_mins = ifelse(tripduration < 1800, "Short Trip", "Long Trip"),
+                    weekend = ifelse(day_of_week %in% c("Saturday", "Sunday"), "Weekend", "Weekday"),
+                    day_of_week = factor(day_of_week, levels = c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")))
+```
+
+a.  
+```{r}
+tab1a <- table(bike_data$gender, bike_data$am_or_pm)
+chisq.test(tab1a)
+```
+
++  The chi-squared test returns the chi-squared value, the degrees of freedom, and the p-value of the test.
++  The chi-square test statistic is 8.3235.
++  The p-value of the test is 0.01558. 
++  Because the p-value is sufficiently low, we have enough evidence to reject the null hypothesis, at the .05 level, and conclude that the two variables are dependent
+
+b.  
+```{r}
+chisq.test(table(bike_data$am_or_pm, bike_data$gender))
+```
+
+After reordering the variables in the table (`gender` as the columns and `am_or_pm` as the rows), the test results stay the same. We again reject the null hypothesis and conclude that the variables are dependent. This makes sense because if the data were indeed independent from each other, the order in which we compare them in the contingency table should not matter. 
+
+c.  
+```{r}
+chisq.test(table(bike_data$day_of_week, bike_data$birth_decade))
+```
+
+When we run the chi-square test on the `day_of_week` and `birth_decade` variables, the p-value comes out to be approximately 0. This would suggest that we have sufficient evidence to reject the null hypothesis and conclude that the two variables are dependent. In the context of this problem, this means that the day of the week that a user rides a Citi Bike and the decade they were born in are statistically dependent and the occurrence of one variable affects the distribution of the other. 
+
+We get a error message when we run this test saying that the Chi-squared approximation may be incorrect. But, given the size of our test statistic it seems likely that we would reject the null hypothesis even if the Chi-squared value was exact. 
+
+In this case, this would mean that the day of the week and the birth decade of the user are in fact independent The result makes sense because the age group that a user belongs to should not affect when they choose to rent a bike. The day of the week that a bike is rented is reflective of the lifestyle of the city and not the specific age group of the users.
+
+d.  
+```{r}
+chisq.test(table(bike_data$am_or_pm, bike_data$less_than_30_mins))
+```
+
+The chi-square test between these two variables has a high p-value of 0.5671, indicating that we do not have enough evidence to reject the null hypothesis. Thus, we cannot reject the hypothesis that the two variables are independent and can assume that they are at most weakly correlated. Specifically, this means that the time of day that the bike is rented does not affect the probability distribution of the trip duration. This notion also makes sense, because the duration of a trip is generally not determined by the time of day that it is rented and rather by the purpose of the ride.
+
+***
+***
+
+
+#  Problem 2
+
+**Mosaic Plots**
+
+```{r, warning = F, message = F}
+library(devtools)
+source_url("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/code/geom_mosaic.R")
+```
+
+```{r, warning = F, message = F}
+# comparing gender and time of day
+ggplot(bike_data, aes(x = gender, y = am_or_pm)) + geom_mosaic() + mosaic_legend() + ggtitle("Mosaic Plot of Gender and Time of Day")
+
+# comparing day of week and birth decade
+ggplot(bike_data, aes(x = day_of_week, y = birth_decade)) + geom_mosaic() + mosaic_legend() + ggtitle("Mosaic Plot of Day of Week and Birth Decade")
+
+# comparing time of day and trip duration
+ggplot(bike_data, aes(x = am_or_pm, y = less_than_30_mins)) + geom_mosaic() + mosaic_legend() + ggtitle("Mosaic Plot of Time of Day and Trip Duration")
+```
+
+a.  Based on the mosaic plots above, we see colored cells when comparing `gender` and `am_or_pm` and when comparing `day_of_week` and `birth_decade`. Since the colored cells represent standardized Pearson residuals, we can conclude dependence for both sets of variables. This matches the conclusions that we drew from the chi-squared test in problem 1. The mosaic plot comparing `am_or_pm` and `less_than_30_mins` does not contain any colored cells, so we conclude that these two variables are independent. This matches the conclusion from the chi-squared test in part 1 (d).
+
+b.  The width of the bars in the mosaic plot for variables `day_of_week` and `birth_decade` correspond to respond to the marginal distribution of the variable. This means that the width of the vertical bars correspond to marginal distribution for `day_of_week`. As we can tell from the plot, the frequency of the weekdays are roughly equal and the frequency of the weekend days (Saturday and Sunday) are roughly equal to each other and higher than that of the weekdays.
+
+c.  The heights of the bars in the mosaic plot of `am_or_pm` and `less_than_30_mins` correspond to the conditional distribution of the trip duration given the time of day of the rental. As we can see, the probability of being a short trip or long trip is roughly equal regardless of the time of day that the bike is rented.
+
+d.  The mosaic plot of `gender` and `am_or_pm` shows that the cell representing the count of female users that rent a bike in the morning have a significantly lower count that would be expected under independence. There are no cells that have observed counts significantly higher than we would expect under independence.
+
+***
+***
+
+
+#  Problem 3
+
+**Introduction to Continuous Data -- Histograms**
+
+a.  
+
+```{r}
+library(datasets)
+data(cars)
+```
+
+The `cars` dataset gives the speed of cars the distances taken to stop, and the data were recorded in the 1920s. The variables included are the speed measured in mph and the stopping distance measured in feet. 
+
+b.  
+```{r}
+ggplot(data = cars, aes(x = speed)) + geom_histogram(color = "black", fill = "darkgray") + ggtitle("Distribution of Car Speeds (mph)") + labs(x = "Speed (mph)", y = "Frequency")
+```
+
+c.  
+```{r}
+ggplot(data = cars, aes(x = speed)) + geom_histogram(breaks = seq(0, 30, by = 3), col = "red", fill = "green", alpha = .2) + ggtitle("Distribution of Car Speeds (mph)") + labs(x = "Speed (mph)", y = "Frequency")
+```
+
++  Adding that line to the code increased the width of the bars in the histogram and thus smoothed out the shape of the graph. 
++  The `alpha` parameter corresponds to the transparency of the color of the bars and can take values between 0 and 1. The lower the `alpha` value, the more transparent the color is, and higher values of `alpha` correspond with more opacity. The default value for `alpha` is 1, meaning that the color is completely opaque by default.
++  The `seq()` function creates a sequence of numbers between the lower and upper limits specified and by the interval specified (with a default interval of 1).
+
+d.  
+```{r}
+ggplot(data=cars, aes(x=speed)) + geom_histogram(aes(x=speed), col = "red", fill = "green", alpha = .2, binwidth=3) + ggtitle("Histogram of Speed in MPH") + labs(list(x="speed (mph)")) 
+```
+
+The `binwidth` parameter changes the width of the bars in the histogram - the larger the `binwidth`, the wider the bars. Wider bars mean that more observations fall into each "bin".
+
+e.  
+```{r}
+ggplot(data=cars, aes(x=speed)) + geom_histogram(breaks=c(0, 5, 14, 16, 19, 20, 24, 25), col="red", fill="green") + ggtitle("Histogram of Speed in MPH") + labs(list(x="speed (mph)")) 
+
+```
+
+It is extremely difficult to interpret the graph without consistent bin widths.  We can see that there are more 20 cars with speeds between and 5 and 14.  However, if we look carefully we can also see that there are an additional 20 cars with speeds between 14 and 20, a smaller range.  We can imagine splitting the largest block into two smaller bins and see that it make be the case that the distribution is fairly uniform between speeds of 5 and 24. 
+
+***
+***

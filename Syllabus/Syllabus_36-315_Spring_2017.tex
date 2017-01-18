@@ -1,0 +1,511 @@
+\documentclass[11pt]{article}
+%\usepackage{geometry}                % See geometry.pdf to learn the layout options. There are lots.
+%\geometry{letterpaper}                   % ... or a4paper or a5paper or ... 
+%\geometry{landscape}                % Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+\setlength{\evensidemargin}{0.0in}
+\setlength{\oddsidemargin}{0.0in}
+\setlength{\textwidth}{6.5in}
+\setlength{\topmargin}{-0.5in}
+\setlength{\textheight}{9in}  
+\usepackage{graphicx}
+\usepackage{amssymb}
+%\usepackage{epstopdf}
+%\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\parindent=0pt
+\def\splus{{\sc Splus}}
+
+\usepackage{hyperref} 
+\newcommand{\rref}[1]{\hyperref[#1]{\ref*{#1}}}
+\hypersetup{backref, colorlinks=true, citecolor=blue, linkcolor=blue, urlcolor=blue}
+
+
+\begin{document}           % End of preamble and beginning of text.
+\begin{center}
+{\Large \bf 36-315\\ Statistical Graphics and Visualization}\\
+\vspace{11pt}
+{\Large {\bf Spring 2017}}%\vspace*{.15in}
+\end{center}
+
+
+%\vspace*{5mm}
+
+\noindent \begin{tabular}{ll}
+ {\bf Instructor:} 
+    & Sam Ventura (\href{mailto:sventura@stat.cmu.edu}{sventura@stat.cmu.edu})\\
+& Office:\hspace*{.25in}  Baker Hall 232A \\
+%& Telephone:\hspace*{.25in}  412-268-7362\\ 
+& Office Hours:  Tuesdays, 2-3pm\\% Wednesday,  1:30pm -- 2:30pm, BH229I.\\% Wednesday, 2:00pm - 3:00pm,  Baker Hall 229I\\ 
+%& \hspace*{1.07in} Tuesday 4:20pm - 5:00pm, in BHA51, after class.
+\vspace*{.05in}\\
+
+{\bf Graduate}  & Ben Leroy (Head TA); Office Hours:  Mondays, 5-6pm, PH 117\\
+{\bf Teaching}  & Andersen Chang; Office Hours:  Tuesdays, 5-6pm, PH 117\\
+{\bf Assistants:}  & Justin Wang; Office Hours:  Mondays, 2:30-3:30pm, PH 117\\\\
+%  
+{\bf UG Lab TAs:}  & Olvia Du, Zihan Guo, Jennifer Jin, Dan Park, Lina Sheremet, Hanson Zeng\\
+& \\
+& $\;$\\
+%
+
+%\vspace*{.1in}\\
+{\bf Textbooks:} 
+& None of these are required.\\
+& {\it ggplot2: Elegant Graphics for Data Analysis,} by Hadley Wickham\\
+& {\it Graphics for Statistics and Data Analysis with R,} by Keen.  CRC Press, 2010.\\
+& {\it Interactive and Dynamic Graphics for Data Analysis,} by Coke and Swayne.  Springer, 2007.\\
+& {\it Introductory Statistics with R,} by Peter Dalgaard.  Springer, 2002/2004.\\
+& {\it Using R for Introductory Statistics,} by John Verzani, Chapman \& Hall, 2004.\\
+& {\it R Graphics,} by Paul Murrell.  Chapman \& Hall, 2006.\\
+& {\it Visualizaing Data,} by William S. Cleveland.  Hobart Press, 1993.\\
+& {\it Envisioning Information,} by Edward R Tufte.  Graphics Press, 1990.\\
+& {\it The Visual Display of Quantitative Information,} \\ & by Edward R Tufte.  Graphics Press, 1983.\\
+& {\it \href{http://tidytextmining.com/}{Tidy Text Mining with R}}, by Julia Silge and David Robinson.\\
+& {\it Effective Communication with Data Visualization}, by Ventura et al.\\
+& \\
+
+
+
+
+{\bf Lectures}
+& Monday and Wednesday, 12:30pm -- 1:20pm, DH 1212\\
+
+
+{\bf Labs}
+& Friday, 12:30pm -- 1:20pm, BH 140 Wing + Hunt Library Basement Cluster\\
+
+\vspace*{.05in}\\
+
+
+%\vspace*{.1in}\\
+
+ {\bf Weekly} & Homeworks are due on Wednesday at noon, unless otherwise instructed.\\
+ {\bf Assignments:}
+& Labs are due on Friday at 6:30pm, unless otherwise instructed.\\
+& Short oral presentations will be conducted during lab (more details below).\\
+
+\vspace*{.05in}\\
+
+%\vspace*{.1in}\\
+
+
+{\bf Lab Exam:} & There will be one lab exam on Wednesday, March 8th.
+
+\vspace*{.05in}\\
+
+{\bf Static} & After mid-semester, there will be a group project\\
+{\bf Graphics Project:}
+ & involving a poster presentation of static graphics.
+
+\vspace*{.15in}\\
+
+{\bf Interactive} & There is no final exam.  There will be a final group project, which will \\ 
+{\bf Graphics Project:} & culminate in an oral presentation and a paper (due during finals week).\\
+
+%\vspace*{.1in}\\
+
+\vspace*{.05in}\\
+
+ {\bf Prerequisites:} 
+& 36202 or 36208 or 36226 or 88250 or 36309 or 36625 or \\ & 70208 or 36303 or 36225.\\
+
+
+%\vspace*{.1in}\\
+
+
+%{\bf Special dates:} & TBA\\
+%& More details late run the semester\\
+
+
+
+\end{tabular}
+
+
+%\noindent {\bf \underline{General overview.}}
+\subsubsection*{\underline{Course Description}}
+
+Graphical displays of quantitative information take on many forms as they help us understand both data and models. This course will serve to introduce the student to the most common forms of graphical displays and their uses and misuses. Students will learn both how to create these displays and how to understand them. As time permits, the course will consider some more advanced graphical methods such as interactive graphics, computer-generated animations, maps, network graphics, etc. Each student will be required to engage in projects using graphical methods to understand data collected from a real scientific or engineering experiment. In addition to two weekly lectures, there will be lab sessions where the students learn to use software to aid in the production of appropriate graphical displays.
+ 
+
+\vspace*{1mm}
+
+\subsubsection*{\underline{Course Objectives}}
+\begin{enumerate}
+\item {\bf Understanding the Fundamentals of Data and Reproducible Data Analysis.}
+\begin{itemize}
+	\item Distinguish between data types
+	\item Write easily readable and reproducible code to explore datasets graphically
+	\item Master the use of R, RStudio, RMarkdown, and other tools to promote reproducible research and allow others to build from your work
+\end{itemize}
+
+\item {\bf Creating Statistical Graphics.}
+\begin{itemize}
+	\item Create easily readable and understandable statistical graphics
+	\item Master the use of R, RStudio, and RMarkdown to explore datasets graphically
+	\item Incorporate statistical information (e.g. the results of statistical tests) into elegant data visualizations
+	\item Create both static and interactive graphics for mass public consumption
+\end{itemize}
+
+\item {\bf Writing About Statistical Graphics.}
+\begin{itemize}
+	\item Describe statistical graphics and data visualizations in detail, but concisely
+	\item Incorporate appropriate statistical language into written descriptions of graphics
+\end{itemize}
+
+\item {\bf Speaking About Statistical Graphics.}
+\begin{itemize}
+	\item Give eloquent oral presentations of statistical graphics to both technical and non-technical audiences
+	\item Enhance public speaking skills when presenting data visualizations
+	\item Demonstrate interesting features of datasets via interactive graphics
+\end{itemize}
+
+\item {\bf Critiquing Statistical Graphics.}
+\begin{itemize}
+	\item Review others' statistical graphics objectively and academically
+	\item Describe the pros and cons of a given graphical choice
+	\item Give useful critiques, feedback, and suggestions for improvement on others' graphics
+\end{itemize}
+
+\end{enumerate}
+
+\vspace*{3mm}
+
+\subsubsection*{\underline{Course Components}}
+\begin{enumerate}
+\item {\bf Lectures.} The main topics of the course will be covered during the lecture.  You are also responsible for any additional material covered in the assigned readings, labs, and homework.  
+
+If you miss a lecture, you are responsible for the material covered during the lecture you have not attended. %While homework and midterm exam solutions will be posted on the web, the solutions to the many problems and exercises solved in class will not. 
+Students are expected to take notes and follow along with example problems in class.  Some (but not all) course notes and example code will be posted on the course website.
+
+%Throughout the course I will distribute a number of handouts containing many practice problems that will be solved in class. These handouts will be posted on Blackboard, but not their solutions, which will only be given in class. The problems on the handouts are an important part of the course, as they will elucidate the material and concepts covered in class and will provide me the opportunity of engaging and interacting with the class and also of assessing the level of preparation and understanding of course material. Due to the large number of students enrolled, I will not print out and distribute handouts in class.
+
+
+\item {\bf Labs.}  Labs are specifically designed to add context and give examples (using real-world datasets) of the concepts covered in lecture.  They are also designed to prepare students for homework assignments due the following week.  Labs will typically include example code to ease the introduction into new concepts.
+
+Labs are designed to take 45 minutes to complete.  The instructor and TAs are in lab to help you, so please feel free to ask questions when you need assistance.  Additionally, please feel free to talk with other students, ask other students for help, and help other students in lab, as long as the talking is not disruptive.  Talking is not allowed during the lab exam, however. 
+
+While students are permitted (and encouraged) to ask questions during lab, questions about the lab assignment will not be answered after the lab session has ended.  Discussion board questions about lab assignments are not guaranteed to be answered.  Emailed questions about lab assignments will not be answered. 
+
+\textbf{Lab attendance is mandatory.}  It is also required that you attend attend the same lab section / room each week.
+
+Students are encouraged to use the computers in the computer cluster.  Students are permitted to use their own computers during lab, though any issues arising from using personal computers (e.g. hardware, software, or operating system incompatibility) are the responsibility of the student to resolve.
+
+Lab assignments are due at 6:30pm on the day of lab (unless otherwise specified), submitted through the course website.  Students should submit a single .Rmd file and a single .html file, unless otherwise specified.  (This will be more clear when you complete Lab 01.)
+
+\item {\bf Oral Evaluations.} During lab, a random group of students will be asked to give a short, one-on-one oral presentation of a single graphic to the instructor.  The graphic will be provided to all students before lab.  During the first week's lab, the instructor will give an example of what is expected for these oral presentations, and no students will be required to give presentations during Lab 01.
+
+These oral evaluations are strictly for the benefit of the students and will be graded on completion only.  If you are not in (the correct) lab when you are chosen to give a presentation, you will lose credit.  Students are expected to take notes on the feedback that the instructor provides during and after these presentations in order to improve their oral presentation skills.
+
+\item {\bf Homework}. 
+Homework problems provide you with the opportunity to learn, practice, and test your knowledge and understanding of the material.  All material found in the homework may show up in later homeworks and/or the lab exam.
+
+Homeworks are due on Wednesdays at noon, submitted through the course website.  Students should submit a single .Rmd file and a single .html file, unless otherwise specified.
+
+\item {\bf Code}.  All code should be written in R and RMarkdown.  Students should follow one of two popular style guidelines:  (1) \href{https://google.github.io/styleguide/Rguide.xml}{Google's R Style Guide} or (2) \href{http://adv-r.had.co.nz/Style.html}{Hadley Wickham's Advanced R Style Guide}.
+
+Students should specify what style guide they are using at the top of their submitted code and assignment.  If a student's submitted code does not adhere to one of these two style guides, students will lose up to 10\% credit on that assignment.
+
+If you are an experienced R programmer who wishes to use a different (but well-defined) style guide, please talk to the instructor.  
+
+% We will give adequate time to working on the problems and the graders will work hard to return your homework in a timely manner. Unfortunately, this means that {\bf late homework will not be accepted}. 
+
+%\item {\bf DISCUSSION}: Just as reading material will not set it in your mind as knowledge, neither will hearing the material, however discussion is not feasible in the class setting.  Therefore, we realize that discussing the material outside of class provides opportunities for gaining understanding (for ourselves and others) and for correcting misunderstandings.  The settings you have for discussion are working with your classmates and office hours.
+
+
+\item {\bf Lab Exam.} There is one lab exam during the semester.  Specific details about the content and format of the lab exam will be available closer to the exam date (Wednesday, March 8th).  %The exam will be on Wednesday, 3/2 (right before Spring Break).  Please plan accordingly.
+
+
+\item {\bf Static Graphics Project.} There will be a midterm project.  Groups of students will be assigned a dataset to analyze.  Each group will create a poster describing their work.  A public group presentation of the analyses will occur on Wednesday, April 19th.  More details will be available after mid-semester.
+
+\item {\bf Interactive Graphics Project and Paper.} There will be a final project.  Groups of students will be assigned a dataset to analyze.  A group paper describing the work is due during finals week.  A public group presentation of the analysis will occur during our regularly scheduled final exam period.  More details will be available near the end of the semester.
+
+
+%\item {\bf Pop Quizzes.} There will be short pop quizzes during
+%    the last 10 minutes of class. Your scores on these quizzes will be
+%    counted as bonus points when your final grade is computed.
+
+\end{enumerate}
+
+
+
+\subsubsection*{\underline{Grading Policies}}
+\begin{itemize}
+\item All numeric grades are on a scale from 0 to 100.
+
+\item Final grades are based on exams and homework, and will be computed according to the following weights:
+\begin{center}
+\begin{tabular}{lr}
+Average Homework Score & 35.0\%\\
+Oral Evaluations (completion only) & 5.0\%\\
+Average Lab Score & 10.0\%\\
+Lab Exam Score & 12.5\%\\
+Static Graphics Project/Paper/Presentation & 12.5\%\\
+Interactive Graphics Project/Paper/Presentation & 25.0\%\\
+%Participation   & 5\%\\
+\end{tabular}
+\end{center}
+
+
+\item Final letter grades will be determined according to the following rules (subject to change at the instructor's discretion):
+\begin{center}
+\begin{tabular}{lcc}
+A  	& $\;\;\;\;$		& $\geq$ 90\\
+B  	& $\;\;\;\;$		& [80, 90)\\
+C  & $\;\;\;\;$	 & [70, 80)\\
+D  & $\;\;\;\;$	 & [60, 70)\\
+R  & $\;\;\;\;$	 & $< 60$\\
+\end{tabular}
+\end{center}
+
+\item {No assignments are dropped when calculating mid-semester grades.}  
+
+\item {The lowest lab score and homework score are not included in the calculation of final grades.}    
+
+\end{itemize}
+
+
+
+
+
+\subsubsection*{\underline{Computing}}
+\begin{itemize}
+	\item All code for all projects must be written in R unless otherwise specified.  
+	
+	\item All course assignments must be written in R and RMarkdown unless otherwise specified.
+	
+	\item Students with laptops and personal computers should download the latest versions of R and RStudio.  Instructions to do this will be given during the first week of classes.
+	
+	\item All students should IMMEDIATELY check their university computing accounts to make sure that R and RStudio are installed.  If you cannot access these resources, please notify the instructor ASAP.
+	
+	\item Students are encouraged to use the computers in the computer cluster.  Students are permitted to use their own computers during lab, though any issues arising from using personal computers (e.g. hardware, software, or operating system compatibility) are the responsibility of the student to resolve.
+	
+\end{itemize}
+
+
+
+
+\subsubsection*{\underline{Administrative Procedures and Logistics}}
+\begin{itemize}
+\item {\bf Lectures.} Use common courtesy: arrive on time; do not leave early; no cell-phone use allowed; do not be disruptive in class; participate in class when the instructor asks questions; etc.  The  use of laptops/tablets/etc is allowed only for course-related purposes.
+    
+\item {\bf Course Materials:  Blackboard.} The syllabus, lab assignments, homework assignments, solutions, assigned readings, any supplementary material, grades, and announcements for this course can be found on the course web page on Blackboard:  \url{www.cmu.edu/blackboard}.  {\bf Please check Blackboard regularly.}
+
+\item {\bf Discussion Board:  Piazza.} All class discussions that take place outside of lecture and lab will occur on Piazza:  piazza.com/cmu/spring2017/36315/home
+
+All students are responsible for understanding all discussions on Piazza.  Important course material, example code, etc will be distributed via Piazza.
+
+%Class discussion boards are available on the web page to help with questions about the material and the class procedures.  Check-in for help with your homework.
+%Please see also the TA or instructor during office hours for help with homework problems.  
+%If you have any questions related to the class material, homework problems and exams please post them to the appropriate discussion group on Blackboard. We will try to answer any pertinent questions posted on Blackboard within 24 hours. If the questions is about the current homework assignment,  make sure to post it at least 24 hours before the time the assignment is due in order to get a response on time. {\bf If your question applies only to you, then you may want to email directly the instructor instead.}
+
+
+\item {\bf Communication.} If you have any questions related to the class material, homework problems and exams, feel free to ask the instructor during class or, preferably, the instructor and the TAs during their office hours. 
+
+{\bf Questions concerning the current homework submitted by email will not be answered. Please use email only to address administrative and logistic issues. You should not expect a reply within 24 hours.}  Questions about homework should instead be submitted to the course discussion board.
+
+
+\item {\bf Homework Format.}  Homeworks should have the students name and Andrew ID at the very top/beginning.  Students should specify the style guide they used to write their code (see above).  Questions should be answered in order.  All answers should be clearly marked and labeled.  Answers should be written in the context of the problem when applicable.  Proper spelling and grammar should always be used -- this means using complete sentences, proper punctuation, etc.  Deviating from this format may result in your assignment not being graded.
+
+You are encouraged to discuss homework problems and collaborate with classmates.  However, the work you submit must be {\bf your own}.  This means, in
+particular, that each student must independently write up each problem, including all code and written responses.  {\bf Instances of identical, nearly identical, or copied homework will be considered cheating and plagiarism.}  {\bf The use of material from previous semesters of this course or from any other source to solve homework and exam problems is regarded as unauthorized assistance and therefore as a violation of the Carnegie Mellon University code of academic integrity.}
+
+
+\item {\bf Extensions.}  In general, extensions will not be granted for students because they are behind on work, had a busy week, etc.  Extensions for \textbf{reasonable academic purposes} (e.g. university athletic event, job interview), \textbf{extreme circumstances} (e.g. hospitalization), or religious reasons may be granted at the instructor's discretion.  If you believe you have a reasonable request for an extension, please request this at least 48 hours before an assignment is due.  Students should submit proof of the issue when requesting an extension.  At the top of the assignment, please clearly write that you received an extension on the assignment.
+
+If you require special accommodations via disability services, please see below.
+
+%\item {\bf Cheating/plagiarism will receive no credit and I will send a letter to the Dean of Students, your adviser, your department, etc. explaining that you have cheated in my class.}  www.cmu.edu/policies/documents/Cheating.html
+
+\item {\bf Regrades.}  If you believe a mistake was made when your assignment was graded, you must write a clear, detailed description of the issue.  Please include your name and the number of points you expect to receive at the top of the page.  Please submit this, along with a printed copy of your assignment, to the instructor's mailbox (Baker Hall 232 wing) \textbf{WITHIN ONE WEEK of when the assignment was graded}.  
+
+Regraded assignments will be processed at the end of the semester, ONLY if they have the potential to influence your final letter grade.
+
+
+\item {\bf Integrity.} Cheating, plagiarism and unauthorized assistance on homework or exams will be dealt with in accordance with the academic integrity policy in place at Carnegie Mellon University, as described here:  \url{http://www.cmu.edu/academic-integrity/index.html}
+
+\item {\bf Disability Services.}  If you have a disability and need special accommodations in this class, please contact the instructor {\bf immediately} to make arrangements.  Special accommodations for exams must be requested {\bf no later than one week prior to the exam.}  You should also contact the Disability Resources office at 8-2013, request the appropriate documentation, and give a copy of this documentation to the instructor.  For more information, see the Carnegie Mellon Equal Opportunity Services and Disability Resources webpage:  \url{http://www.cmu.edu/hr/eos/index.html}
+
+%\item {\bf In-Class Questions.} Questions regarding current and past course material are always encouraged.  Questions about current material will be given first priority.  Questions about future material and/or additional topics should be reserved for after class or during office hours.
+
+\item {\bf Cellphones, Laptops, etc.}:  All cellphones and anything else that makes noise should either be turned off or silenced during class.  Students are expected to participate in class.  Students should not use their cell phones in class for any purpose.  This includes texting and checking email.  Laptops may only be used for course-related purposes.  Students are encouraged to follow along and run code in class.
+
+\item {\bf Email:}  Sending email to the instructor should be treated as professional communication.  Emails should have an appropriate greeting and ending; students should refrain from using any kind of ``shortcuts," abbreviations, acronyms, slang, etc in the email text.  Emails not meeting these standards may not be answered.
+
+\textbf{Emails about homework/lab questions will not be answered.}  Please direct these questions to the course discussion board (see below).
+	
+\textbf{Emails to the TAs will not be answered.}
+
+
+\item {\bf Discussion Board:}  All questions about the homework and the notes should be directed to Blackboard's discussion board.  Homework-related email to the instructor or TAs will not be answered.  (The TAs will not answer any email, whatsoever.)  The discussion board will be checked regularly by the instructor and TAs.  That said, in order to guarantee that a question is answered in time, please allow 24 hours in advance of when an assignment is due when asking a question on the discussion board.
+
+Students are expected to subscribe to all discussion board threads at the beginning of the semester, so that they receive email notifications when a question or answer is posted.
+
+
+\item {\bf Photo, Audio, and Video Recording:}  Photo, audio, and video recordings of the course lectures, course labs, lab exams, and all other course materials are strictly prohibited.
+
+This includes, but is not limited to:  using a cell phone to take pictures of the notes, recording video and/or audio of lectures, labs, exams, and other course settings.  
+
+\item {\bf Take care of yourself:}  Do your best to maintain a healthy lifestyle this semester by eating well, exercising, avoiding drugs and alcohol, getting enough sleep and taking some time to relax. This will help you achieve your goals and cope with stress.
+
+All of us benefit from support during times of struggle. You are not alone. There are many helpful resources available on campus and an important part of the college experience is learning how to ask for help. Asking for support sooner rather than later is often helpful.
+
+If you or anyone you know experiences any academic stress, difficult life events, or feelings like anxiety or depression, we strongly encourage you to seek support. Counseling and Psychological Services (CaPS) is here to help: call 412-268-2922 and visit their website at http://www.cmu.edu/counseling/. Consider reaching out to a friend, faculty or family member you trust for help getting connected to the support that can help.
+
+If you or someone you know is feeling suicidal or in danger of self-harm, call someone immediately, day or night:
+
+CaPS: 412-268-2922
+
+Re:solve Crisis Network: 888-796-8226
+
+If the situation is life threatening, call the police:
+
+On campus: CMU Police: 412-268-2323
+
+Off campus: 911
+
+\end{itemize}
+
+
+
+\end{document}
+
+\noindent \underline{Course work:}
+Your grade in this course will be determined by class participation, homework
+assignments, midterm exams, and a final.  
+\begin{itemize}
+\item Class participation will be measured by short problems done during class (full credit for trying) and short quizzes done in class (half credit for trying).
+
+\item Homework will be assigned every week.  It will be due at {\bf 5:00pm on Thursday} each week in the professor's box (the doors are locked at 5, don't be late). {\bf Always show your work, the correct answer is not sufficient.}
+ Assignments should be completed and
+submitted on paper; electronic versions will not be
+accepted. All work must be your own (see the grading policy).
+
+%Please see the TAs or instructor during office hours for help with homework problems.  
+%There is also a discussion board for questions on Blackboard;
+%questions must be posted at least 24
+%hours before the time an assignment is due in order to guarantee a response.  
+%Questions posed by email may take even longer to get a response.
+
+\item Examinations will focus primarily on your understanding of the mathematical
+material that is covered in the course.  There will be one midterm in the middle of the semester and one at the end of the semester.
+
+{\bf There are no make up exams for any reason.}  If you miss a midterm exam, then your grade on the final will be used in its place.  If you miss the final exam, except for a documented medical emergency, then you will get a zero and most likely fail the class.  All exam work must be your own.
+
+\item The final exam will be comprehensive. If your score on the final is higher than a midterm grade, it will replace the midterm grade.
+\vspace*{2mm}
+\end{itemize}
+
+\noindent \underline{Grading policy:} You are encouraged to discuss homework
+problems  and collaborate with your fellow students, however the work you submit must be your
+own.  Failing to indicate your collaborators (including students, TAs,
+instructor) on a homework assignment will be considered cheating. {\bf  The use
+    of material from previous semesters of this course or from any other source
+is regarded as unauthorized assistance and therefore as cheating.}
+{\bf Cheating/plagiarism will receive no credit and I will send a letter to the Dean of Students, your adviser, your department, etc. explaining that you have cheated in my class.}  
+www.cmu.edu/policies/documents/Cheating.html
+
+%All students are expected to comply
+%with the CMU policy on academic integrity.  This policy is online at www.studentaffairs.cmu.edu/acad\_integ/acad\_int.html \vspace*{2mm}
+
+Grades will be computed with the following weights:
+
+\begin{center}
+\begin{tabular}{lr}
+Homework  			& 20\%\\
+Midterm 1  			& 20\%\\
+Midterm 2  			& 20\%\\
+Final      			& 30\%\\
+Participation   & 10\%\\
+\end{tabular}
+\end{center}
+\vspace*{2mm}
+
+Letter grades will be assigned as follows: A [90,100], B [80,90), C [70, 80), D [60,70), R [0,60).
+Your final exam grade will replace any midterm grades that are lower than your grade on the final.  {\bf 2 percentage points will be added to everyone's final grade to account for grading mistakes, a missed homework or lecture, badly worded problems, etc.} There are too many students in the class to handle all of these issues individually.  
+
+\vspace*{2mm}
+\newpage
+\noindent \underline{Communication:}  Assignments and class
+information will be posted on Blackboard.  Help with
+using blackboard is available at www.cmu.edu/blackboard/help/. 
+
+Class discussion boards are available in Blackboard to help with questions about the material and the class procedures.  Check-in for help with your homework.
+Please see the TAs or instructor during office hours for help with homework problems.  
+Questions must be posted to Blackboard at least 24
+hours before the time an assignment is due in order to guarantee a response.  
+Questions posed by email may take even longer to get a response.
+\vspace*{2mm}
+
+%\noindent \underline{Academic Integrity:}  
+
+\noindent \underline{Disability Services}:  If you have a disability and need special accommodations in this class, please speak with me immediately.  You should also contact the Disability Resources office at 8-2013.
+
+\vspace*{2mm}
+\noindent \underline{Policy Reference}:  
+
+Here's where you check first if you have a question.
+
+%\begin{enumerate}
+%\item 
+{\bf Missing Work and Grading Errors}.  There are too many students in this course to individually handle minor issues such as grading errors and inconsistencies and late and missing work, even for legitimate reasons.  For this reason {\bf 2 points are added to everyone's final grade at the end of the semester.}  In nearly every case, this more than compensates for the problem. If you are not satisfied with this remedy or if you have a major problem, here's what to do:
+\begin{itemize}
+\item {\bf Final Exam}. Do not miss the final exam or you will receive a zero.  If you have a medical emergency, bring documentation to me as soon as possible.  You can see your final exam next semester.  You must submit a written report describing any grading questions for the final exam.
+\item {\bf Midterm Exams}.  A missed midterm, for any reason, receives a grade of zero which will be replaced by your grade on the final.
+You must submit a written report describing any grading questions for the midterms within one week of the exam being available for pick-up.
+\item {\bf Homework}.   A late or missing homework, for any reason, receives a zero grade.  If you have a legitimate excuse for not turning in an assignment or believe there was a grading error, you should:
+\begin{enumerate}
+\item Send the instructor an email (tanzy@cmu.edu) with the subject line {\bf 217problem} describing the problem. (You should not expect a reply.)
+\item Turn in the homework (or a copy in case of grading errors) to the instructor's mailbox (BH 232).
+\end{enumerate}
+At the end of the semester, these emails and documentation will be taken into consideration when assigning final letter grades.
+\item {\bf Lecture Participation}.  If you miss class, for any reason, then you will not receive credit for that day.  If you have a legitimate excuse for not attending you should send the instructor an email (tanzy@cmu.edu) with the subject line {\bf 217problem} describing the problem. (You should not expect a reply.)  At the end of the semester, these emails  will be taken into consideration when assigning final letter grades.
+\end{itemize}
+%\item {\bf Lectures}.    Use common courtesy: arrive on time; don't leave early; no cell-phones, laptops, headphones, etc.
+%\item {\bf Homework}.    Late homework and electronic homework are not accepted for any reason.  Instances of identical or copied homework will be considered cheating, as will use of any materials from previous semesters of this course, or solutions from any other source.  Failing to indicate all of your collaborators on a homework is considered cheating.
+%\end{enumerate}
+
+%\newpage
+% \noindent TENTATIVE SCHEDULE \vspace*{.1in}\\
+%(Do the readings {\it before} the class where they are listed)\\
+%
+%{\red ADD HERE }
+%
+%\begin{tabular}{lll}
+%{\bf Date} & {\bf Topic} & {\bf Reading}\\
+%1/16\ & What is probability?? & \\
+%1/18  & Background and notation & G\&S 1 \\
+%1/23  & Random variables and the Law of Large Numbers & G\&S 2 \\
+%1/25  & Discrete random variables & G\&S 3  \\
+%1/30  & Continuous random variables and transformations & G\&S 4.1-8 \\
+%2/1   & Generating functions & G\&S 5.1-5 \\
+%2/6   & Characteristic functions & G\&S 5.6-8 \\
+%2/8   & Markov chains & G\&S 6.1-3 \\
+%2/13  & Markov chain Monte Carlo & G\&S 6.4,5,14 \\
+%2/15  & Finite/countable chains & G\&S 6.6-8 \\
+%2/20  & Group Practice & \ \\
+%2/22  & Group Practice & \ \\
+%2/27  & {\bf Midterm Exam} & \ \\
+%3/1   & Convergence of processes & G\&S 7.1-3 \\
+%3/6   & Martingales & G\&S 7.7-8 \\ 
+%3/8   & Prediction and uniform integrability & G\&S 7.9-10 \\
+%3/13  & {\bf Spring Break} &  \ \\ 
+%3/15  & {\bf Spring Break} &  \ \\ 
+%3/20  & Introduction to formal processes & G\&S 8.1-3 \\ 
+%3/22  & Ques and Brownian motion & G\&S 8.4-6 \\ 
+%3/27  & Stationary processes & G\&S 9.1-3 \\
+%3/29  & Ergodic Theorem & G\&S 9.4-6 \\
+%4/3   & Renewal processes & G\&S 10.1-4 \\
+%4/5   & Ques & G\&S 11.1-3 \\
+%4/10  & Networks of ques & G\&S 11.4,6,7 \\
+%4/12  & Martingales & G\&S 12.1-3 \\
+%4/17  & Stopping times for martingales & G\&S 12.4-6 \\
+%4/19  & {\bf Carnival } & \ \\
+%4/24  & Brownian motion & G\&S 13.1-2  \\
+%4/26  & Diffusion processes & G\&S 13.3-5  \\
+%5/1   & Group Practice &   \\
+%5/3   & Group Practice &  \\
+%\end{tabular}
+%
+%\vspace*{1in}
+%%Final Examination:  TBA
+\end{document}

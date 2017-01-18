@@ -1,0 +1,259 @@
+---
+title: "36-315 Lecture 10, Fall 2016"
+author: "Sam Ventura"
+date: "October 3rd, 2016"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  hide
+---
+
+#  Rug Plots
+
+Rug plots aide histograms and density plots by showing the viewer exactly where the underlying points are.  These are especially useful with small datasets, when the resulting density estimate or histogram is very "jagged" due to the variability inherent in small datasets.
+
+```{r}
+library(MASS)
+library(ggplot2)
+data(Cars93)
+#head(Cars93)
+
+ggplot(Cars93) + aes(x = Fuel.tank.capacity) + 
+  geom_histogram(bins = 20, fill = "red", color = "black") + 
+  geom_rug()
+
+```
+
+From the rug plot above, we see exactly where each of the fuel tank capacities fall.
+
+
+#  Violin Plots
+
+Violin plots are an alternative to box plots.  They provide all of the same information, plus some additional distributional information:
+
+```{r}
+ggplot(Cars93) + geom_boxplot(fill = "red") + 
+  aes(y = Fuel.tank.capacity, x = as.factor(Origin)) +
+  labs(y = "Capacity of Fuel Tank (Gallons)", x = "Origin of Car") + 
+  ggtitle("Distribution of Fuel Tank Capacity in Gallons") + 
+  theme(legend.position = "none")
+```
+
+Above is a boxplot showing the conditional distributions of fuel tank capacity given the origin of the car.
+
+Below is the same information displayed using a violin plot.  Which is better?
+
+```{r, warning = F, message = F}
+library(dplyr)
+ggplot() + 
+  aes(x = Fuel.tank.capacity) +
+  stat_density(data = Cars93, aes(ymax = ..density..,  ymin = -..density..),
+               fill = "red", colour = "black",
+               geom = "ribbon", position = "identity") +
+  facet_grid(. ~ Origin) +
+  labs(x = "Capacity of Fuel Tank (Gallons)", y = "Origin of Car") + 
+  ggtitle("Distribution of Fuel Tank Capacity in Gallons") + 
+  theme(legend.position = "none") + coord_flip()
+```
+
+
+These are very useful looking graphs, but does anyone detect the distortion that's happening here?
+
+How can we fix it?
+
+```{r}
+ggplot(Cars93) + 
+  stat_density(data = dplyr::filter(Cars93, Origin != "USA"), 
+               aes(x = Fuel.tank.capacity, ymax = ..density.., ymin = 0),
+               fill = "red", colour = "black",
+               geom = "ribbon", position = "identity") +
+  stat_density(data = dplyr::filter(Cars93, Origin == "USA"), 
+               aes(x = Fuel.tank.capacity, ymax = 0, ymin = -..density..),
+               fill = "blue", colour = "black",
+               geom = "ribbon", position = "identity") +
+  labs(x = "Capacity of Fuel Tank (Gallons)", 
+       y = "Origin of Car (Left:  USA; Right:  non-USA)") + 
+  ggtitle("Distribution of Fuel Tank Capacity in Gallons by Origin") + 
+  theme(legend.position = "none") + coord_flip()
+
+```
+
+
+
+```{r}
+ggplot(Cars93) + 
+  aes(x = Fuel.tank.capacity) +
+  stat_density(aes(ymax = ..density..,  ymin = 0),
+               fill = "red", colour = "black",
+               geom = "ribbon", position = "identity") +
+  facet_grid(. ~ Origin) +
+  labs(x = "Capacity of Fuel Tank (Gallons)", y = "") + 
+  ggtitle("Distribution of Fuel Tank Capacity in Gallons") + 
+  theme(legend.position = "none") + coord_flip()
+
+ggplot(Cars93) + 
+  aes(x = Fuel.tank.capacity) +
+  stat_density(aes(ymax = ..density..,  ymin = 0),
+               fill = "red", colour = "black",
+               geom = "ribbon", position = "identity") +
+  facet_grid(. ~ Origin) +
+  labs(x = "Capacity of Fuel Tank (Gallons)", y = "") + 
+  ggtitle("Distribution of Fuel Tank Capacity in Gallons") + 
+  theme(legend.position = "none")
+
+ggplot(Cars93) + 
+  aes(x = Fuel.tank.capacity) +
+  stat_density(aes(ymax = ..density..,  ymin = 0),
+               fill = "red", colour = "black",
+               geom = "ribbon", position = "identity") +
+  facet_grid(Origin ~ .) +
+  labs(x = "Capacity of Fuel Tank (Gallons)", y = "") + 
+  ggtitle("Distribution of Fuel Tank Capacity in Gallons") + 
+  theme(legend.position = "none")
+
+```
+
+
+
+There's also a built-in `ggplot()` geometry for violin plots:
+
+
+```{r}
+ggplot(Cars93) + 
+  aes(y = Fuel.tank.capacity, x = Origin) +
+  geom_violin(fill = "red")
+```
+
+
+Now, add more information:
+
+
+```{r}
+ggplot(Cars93) + 
+  aes(y = Fuel.tank.capacity, x = Origin) +
+  geom_violin(fill = "red") + 
+  stat_summary(fun.y=mean, geom="point", shape=5, size=4, color = "blue") + 
+  stat_summary(fun.y=median, geom="point", shape=16, size=4, color = "yellow")
+
+```
+
+
+
+#  Kolmogorov-Smirnov Tests
+
++  Non-parametric test for equality of 1-D continuous distributions
++  Can be used to compare two empirical continuous distributions (i.e. based on the data)
++  Can also be used to compare one empirical continuous distribution to a theoretical distribution (e.g. continuous variable in data vs. "Normal", "Uniform", "Gamma", etc).  The theoretical distribution is often called the "reference distribution".
++  Null hypothesis:  Two distributions are equal
++  Alternative hypothesis:  Two distributions are different
++  Note:  Can specify other alternative hypotheses (see the `Details` section in `help(ks.test)` for more details)
+
+
+
+###  Compare randomly generated, normally distributed data to a normal distribution
+
+```{r}
+nn <- 1000
+my_normal_sample <- rnorm(nn, mean = 0, sd = 1)
+ks.test(my_normal_sample, "pnorm", mean = 0, sd = 1)
+```
+
+Resulting p-value is high, indicating that there is no evidence to reject the null hypothesis that the two distributions are identical.
+
+
+
+###  Compare randomly generated, normally distributed data to a normal distribution
+
+```{r}
+my_uniform_sample <- runif(nn, min = 0, max = 100)
+ks.test(my_uniform_sample, "punif", 0, 100)
+```
+
+Resulting p-value is high, indicating that there is no evidence to reject the null hypothesis that the two distributions are identical.
+
+
+
+###  Compare the normal and uniform samples
+
+```{r}
+ks.test(my_uniform_sample, my_normal_sample)
+```
+
+Resulting p-value is very low, indicating that there is evidence to reject the null hypothesis that the two distributions are identical.  We would conclude that the two distributions are different.
+
+
+
+
+###  Using the `Cars93` data
+
+We can use the estimated means, standard deviations, variances, minima, maxima, etc from our data when implementing the KS-Test.
+
+First, we'll plot one of our variables.  Then, we'll do the KS-test:
+
+```{r}
+library(MASS)
+library(ggplot2)
+data(Cars93)
+head(Cars93)
+
+ggplot(Cars93) + aes(x = Weight) + geom_histogram(bins = 20, fill = "red", color = "black")
+
+ks.test(jitter(Cars93$Weight), "punif", min = min(Cars93$Weight), 
+        max = max(Cars93$Weight))
+ks.test(jitter(Cars93$Weight), "pnorm", mean = mean(Cars93$Weight), 
+        sd = sd(Cars93$Weight))
+
+```
+
+For the uniform distribution, the p-value is very low, which means we have evidence to reject the null hypothesis that the two distributions are the same and conclude that they are different.
+
+For the normal distribution, the p-value is greater than any reasonable `alpha` level, so there is no evidence to reject the null hypothesis.
+
+But our graph looked very un-normal!  What's going on here?  
+
+```{r}
+ggplot(Cars93) + aes(x = Weight) + geom_histogram(bins = 6, fill = "red", color = "black")
+```
+
+This is what happens when you're working in small samples!  We specified 20 bins for a histogram with only 93 observations.  That means that there were less than 5 observations per bin.  This is really small, so our histogram looked much more variable that it should.  With small datasets, it's best to use a low number of bins.
+
+
+###  KS Test to see which distribution is greater or less
+
+First, get the two conditional distributions you want to test.  Then, adjust the alternative hypothesis in `ks.test()`:
+
+```{r}
+
+weight_given_US <- jitter(Cars93$Weight[Cars93$Origin == "USA"])
+weight_given_non_US <- jitter(Cars93$Weight[Cars93$Origin != "USA"])
+
+ggplot(Cars93) + aes(x = Weight, color = Origin) + geom_density(size = 1.5)
+
+ks.test(x = weight_given_US, y = weight_given_non_US, alternative = "greater")
+ks.test(x = weight_given_US, y = weight_given_non_US, alternative = "less")
+
+```
+
+For how to interpret the results of the test, note the following from the documentation:  "... thus, the two-sample case with alternative = "greater" includes distributions for which x is stochastically smaller than y".
+
+Additionally, the output of `ks.test()` includes a sentence describing the alternative hypothesis.  E.g., for `alternative = "greater"`:  "alternative hypothesis: the CDF of x lies above that of y"
+
+In our example, the US weights are significantly greater than the non-US weights.  As a result, the p-value for the "less" test is very close to 0, and the p-value for the "greater" test is very close to 1.
+
+
+#  Next time:  2-D Continuous Data & Scatterplots!
+
+Scatterplots plot (at least) two continuous variables -- one on the x-axis, and one on the y-axis.  This gives us a sense of the relationship between the two variables (among many other things).
+
+```{r}
+ggplot(Cars93) + aes(x = Weight, y = MPG.city) + 
+  geom_point() + ggtitle("City Gas Mileage vs. Car Weight") + 
+  labs(x = "Car Weight (lbs)", y = "Miles per Gallon (City)")
+```
+
+It's best to plot independent (explanatory) variable on the x-axis, and the dependent (response) variable on the y-axis.  Here, since it's more likely that Weight affects gas mileage than vice versa, we plot Weight on the x-axis.
+
+
+
+

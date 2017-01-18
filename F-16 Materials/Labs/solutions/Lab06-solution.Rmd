@@ -1,0 +1,122 @@
+---
+title: "Lab 06 Solutions"
+author: ""
+date: "Due Friday, October 7, 2016 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 06:  2-D Continuous Data and Violin Plots
+
+```{r}
+#Create theme that can be added to plots
+library(data.table)
+library(ggplot2)
+library(gridExtra)
+my_theme <-  theme_bw() + # White background, black and white theme
+  theme(axis.text = element_text(size = 15, 
+                                color="indianred4"),
+        text = element_text(size = 18, face="bold", 
+                            color="darkslategrey"))
+```
+
+***
+***
+
+#  Problem 1
+
+**Loading The Data**
+
+a.  `energy_100g`, `fat_100g`, `saturated_fat_100g`, `carbohydrates_100g`, `sugars_100g`, `fiber_100g`, `proteins_100g`, `proteins_100g`, `salt_100g`, and `sodium_100g` are the continuous variables. The lowerbounds are 0 for all of these variables.
+
+```{r}
+food <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv")
+```
+
+
+***
+***
+
+
+#  Problem 2
+
+**Violin Plots**
+
+a.  
+```{r}
+
+# Violin plot
+ggplot(food) + aes(y= energy_100g, x = factor(1)) + geom_violin(fill = "red") + stat_summary(fun.y = mean, geom = "point", shape = 5, size = 4, color = "blue") + labs(y = "Energy per 100g (kj)", x = "Density of Foods") + ggtitle("Distribution of Energy per 100g of Food") + theme(axis.text.x = element_blank()) + my_theme + stat_summary(fun.y = median, geom = "point", shape = 3, size = 4, color = "white")
+```
+
+b.  First, we notice that more of the foods without additives have low amounts of energy per 100g while more foods with additives have higher energy per 100g.  We see this from looking at each of the highest modes for each density plot. Some more interesting things we notice are that for the no additives plot, we see three modes, and the overall plot has a larger range for energy and is also skinnier.  We see for the presence of additives plot that the right tail is shorter, there are two modes, and the overall plot is wider.  Comparing the conditional distributions, we see that for foods that have additives, most seem to have overall more energy (around 1500 - 2500 kj per 100g), but there is also a higher density in the distribution lower energy amounts.  Both the conditonal distributions have a similar mean energy amount of around 1200-1300 kj per 100g.  The medians are different and follow more of the overall comparison trend between the two - that foods with no additives have less overall energy than foods with additives.
+
+```{r, fig.height = 10, fig.width = 10}
+ggplot(food) + 
+  stat_density(data = dplyr::filter(food, additives_n == "Yes"), 
+               aes(x = energy_100g, ymax = ..density.., ymin = 0),
+               fill = "red", colour = "black",
+               geom = "ribbon", position = "identity") +
+  stat_density(data = dplyr::filter(food, additives_n != "Yes"), 
+               aes(x = energy_100g, ymax = 0, ymin = -..density..),
+               fill = "blue", colour = "black",
+               geom = "ribbon", position = "identity") +
+  labs(y = "Presence of Additives (Left: No, Right: Yes)",
+       x = "Energy per 100 Grams of Food (kilojoules)") + 
+  ggtitle("Distribution of Energy per 100 Grams of Food by Presence of Additives") + 
+  theme(legend.position = "none") + coord_flip() +
+  my_theme
+```
+
+***
+***
+
+#  Problem 3
+
+**Visualizing 2-D Continuous Data with Scatterplots**
+
+a.  
+```{r}
+ggplot(food) + aes(x = carbohydrates_100g, y = energy_100g) + geom_point() + labs(x = "Carbohydrates per 100g (g)", y = "Energy per 100g (kj)") + ggtitle("Energy vs. Carbohydrates \n per 100g of Various Foods") + my_theme
+```
+
+b.  The plot showing the joint distribution between carbohydrates and energy per 100g of food is interestingly shaped.  We ultimately see two main clusters of datapoints, one of foods with low amounts of carbohydrates and low amounts of energy per 100g and one cluster of foods with high amounts of carbohydrates and higher amounts of energy.  This is definitely some sort of group structure.  There does appear to be some evidence to suggest that the two variables are associated with each other, in a positive way. It is interesting that there seems to be a whole in the plot, around 25-50g of carbohydrates, we see that foods with these amounts of carbs either have energy above or below 1000-2200 kj. 
+
+c.  Looking at the graph, we see that foods of nutrition grade "E" are clustered around high in carbs and high in energy (around 50-75g of carbs and around 2000-2400kj of energy per 100g). This is the lowest nutrition grade, with the foods being more sugary snacks.  We also see a cluster of points at the low carb/low energy area of the graph a well as the high carb, medium energy area. These points are of nutrition grade "A". These two clusters of the same nutrition grade also have some points connecting them, showing an overall "line" or positive sloping trend. These clusters, although all of nutrition grade "A", include different food types. The low energy/low carbs cluster includes more fruits and vegetables.  The high carbs/high-medium energy cluster includes more cereals and potatoes. So, we find that nutrition grade "A" foods overall follow a positive association between carbs and energy. Another interesting find is that foods of nutrition grade "D" are pretty spread out but do have two clusters. One being around low carbs but with energy spanning from low to very high. The other being around higher carbs and higher energy (with the carbs spanning from around 40 to 100g). These clusters include a lot of varying food types; sugary snacks, salty snacks, cereals and potatoes, fat and sauces, and milk and dairy products. The other two food grades do not seem to show significant clusters.
+
+```{r, fig.height = 10, fig.width = 10}
+ggplot(food) + aes(x = carbohydrates_100g, y = energy_100g, color = nutrition_grade_fr) + geom_point() + labs(x = "Carbohydrates per 100g (g)", y = "Energy per 100g (kj)", color = "Nutrition Grade") + ggtitle("Energy vs. Carbohydrates per 100g of Various Foods") + my_theme
+```
+
+d.  I think it is easier to answer the questions from part (c) with this facetted graph because we are isolating the data points for each nutrition grade, so it is easier to see what points we want to focus on for each question. I think this depends on the problem or questions asked, as well as the data characteristics. It might be easier to look at the graphs with colors if you have less data to work with and can benefit from seeing everything all on one plot.  However, if the problem is like this case, where you want to isolate everything because of what the question is asking, then the facetting is better. 
+```{r, fig.height = 10, fig.width = 10}
+ggplot(food) + aes(x = carbohydrates_100g, y = energy_100g) + geom_point() + labs(x = "Carbohydrates per 100g (g)", y = "Energy per 100g (kj)", color = "Nutrition Grade") + ggtitle("Energy vs. Carbohydrates per 100g of Various Foods \n by Nutrition Grade") + my_theme + facet_grid(~nutrition_grade_fr)
+```
+
+e.  It is not easy to tell if foods with or without additives occur in certain portions of the graph because of the many colors, many points - it makes it hard to distinguish the two shapes we have for the presence or absence of additives.
+```{r, fig.height = 12, fig.width = 12}
+ggplot(food) + aes(x = carbohydrates_100g, y = energy_100g, color = nutrition_grade_fr) + geom_point() + labs(x = "Carbohydrates per 100g (g)", y = "Energy per 100g (kj)", color = "Nutrition Grade", shape = "Presence of Additives") + ggtitle("Energy vs. Carbohydrates per 100g of Foods, \n with Nutrition Grade and Additives") + my_theme + geom_point(aes(shape = additives_n), size = 2)
+```
+
+f.  It looks like the amount of sugar for every 100g of food is positively associated with both carbohydrate amount per 100g and energy amount for every 100g. It looks like there is association between sugars per 100g and nutrition grade, with there being more sugar in foods with worse nutrition grades (particularly of grades "D" and "E"). It also looks like there is an association between sugar content and presence of additives - we see that generally, foods without additives have higher sugar per 100g.
+
+```{r, fig.height = 12, fig.width = 14}
+ggplot(food) + aes(x = carbohydrates_100g, y = energy_100g, color = nutrition_grade_fr) + geom_point() + labs(x = "Carbohydrates per 100g (g)", y = "Energy per 100g (kj)", color = "Nutrition Grade", shape = "Presence of Additives", size = "Sugars per 100g (g)") + ggtitle("Energy vs. Carbohydrates per 100g of Foods, \n with Nutrition Grade, Additives, and Sugar Content") + my_theme + geom_point(aes(shape = additives_n), size = 2) + geom_point(aes(size = sugars_100g))
+```
+
+g.  The line does not appear to provide a good fit to the variables plotted because so much of the data is still in those two main clumps. If we were to look at the bottom of the plot, where there is more of a linear trend, then the line could be said to have a good fit.  However, the upper part of the data (looking at energy amounts of 1000+ kj), does not work with this line. Furthermore, the data/plot itself is not linear trending, so this line does not work for this particular dataset.
+```{r}
+ggplot(food) + aes(x = carbohydrates_100g, y = energy_100g) + geom_point() + labs(x = "Carbohydrates per 100g (g)", y = "Energy per 100g (kj)") + ggtitle("Energy vs. Carbohydrates \n per 100g of Various Foods") + my_theme + geom_smooth(method = lm, se = FALSE)
+```
+
+h.  This non-linear regression appears to provide a somewhat better fit than the linear model because it varies with the two main clusters we see. I think that the line could do better around the middle of the plot (where we currently see a more empty space of data - around 25 - 60g of carbohydrates).  In this area, the line could become more linear than it currently is as most of the data is clumped in a positively linear way before going into the large rightmost cluster of data.  
+```{r}
+ggplot(food) + aes(x = carbohydrates_100g, y = energy_100g) + geom_point() + labs(x = "Carbohydrates per 100g (g)", y = "Energy per 100g (kj)") + ggtitle("Energy vs. Carbohydrates \n per 100g of Various Foods") + my_theme + geom_smooth(method = loess, se = FALSE)
+```
+
+***
+***

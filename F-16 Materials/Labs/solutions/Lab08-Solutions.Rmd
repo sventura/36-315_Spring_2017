@@ -1,0 +1,200 @@
+---
+title: "36-315 Lab 08"
+author: "Mr. Solution Man"
+date: "Due Friday, October 28, 2016 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+Style Guide: Hadley Wickham (http://adv-r.had.co.nz/Style.html)
+
+```{r}
+library(data.table)
+olive <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/olive_oil.csv")
+```
+
+
+#  Problem 0
+```{r}
+library(ggplot2)
+
+my_theme <-  theme_bw() + # White background, black and white theme
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+```
+
+#  Problem 1
+a. 
+```{r}
+olive$area <- as.factor(olive$area)
+olive$region <- as.factor(olive$region)
+
+olive_cont = subset(olive, select = -c(1,2))
+```
+
+b. 
+```{r}
+apply(olive_cont, 2, sd)
+```
+
+There is a large difference in standard deviation among the variables, from the largest being 405.810 (for oleic) to the smallest being 12.969 (for linolenic). Five of the continuous variables have standard deviations below 60, and three of them above 100 with one being over 200 and one over 400. I recommend scaling the variables since using the original dataset will lead to variables with large variance contribute disproportionally more to the calculation of distance. 
+
+c. 
+```{r}
+# ?scale
+```
+
+The `scale()` function scales the columns of a numeric matrix. In other words, it returns a matrix where each column has been substracted by its mean subtracted. After scaling each column of `olive_cont`, the standard deviation for each column is one. The reason is that each number in the column is subtracted by the mean of that column, and therefore, the column is centered with a mean of zero and a standard deviation of one. 
+
+```{r}
+olive_cont_scale <- scale(olive_cont)
+apply(olive_cont_scale, 2, sd)
+```
+
+After scaling the data set, each variable now has a standard deviation of 1. 
+
+d. 
+```{r}
+# ?dist
+```
+
+The `dist()` function "computes and returns the distance matrix computed by using the specified distance measure to compute the distances between the rows of a data matrix." The default method for calculating the distance between each observation is "euclidean".
+e. 
+```{r}
+dist_olive <- dist(olive_cont_scale)
+
+length(dist_olive)
+choose(nrow(olive_cont_scale), 2)
+```
+
+The length of our matrix (i.e. the number of comparisons) is equal to $n \choose 2$, where n is the number of rows (i.e. the number of observations) as seen above. This makes sense because we're picking two observations to find the distance between, and we're doing this between all n observations, so we're "choosing 2" from "n", which is equal to "n choose 2".
+
+
+
+#  Problem 2
+a. 
+```{r}
+# ?cmdscale
+```
+
+The first input parameter is a distance structure (such as one returned by `dist`). It requires a symmetric, numerical matrix. The second input parameter is an integer indicating the maximum dimensions of the space which the data are represented in. The default is 2. Some other dimension reduction methods are `isoMDS` and `sammon`. 
+
+b. 
+```{r}
+olive_mds <- cmdscale(dist_olive, k = 2)
+dim(olive_mds)
+dim(olive_cont_scale)
+```
+
+The dimensions of `olive_mds` is 572 x 2, whereas the dimensions of the data set, `olive_cont_scale` is 572 x 8. 
+
+c. 
+```{r, warning = F, message = F}
+olive_mds <- as.data.frame(olive_mds)
+colnames(olive_mds) <- c("mds_coordinate_1", "mds_coordinate_2")
+
+library(dplyr)
+olive_mds <- mutate(olive_mds, area = olive$area, region = olive$region)
+
+dim(olive_mds)
+```
+
+`olive_mds` now has dimensions 572 x 4. 
+
+
+d. 
+```{r}
+ggplot(data = olive_mds) + geom_point(aes(x = mds_coordinate_1, y = mds_coordinate_2)) + 
+  labs(x = "MDS Coordinate 1", y = "MDS Cooridnate 2") + ggtitle("Scatterplot of the Two MDS
+  Coordinates of Olive Oil Data Set") + my_theme
+```
+
+Above is the scatterplot of the two MDS coordinates. There does seem to be some group structure, with around three groups. The first group occurs with a value of 0 for "Coordinate 2" and a value of -2.5 for "Coordinate 1" (and extends up and down). The second group occurs with a value of slightly less than 1 for "Coordinate 2" and a value of slightly less than 0 for "Coordinate 1" (and extend mostly downwards). The last occurs with a value of slightly less than 1 for "Coordinate 2" and a value of slighlty less than 2.5 for "Coordinate 1" (and extends downwards and a bit to the right). 
+
+e. 
+```{r}
+my_colors <- c("firebrick3", "lightsteelblue4", "chartreuse2")
+
+ggplot(data = olive_mds) + geom_point(aes(x = mds_coordinate_1, y = mds_coordinate_2, 
+  col = area, shape = region), size = 5) + labs(x = "MDS Coordinate 1", 
+  y = "MDS Cooridnate 2", color = "Area", shape = "Region") + 
+  ggtitle("Scatterplot of the Two MDS
+  Coordinates of Olive Oil Data Set\nby Area and Region") + my_theme + 
+  scale_shape_manual(values = as.character(sort(unique(olive_mds$region)))) + 
+  scale_color_manual(values = my_colors)
+```
+
+The group structure seen in the olive oil data set corresponds to the area (and therefore the region as well, since there are two to four unique regions per area). Area 3 corresponds to the leftmost group described earlier. Area 2 corresponds to the middle group, and area 1 corresponds to the rightmost group described earlier. 
+
+
+f. Area 2 is very tightly clustered together. Area 3 is moderately tightly clustered. Area 1 is not very closely clustered. Similarly, regions 5 and 6 are very closely clustered together. Regions 7, 8 and 9 are moderately closely clustered together. And regions 1, 2, 3, and 4 are not very closely clustered together. 
+
+g.  There looks to be three clusters of observations, one corresponding with each of the Area factors in the data set. In general, areas with many points overlapping signal the "centers" of potential clusters. Also, the "gaps" between groups of points usually indicate the "boundaries" of clusters. 
+
+
+#  Problem 3 {.tabset}
+```{r, warning = F, message = F}
+# install.packages("dendextend")
+
+library(dendextend)
+library(dplyr)
+library(MASS)
+library(ggplot2)
+data(Cars93)
+colorblind_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+cars_cont <- dplyr::select(Cars93, Price, MPG.city, MPG.highway, EngineSize, 
+                           Horsepower, RPM, Fuel.tank.capacity, Passengers,
+                           Length, Wheelbase, Width, Turn.circle, Weight)
+
+hc <- cars_cont %>% scale %>% dist %>% hclust 
+dend <- hc %>% as.dendrogram
+
+get_colors <- function(x, palette = colorblind_palette) palette[match(x, unique(x))]
+```
+
+a.  Create a dendrogram of some of the continuous variables in the `Cars93` dataset.
+
+b.  Recreate the graph from (a), but this time, color the leaves of the dendrogram according to the `Type` of the car.
+
+c.  Recreate the graph from (b), but this time, change the leaf labels in the dendrogram to say the `Type` of the car.
+
+d.  Recreate the graph from (c), but this time, change the leaf labels in the dendrogram to say the `Origin` of the car instead of the `Type` of the car.
+
+
+##  Part (a) 
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 10}
+ggplot(dend, horiz = T)
+```
+
+
+
+##  Part (b) 
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 10}
+dend %>% set("labels_col", get_colors(Cars93$Type)[hc$order]) %>% 
+  ggplot(horiz = T)
+```
+
+
+
+##  Part (c)
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 10}
+dend %>% set("labels", Cars93$Type[hc$order]) %>% 
+  set("labels_col", get_colors(Cars93$Type)[hc$order]) %>% ggplot(horiz = T)
+```
+
+
+
+##  Part (d) 
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 10}
+dend %>% set("labels", Cars93$Origin[hc$order]) %>% 
+  set("labels_col", get_colors(Cars93$Type)[hc$order]) %>% ggplot(horiz = T)
+```

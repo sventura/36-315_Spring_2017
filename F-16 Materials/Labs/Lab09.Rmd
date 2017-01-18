@@ -1,0 +1,182 @@
+---
+title: "36-315 Lab 09"
+author: "Your Name Here"
+date: "Due Friday, November 4, 2016 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 09:  Time Series
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab09.Rmd -- e.g. "sventura-Lab09.Rmd") to the Lab 09 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+This week's oral evaluation graphic comes from NASA:
+
+<div style="width:600px">
+![](http://climate.nasa.gov/system/charts/15_co2_left_061316.gif)
+</div>
+***
+
+
+More information about the graphic can be found [here](http://climate.nasa.gov/vital-signs/carbon-dioxide/).
+
+
+Sam Says:  Remember to first explain the graph and discuss the main results presented in the graph (what's the main takeaway?).  Only after you've done that, you should offer any criticism of the graph or suggest changes you would make to the graph.
+
+
+***
+***
+
+
+#  Problem 0
+
+(10 points)
+
+Use your theme.  Do not directly copy the instructors' theme.
+
+
+***
+***
+
+
+#  Problem 1
+
+
+(10 points each)
+
+**Time Series and Dates in `ggplot()`**
+
+Note:  Almost all code for this problem is given to you already.  Please take time to understand what the code does!  You will be asked to do similar problems on your own in the next homework assignment.
+
+a.  Load the new "big bike" dataset from the course GitHub page.  This is similar to the NYC Citi Bike dataset from earlier in the semester, except with data going back to 2013.  Create a new variable, `start_date`, with the following code:
+
+```{r, warning = F, message = F}
+library(data.table)
+library(dplyr)
+big_bike <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/big_bike.csv")
+
+#  Add start_date variable to big_bike, and a bunch of other variables
+big_bike <- mutate(big_bike,
+                   start_date = as.Date(start_date),
+                   birth_decade = paste0(substr(`birth year`, 1, 3), "0s"),
+                   hour_of_day = as.integer(substr(time_of_day, 1, 2)),
+                   am_or_pm = ifelse(hour_of_day < 12, "AM", "PM"),
+                   day_of_week = weekdays(start_date),
+                   less_than_30_mins = ifelse(tripduration < 1800, "Short Trip", "Long Trip"),
+                   weekend = ifelse(day_of_week %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
+```
+
++  How many rows and columns are in the result?  
++  What are the minimum and maximum bike trip dates?
+
+
+b.  Let's plot the number of trips over time.  First, we need to calculate the number of trips on any given day.  This is easy with the `dplyr` package.  Using the code below, we now have a new data frame (called `trips_per_day`).  We can use it to create a nice time series plot with `ggplot()`, `geom_line()`, and `scale_x_date()` to properly format the x-axis:
+
+```{r, warning = FALSE, message = FALSE}
+library(ggplot2)
+
+#  Summarize the big_bike, creating a new data.frame that includes the number 
+#  of trips taken on each day
+by_date <- dplyr::group_by(big_bike, start_date)
+trips_per_day <- dplyr::summarize(by_date, n_trips = n())
+
+#  Create a time series plot with the dates on the x-axis and the number of
+#  trips per day on the y-axis
+ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + geom_line() + 
+  scale_x_date() + geom_point()
+```
+
+Add an appropriate title and axis labels to the graph above.  Be sure to adjust the `fig.height` and `fig.width` to make the graph more easily readable.
+
+c.  Answer the following questions:
+
++  Try removing `geom_point()` from the code in (b).  What happens?
++  Do you notice any trends in the number of bike rides over time?  Use the principles we covered in class to discuss the time series.
++  Which date had the most bike trips?  
+
+d.  Repeat part (b), but this time, split the time series into subscribers and customers in the `usertype` variable, and color by the `usertype` variable.  (Hint:  All you have to do is map an aesthetic of the graph to the `usertype` variable.)
+
+```{r, warning = FALSE, message = FALSE}
+#  Summarize the big_bike, creating a new data.frame that includes the number 
+#  of trips taken on each day, split by usertype
+by_date_usertype <- dplyr::group_by(big_bike, start_date, usertype)
+trips_per_day_usertype <- dplyr::summarize(by_date_usertype, n_trips = n())
+
+#  Create a time series plot with the dates on the x-axis and the number of
+#  trips per day on the y-axis, split by usertype
+ggplot(trips_per_day_usertype, aes(x = start_date, y = n_trips)) + 
+  geom_line() + scale_x_date()
+```
+
++  Add appropriate titles, labels, and legend labels to your graph.
++  Use a non-default color scheme in the plot
++  Which time series appears to have more fluctuation / variability?
+
+
+***
+***
+
+
+#  Problem 2
+
+(10 points each)
+
+**Understanding Autocorrelations and Autocorrelation Plots**
+
+a.  Autocorrelations are just the correlation of a time series with itself at different lags.  Let's start by looking at a totally random, made up time series:  `rand_ts <- rnorm(1000)`.  This is just a bunch of random numbers from a Normal(0, 1) distribution.  Use `acf(rand_ts, plot = FALSE)` to look at the correlation of the "time series" and itself at different lags.  Since this "time series" is just 1000 random draws from a Normal(0, 1) distribution, most of the autocorrelations should be near zero.
+
++  Is this true?  
++  Which autocorrelation is NOT near zero?  
++  Does this make sense?  Why or why not?
+
+b.  Autocorrelation plots show the correlation between the time series and itself at all of the different possible lags.  The (auto)correlations are plotted on the y-axis, and the lags are shown on the x-axis.  Create an autocorrelation plot of the random time series from (a).  To do this, just type `acf(rand_ts, plot = TRUE)`.  In the resulting plot, the blue dotted lines indicate statistical significance.  Any correlation above the positive blue line or below the negative blue line is significantly different from zero.
+
++  Are any of the autocorrelations significantly different from zero in your plot?  
++  Does this make sense?  Why or why not?
+
+c.  Calculate the autocorrelations of the NYC Bike Data daily-rides time series we created in Problem 1 (`trips_per_day$n_trips`).  To do this, use (e.g.) `acf(trips_per_day$n_trips, plot = FALSE)`.  Store these in an object called `bike_acf`.  Type `names(bike_acf)`.  
+
++  What information is included in the autocorrelation results?  
++  Type `bike_acf$acf` and `bike_acf$lag`.  What information is stored in the `acf` and `lag` pieces?
+
+d.  Create two autocorrelation plots of the `trips_per_day_usertype` time series:  One for subscribers, and one for customers.  Arrange these base-R graphics into a 1x2 grid.  Specify the `main` argument to give your graph an informative title.  The code to do this is partially complete for you below:
+
+```{r}
+par(mfrow = c(1, 2))
+acf(filter(trips_per_day_usertype, usertype == "Customer")$n_trips, main = "bad title")
+acf(filter(trips_per_day_usertype, usertype == "Subscriber")$n_trips, main = "bad title")
+```
+
++  Which time series typically has higher autocorrelations?
+
+e.  Describe the autocorrelation plot from (d).  
+
++  Which lags have the highest significant, positive autocorrelations?  
++  What does it mean, in the context of the problem, to have a significant positive autocorrelation?  In the context of the problem (NYC Citi Bike Data), why do you see this pattern of autocorrelations in the plot?
+
+On the next homework, you will be asked to create a new `ggplot()` geometry for autocorrelation plots.
+
+
+***
+***
+***
+***

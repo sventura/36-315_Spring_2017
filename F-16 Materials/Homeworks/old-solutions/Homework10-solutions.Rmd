@@ -1,0 +1,446 @@
+---
+title: "36-315 Homework 10, Spring 2016"
+author: "Solutions"
+date: "Due Wednesday, April 6th, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  hide
+---
+
+***
+***
+
+#  Homework 10:  Back to Basics
+
+**Base R Graphics, Dendrograms, Time Series**
+
+This week, we're using several datasets to review several topics, including base R graphics.
+
+<div style="width:400px">
+![alt text](http://www.belvederetrading.com/wp-content/uploads/2015/07/Rlogo-1.png)
+</div>
+
+***
+***
+
+
+#  Problem 2:  A Very Quick Introduction to Base R Graphics {.tabset}
+
+(16 points total)
+
+Professor Rodu wrote a great set of summary notes / example code for base `R` graphics for last year's iteration of this course.  You can find these notes on Blackboard under Course Content.
+
+a.  (2 points each)  Load the `Cars93` dataset into `R`.  Consult Professor Rodu's notes for example code on the following tasks, which you are to complete using functions from base R graphics:
+
+
+##  Barplot
+
++  Create a 1-D barplot (`barplot()`) of a categorical variable of your choosing from the `Cars93` dataset.  Be sure to use `table()` first!
+
+```{r, warnings = FALSE}
+# Load in the data
+library(MASS)
+data(Cars93)
+
+# Table of car type
+table(Cars93$Type)
+
+# Convert car type to factor variable
+Cars93$Type <- factor(Cars93$Type, c("Sporty", "Compact", "Small", "Midsize", "Large", "Van"))
+
+# Barplot of car type
+barplot(table(Cars93$Type), xlab = "Car Type", ylab = "Frequency", 
+        main = "Frequency of Car Types", col = "red")
+```
+
+
+##  Stacked barplot
+
++  Create either a stacked or a side-by-side barplot of two categorical variables of your choosing from the `Cars93` dataset.
+
+```{r}
+# Stacked bar plot of car type given drive type
+counts_4wd <- table(Cars93$Type[Cars93$DriveTrain == "4WD"])
+counts_front <- table(Cars93$Type[Cars93$DriveTrain == "Front"])
+counts_rear <- table(Cars93$Type[Cars93$DriveTrain == "Rear"])
+counts <- rbind(counts_4wd, counts_front, counts_rear)
+counts
+
+barplot(counts, xlab = "Car Type", ylab = "Frequency",
+        main = "Frequency of Car Types Given Drive Type", 
+        col = c("red", "khaki1", "lightblue"))
+legend("topright", c("4 Wheel Drive", "Front Wheel Drive", "Rear Wheel Drive"), 
+       col = c("red", "khaki1", "lightblue"), pch = 20)
+```
+
+
+##  Histogram
+
++  Create a 1-D histogram (`hist()`) of a continuous variable of your choosing from the `Cars93` dataset, displayed **at the density scale**.  Overlay a density estimate (`density()`) on the plot (see the use of `lines()` on page 20).  Use a rug plot on the same graph as well.
+
+```{r}
+# Histogram of maximum price
+hist(Cars93$Max.Price, freq = FALSE, xlab = "Maximum Car Price", 
+     ylab = "Density", main = "Distribution of Maximum Car Price", 
+     col = "pink", ylim = c(0, 0.05))
+# Add density estimate
+lines(density(Cars93$Max.Price), lwd = 2)
+# Add rug plot
+rug(Cars93$Max.Price)
+legend("topright", "Density Estimate", lwd = 2)
+```
+
+
+##  Scatterplot
+
++  Create a scatterplot of two continuous variables of your choosing from the `Cars93` dataset.  Color the points by a categorical variable.  Add a legend that details the colors. 
+
+```{r}
+# Choose colors
+colors <- c("red", "purple", "cyan")
+# Scatterplot of minimum and maximum price
+plot(Cars93$Min.Price, Cars93$Max.Price, xlab = "Minimum Car Price", 
+     ylab = "Maximum Car Price", main = "Relationship between Minimum and 
+     Maximum Car Prices by Drive Type", col = colors[Cars93$DriveTrain], pch = 20)
+legend("topleft", c("4 Wheel Drive", "Front Wheel Drive", "Rear Wheel Drive"), 
+       col = c("red", "purple", "cyan"), pch = 20)
+```
+
+
+##  2D Density Estimate
+
++  Use the `kde2d()` and `persp()` functions to visualize the 2-D density estimate of two continuous variables of your choosing.  Use a non-default bandwidth in `kde2d()`.
+
+```{r}
+# 2D KDE of min and max prices
+price_density <- kde2d(Cars93$Min.Price, Cars93$Max.Price, h = c(5, 5))
+persp(price_density, xlab = "Minimum Car Price", ylab = "Maximum Car Price", 
+      main = "2D Density Estimate of Minimum and Maximum Car Prices")
+```
+
+
+##  Heat Map
+
++  Create either a contour plot or a heat map of the same two variables used in the previous bullet.
+
+```{r}
+# Heat map of min and max prices
+image(price_density, xlab="Minimum Car Price", ylab="Maximum Car Price", 
+      main="Heat Map of Minimum and Maximum Car Prices")
+```
+
+
+For all of the above, you just need to make a properly formatted graph.  No description is necessary.  Finally, it may help to create the `ggplot()` equivalents of these graphs to check that you got the right answers.  This is not required, though.
+
+
+##  Part b.
+
+b.  (2 points)  Write at 1-3 sentences summarizing the features you **like** (compared to `ggplot()`) in base R graphics.
+
+I like that most graphs can be made with a call to only one function. I also like that features like the legend() function can be used on all base R graphs in the same way. 
+
+
+##  Part c. 
+
+c.  (2 points)  Write at 1-3 sentences summarizing the features you **dislike** (compared to `ggplot()`) in base R graphics.
+
+I dislike that it is harder to subset a portion of the data and create plots of different features of variables without doing it very manually. I also dislike the default colors base R graphs choose, so you always need to change them. 
+
+***
+***
+
+
+
+#  Problem 3:  Clustering and Colored Dendrograms (US Arrest Data) {.tabset}
+
+(5 points each; 20 points total)
+
+Read the [documentation provided here](https://rpubs.com/gaston/dendrograms) on creating dendrograms in R.  At the bottom, under "Colored dendrogram", there is a custom function called `A2Rplot()` that allows you to color not only the leaves, but the branches of the tree as well.
+
+Load the `A2Rplot()` function into R by typing:  `source("http://addictedtor.free.fr/packages/A2R/lastVersion/R/code.R")`
+
+
+## Part a.
+
+Load in the USArrests data into R, and read the help documentation for the dataset.  Scale the continuous variables, calculate the distance matrix, and submit the distance matrix to hierarchical clustering with complete linkage.  Store the result in an object called `hc_arrests`.  What variables are included in the `USArrests` Dataset?
+
+```{r}
+library(datasets)
+data(USArrests)
+arrests <- as.data.frame(USArrests)
+source("http://addictedtor.free.fr/packages/A2R/lastVersion/R/code.R")
+
+arrests_cont_scale <- scale(arrests)
+
+dist_arrests <- dist(arrests_cont_scale)
+hc_arrests <- hclust(dist_arrests, method = "complete")
+
+colnames(arrests)
+
+```
+
+USArrests is a data frame with 50 observations on 4 variables. `Murder` is a numeric variable with the number of arrests for murder per 100,000 arrests. `Assault` is a numeric variable with the number of arrests for assault per 100,000 arrests. `UrbanPop` is a	numeric variable with the	percent of the total population living in urban areas. `Rape` is a numeric variable with the number of arrests for rape per 100,000 arrests.
+
+## Part b.
+
+Create your own colored dendrogram for the `hc_arrests` clustering results using the `A2Rplot()` function.  Choose `k = 5` in `A2Rplot()`.  Feel free to adjust the other `A2Rplot parameters as you deem necessary (e.g. color choices, line types, rectangular vs. triangular dendrograms, etc), though this is not required.
+
+
+```{r}
+
+A2Rplot(hc_arrests,
+        k = 5,
+        boxes = FALSE,
+        col.up = "gray50",
+        col.down = c("#FF6B6B", "#4ECDC4", "#556270", "orange", "forestgreen"))
+
+```
+
+
+## Part c.
+
+Describe the resulting 5-cluster solution from the dendrogram, and the dendrogram itself.  What interesting information do you see in the patterns of arrests across the different US states?  Given your knowledge about the geography of the United States, do states in similar geographic areas tend to be clustered together?
+
+```{r}
+hc.arrests.five.groups <- cutree(hc_arrests, k=5)
+
+table(hc.arrests.five.groups)
+```
+
+This dendogram provides a wealth of information and we could go on and on describing it, so I will just mention a few things.
+
+The first thing one might notice is that Alaska is in a cluster all by itself. This is because Alaska was different enough from all of the other groups in terms of arrests and urban population that it is clustered on its own. This makes sense because Alaska is geographically and characteristically very different from the rest of the United States.
+
+In the green group (Alabama, Georgia, Louisiana, Mississippi, North Carolina, South Carolina, Tennessee) we see states that are **very** similar politically and geographically. It makes a lot of sense that these "southern states" are grouped together. 
+
+In the dark grey group we see many differences geographically. There are states from both the west and east coast, as well as Texas, New Mexico, Illinois and Michigan which are not categorized typically as East or West. But, we do see that most of these states have very large population sizes, and hence large cities.
+
+One group is large with 21 states, three groups are medium sized with 7, 10 and 11 states in them and finally we have one group with only one state, as previously mentioned.
+
+
+## Part d.
+
+From the dendrogram, which two US states were linked at the first iteration of hierarchical clustering?
+
+Iowa and New Hampshire. We find this by determining the 2 states that were linked by a horizontal line at the **lowest point** on the y "axis", which represents distance/similarities between entities and clusters. Groups or entities linked lower are more similar (closer in "distance"), while groups linked higher up are less similar. 
+
+
+***
+***
+
+
+#  Problem 4:  Time Series Analysis (UK Lung Deaths) {.tabset}
+
+(27 points total)
+
+**Note:  It may help to wait until Monday's lecture to solve these problems.**
+
+Load the "Monthly Deaths from Lung Diseases in the UK" dataset into R with the following code:
+
+
+```{r, results='hide'}
+#library(datasets)
+data(UKLungDeaths)
+ldeaths
+mdeaths
+fdeaths
+```
+
+This will give you three time-series objects to work with:
+
++  `ldeaths`:  A time series giving monthly deaths from bronchitis, emphysema, and asthma in the UK from 1974 through 1979
++  `mdeaths`:  The same information, but for males only
++  `fdeaths`:  The same information, but for females only
+
+
+## Part a.
+
+(7 points)  Plot the `ldeaths` object using the `plot()` function.  Change the limit on the y-axis to be from 0 to the maximum number of monthly deaths in the time series.  Describe the resulting graph.  Are there any periodic trends in the number of monthly lung deaths in the UK?  Which year had the highest number of lung deaths in a single month?
+
+```{r}
+plot(ldeaths,
+     type="l",
+     ylim=c(0, max(ldeaths)),
+     lwd=4,
+     main="Lung deaths over time")
+```
+
+
+There is a clear periodic trend of lung deaths. They start to increase around October/November for a peak around January and then they start to decline. The flu follows a very similar pattern so it would make sense if these are correlated. People are sicker in winter months so it makes sense that there would be more lung deaths. **1976** had the highest number of lung deaths in a single month. 
+
+## Part b.
+
+(7 points)  Recreate your plot from (a).  This time, overlay both the male and female lung deaths time series using repeated calls to the `lines()` function.  For the main time series, use a thick, black line.  For the males, use a thin, blue, dotted line.  For the females, use a thin, red, dashed line.  Add a legend that accurately depicts what each line corresponds to.  See Professor Rodu's notes for how to do this.
+
+
+```{r}
+
+plot(ldeaths,
+     type="l",
+     ylim=c(0, 4600), # I gave us more room for our legend
+     lwd=4,
+     main="Lung deaths over time by gender")
+lines(mdeaths, col="blue", lty="dotted")
+lines(fdeaths, col="red", lty="dashed")
+legend("topright", #position
+       c("All", "Male", "Female"), #names
+       lty=c("solid", "dotted", "dashed"), # line type
+       col=c("black", "blue", "red"), # line color
+       lwd=c(4, 1, 1)) # line width
+
+
+```
+
+We want to make sure that everything in our legend matches up exactly to what we used to graph using `plot` and `lines`. It's okay to increase our ylim in order to make more room for the legend so things don't overlap. 
+
+
+## Part c.
+
+(7 points)  Describe your graph in (b).  Are there any periodic trends in the male and female time series?  Are there any months with more female deaths than male deaths?  Describe any other interesting features you see.
+
+The periodic trends are relatively the same for men, women and the combined group. There are peaks during the winter and dips during the summer. The effects seen by women are much less exaggerated because in general there are less female lung deaths than male. We really see the periodic trends well in the men while it is less pronounced in women. In every month there are more male deaths than female. 
+
+## Part d.
+
+(6 points)  Create a lag plot of the `ldeaths` object.  Lag plots show the lagged time series on the x-axis and the "current" or "future" time series on the y-axis.  See Monday's lecture notes for more details.  It may help to create two new variables and store them in a data.frame, as follows:
+
+```{r, warning=FALSE}
+library(ggplot2)
+nn <- length(ldeaths)
+ldeaths_lag1 <- ldeaths[1:(nn-1)]
+ldeaths_current <- ldeaths[2:nn]
+lag_df <- data.frame(ldeaths_current=ldeaths_current, ldeaths_lag1=ldeaths_lag1)
+
+ggplot(lag_df, aes( ldeaths_lag1, ldeaths_current)) +
+  geom_line() +
+  geom_abline(intercept = 0, slope = 1)  +
+  ggtitle("Lag plot of lung deaths")
+
+```
+
+Now, use `lag_df` and `ggplot()` to create the lag plot.  Use `geom_line()` with `ldeaths_current` on the y-axis and `ldeaths_lag1` on the x-axis.  Add a y=x line to the graph with `geom_abline(intercept = 0, slope = 1)`.
+
+Interpret the plot.  Is the number of lung deaths increasing over time (i.e. is there an increasing trend in the lung deaths time series)?  Decreasing?  Roughly even?
+
+There is **no** overall increasing or decreasing trend in lung deaths over time. Our graph follows the y=x line (there is a similar number of deaths in the current month as the month before) but we still see the periodic trend here. The trend seems to change a bit in later months and we a slight decrease in lung deaths towards the end of our data. 
+
+If most of the points were above the $y=x$ line, that would indicate that there is an increasing trend in the time series.  If most of the points were below the $y=x$ line, that would indicate that there is a decreasing trend in the time series.  Our points are scattered around the $y=x$ line, indicating that there is no increasing or decreasing trend.
+
+
+***
+***
+
+#  Problem 5:  Open-Ended (Swiss Fertility Data) {.tabset}
+
+(30 points)
+
+Load the "Swiss Fertility and Socioeconomic Indicators (1888) Data" into R:
+
+```{r}
+library(datasets)
+data(swiss)
+```
+
+Read the help documentation on the dataset.  Answer the following questions:  
+
++  How many groups are there in the `swiss` dataset?  What distinguishes the groups (in terms of the variables we have access to in this data)?  
++  Are majority-Catholic provinces different from majority-Protestant provinces in 1888 Switzerland?  If so, what makes them different?  (It may help to create a new variable, `majority_catholic`, that is 1 if `Catholic >= 50` and 0 otherwise.)
++  Is the `Infant.Morality` variable associated with any of the other variables in the dataset?
+
+## Marginal Distribution Plots
+
+```{r warning = F, message = F}
+ggplot(swiss) + geom_density(aes(x = Catholic), fill = "darkblue", adjust = .6) + 
+  ggtitle("Catholic Representation by Province") + theme_bw() + 
+  labs(x = "Percentage Catholic")
+```
+
+The proportion of each province that is Catholic is clearly bimodal, with provinces either being almost exclusively Catholic or almost exclusively Protestant. The density plot shows that there are more majority-Protestant provinces, but not by a substantial margin.
+
+```{r warning = F, message = F}
+ggplot(swiss) + geom_density(aes(x = Infant.Mortality), fill = "darkred") + 
+  xlim(0, 100) + 
+  ggtitle("Distribution of Infant Mortality Across Provinces") + theme_bw() + 
+  labs(x = "Infant Mortality Rate")
+```
+
+The density plot shows that the distribution of infant mortality is symmetric and unimodal, centered around 20%.  In almost all provinces, 15% to 25% of infants died in their first year.
+
+***
+***
+
+## Relationships
+
+```{r warning = F, message = F}
+ggplot(swiss) + aes(x = Agriculture, y = Infant.Mortality) + 
+  geom_point(aes(color = Catholic)) + theme_bw() +
+  scale_color_continuous(name = "Percentage\nCatholic") +
+  ggtitle("Infant Mortality vs. Agriculture Jobs") + 
+  labs(x="% working in Agriculture", y="Infant Mortality Rate") +
+  stat_smooth(method="lm", color="black", alpha=.2)
+```
+
+The scatterplot shows very little relationship overall between infant mortality and the proportion of men working in agriculture, but it appears that among heavily Catholic provinces, higher proportions working in agriculture are associated with lower infant mortality rates. Additionally, we can see that heavily Protestant provinces tend to have fewer men working in agriculture and lower infant mortality rates for similar levels of men working in agriculture.  It's hard to tell if there is a definite effect here, or if this is just due to random chance.
+
+```{r warning = F, message = F}
+ggplot(swiss) + aes(x = Fertility, y = Infant.Mortality) + 
+  geom_point(aes(color = Catholic)) + theme_bw() +
+  scale_color_continuous(name = "Percentage\nCatholic") +
+  ggtitle("Infant Mortality vs. Fertility") + 
+  labs(x="Fertility", y="Infant Mortality Rate") +
+  stat_smooth(method="lm", color="black", alpha=.2)
+```
+
+The scatterplot shows a clear positive relationship overall between fertility and infant mortality. Majority-Catholic provinces appear to have higher fertility rates than majority-Protestant provinces, while there does not appera to be any relationship between religious majority and infant mortality rate.
+
+***
+***
+
+## Additional Plots
+
+```{r warning = F, message = F}
+swiss_dist <- dist(scale(swiss[-5]))
+swiss_mds <- as.data.frame(cmdscale(swiss_dist, k = 2))
+swiss_mds$Catholic <- swiss$Catholic
+colnames(swiss_mds) <- c("Dim1", "Dim2", "Catholic")
+ggplot(swiss_mds) + stat_density2d(aes(x = Dim1, y = Dim2, fill = ..level..), 
+                                   geom = "polygon") + theme_bw() +
+  scale_fill_distiller(palette = "YlOrRd", direction=1, name="Density\nLevel") +
+  ggtitle("2-D Multidimensional Scaling of Swiss Provinces") +
+  geom_point(aes(x = Dim1, y = Dim2, color=Catholic)) + 
+  scale_color_continuous(name="Percentage\nCatholic") +
+  labs(x = "First Dimension", y = "Second Dimension")
+```
+
+The heat map suggests that there is only one main group in the data, with perhaps a couple outliers. Heavily Catholic provinces tend to group on the left hand side of the plot, suggesting there are differences between them and Protestant provinces (note that the percentage of the province that's Catholic is not used for calculating distances!) reflected in the other variables.
+
+```{r warning = F, message = F}
+library(ggdendro)
+hc_swiss <- hclust(swiss_dist, method = "complete")
+dendro_swiss <- as.dendrogram(hc_swiss)
+segments_swiss <- dendro_data(dendro_swiss, type = "rectangle")
+
+ggplot(segment(segments_swiss)) + 
+  geom_segment(aes(x = x, y = y, xend = xend, yend = yend)) + 
+  geom_text(data = segments_swiss$labels, size = 2.7, hjust="right",
+            aes(x = x, y = y-.1, label=rownames(swiss), color=swiss$Catholic)) + 
+  theme_bw() + coord_flip() + ylim(-1.8,9) + labs(x="Province", y="Distance") +
+  ggtitle("Complete Linkage Hierarchical Clustering of Swiss Provinces") +
+  scale_color_continuous(name="Percentage\nCatholic")
+```
+
+The dendrogram shows that most provinces are most similar to other provinces with similar religious makeup. There are two small clusters of mostly Catholic provinces, and two larger clusters of mostly Protestant provinces. Interestingly, if we cut the tree to create two clusters, each would be mixed between Catholic and Protestant. The dendrogram also shows that Yverdon is enough of an outlier that if we cut the tree at three clusters, it would be by itself.
+
+***
+***
+
+## Conclusions
+
+The heat map of the multidimensional scaling suggests that there is only one main group in the dataset. Within that group, there appears to be some difference between heavily Catholic and heavily Protestant provinces, but they are not well separated. The differences between Catholic and Protestant provinces are also reflected in the dendrogram, which shows that the provinces can be split into four small clusters, each mostly homogeneous in terms of denomination. Some differences between Catholic and Protestant provinces can also be seen when examining fertility, agricultural jobs, and infant mortality. We lastly see that infant mortality is positively associated with fertility and appears to be associated with an interaction between agricultural jobs and the Catholic-Protestant divide.
+
+***
+***
+
+

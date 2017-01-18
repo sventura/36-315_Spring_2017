@@ -1,0 +1,309 @@
+---
+title: "36-315 Homework 03, Fall 2016"
+author: "Your Name Here"
+date: "Due Wednesday, September 21, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Homework 03:  Data Manipulation for 2+ Dimensional Categorical Graphics
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW03.Rmd -- e.g. "sventura-HW03.Rmd") to the Homework 03 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+***
+***
+
+#  Problem 0
+
+**Style Guide and Tabbed HTML Output**
+
+a.  What style guide are you using on this assignment?  (Up to 10 points will be deducted if you do not adhere to a specific style guide.)
+
+b.  Look at the header of the .Rmd file you're editing (everything between the two `---` lines at the top of the file).  Notice that it says `toc:  true` and `toc_float:  true`.  This enables a "floating table of contents" in your HTML output.  The file should have a nicely formatted table of contents on the left-hand side that will allow easy navigation to parts of the document.  **Include this table of contents on this assignment and all future assignments (unless otherwise specified)!**
+
+
+***
+***
+
+#  Problem 1
+
+**Reading about `ggplot2`**:  
+
+a.  (4 points)  Read [this article](https://codewords.recurse.com/issues/six/telling-stories-with-data-using-the-grammar-of-graphics) on `ggplot()` from Liz Sander.  
+
++  What are the components of a graph in `ggplot()` discussed in this article?
++  Give an example of how you can adjust the x- or y-axis scaling in `ggplot()`.
++  Which plotting system is better for creating facetted graphs -- graphs that partition the data and recreate the same graph for each subset -- base R graphs (with `plot()`) or `ggplot()` graphs?  Why?
+
+b.  (3 points)  Read [this tutorial](https://ramnathv.github.io/pycon2014-r/visualize/ggplot2.html) on `ggplot()`.  
+
++  You are not required to do any of the exercises; just read through the tutorial.
++  What kind of geometry is used to create a scatterplot (a plot of two continuous variables, one on the x-axis and one on the y-axis)?
++  Note:  If you're having trouble with `R`, feel free to go through the other lessons on this page.
+
+c.  (3 points)  Read [this article](https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/) on `ggplot()`.
+
++  What does the author describe as being "advanced parts" of the `ggplot2` grammar?
++  What is a theme?
+
+
+***
+***
+
+#  Problem 2
+
+**Critiquing Graphs --- xkcd**:
+
+Take a look at [this graphic](http://xkcd.com/1732/) from xkcd.  
+
+a.  (3 points)  **Describe the graph**.  What does the graph show?  What variables are plotted on the axes, via color, or via other features of the graph?
+
+b.  (6 points)  **Critique the graph**.  
+
++  Does the graph do a good job of achieving its goals?  Why or why not?
++  Does the graph use an unnecessary amount of data ink?
++  Does the graph distort the actual effect/data/relationship?  Are there any redundant features?
++  What are the strengths and weaknesses (if any) of the graphic?  
++  What would you change (if anything) about this graphic?
+
+c.  (3 points)  **Critique the caption and/or surrounding text**.  (This can include the text annotating each part of the graph.)  Does the text enhance the user's understanding of the graphic?  What else would you include in the caption/surrounding text to help the viewer understand the graphic?
+
+d.  (3 points)  Now, read [this discussion](http://www.npr.org/sections/goatsandsoda/2016/09/14/493925781/epic-climate-cartoon-goes-viral-but-it-has-one-key-problem) of the xkcd graphic from NPR.  (Be sure to read the whole thing, including the text below the graphic.)  Describe, in 1-3 sentences, what potential issues there are with the graphic.
+
+e.  (BONUS:  1 point)  In your opinion, what was the funniest part of the xkcd graph?
+
+
+
+***
+***
+
+
+#  Problem 3
+
+(3 points each)
+
+**More on Pie Charts and Rose Diagrams**
+
+Pie charts and rose diagrams are rarely the most effective way of displaying categorical data.
+
+a.  The default pie chart in `ggplot()` has a small hole in the middle.  This can be easily fixed.  Search the internet for how to do this (something like "get rid of hold in pie charts in ggplot" should do the trick).  Create a pie chart of the `airline` variable in the Twitter Airline data with no hole in the middle.  
+
+(Aside:  Learning how to use online documentation and help forums is an extremely important skill when using any programming language, including `R`.  Although it's painful to think about, there will come a time where you can't ask Sam how to do something on Piazza or send him an email at 4am the night before an assignment is due.  Learning how to effectively use the internet to find the information you're looking for is a skill you will continue to use throughout your career.)
+
+b.  In Lab 03, we learned how to make a stacked bar chart.  In Lab 02 and Homework 02, we learned that rose diagrams were really just bar charts in polar coordinates.  That must mean that we can make a "stacked rose diagram".  Make a stacked rose diagram that shows the marginal distribution of the `airline` variable and the conditional distributions of `airline_sentiment` given `airline`.  Create the corresponding stacked bar chart.  Arrange these two graphs into a 1x2 grid using `grid.arrange()`.
+
+c.  Describe and critique the stacked rose diagram.  
+
++  Where is the marginal distribution of `airline` on this chart?
++  Where is the conditional distribution of `airline_sentiment` given that the tweet was about Delta Airlines on this chart?  
++  Why, to put it bluntly, is this just an absolutely terrible graph?  (Give at least two reasons.)  It may help to compare this to the stacked bar chart in your answer.
+
+
+
+***
+***
+
+
+
+#  Problem 4
+
+(3 points each)
+
+**Bar Charts at the Proportion and Percentage Scales**
+
+Load the NYC Citi Bike dataset from Lab 03:
+
+```{r, warning = F, message = F}
+library(data.table)
+library(ggplot2)
+bike_data <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv")
+dim(bike_data)
+```
+
+Creating bar charts at the proportion scale is actually quite easy in `ggplot` -- we simply need to tell `ggplot` that we want to scale the counts in each category by the sum of the counts.
+
+In the background, the `geom_bar()` function calculates the counts in each category, which are stored in an object called `..count..`.  Using the default settings (i.e. just `geom_bar()`), the y-axis aesthetic is automatically assigned to the `..count..` object (i.e., `geom_bar(aes(y = ..count..))` will give you the same result as `geom_bar()`).
+
+a.  Create a bar chart of `gender` in the NYC Citi Bike dataset at the count scale, as you did in Problem 1 of Lab 03.  This time, specify `aes(y = ..count..)` when you do this, even though it is not necessary:  `... + geom_bar(aes(y = ..count..))`.  Verify that your graph is the same as the corresponding graph from Problem 1 of Lab 03.  Be sure to use properly labeled axes, titles, etc.
+
+b.  Create a bar chart of gender at the proportion scale.  To do this, scale the y-axis aesthetic by the sum of the counts, i.e.:  `... + geom_bar(aes(y = (..count..)/sum(..count..)))`.  Be sure to use properly labeled axes, titles, etc.
+
+c.  Convert this to the percentage scale by multiplying the y-axis aesthetic from (b) by 100.  Be sure to use properly labeled axes, titles, etc.
+
+d.  Use an alternative approach to formatting at the percentage scale:  Take your graph from (b), and add `... + scale_y_continuous(labels = percent)`.  In order for this to work, you'll first need to install and load the `scales` package.  Be sure to use properly labeled axes, titles, etc.  (Note:  If this doesn't work on your computer, it's probably because your version of the `ggplot2` package is out of date.)
+
+
+***
+***
+
+
+#  Problem 5
+
+(12 points)
+
+**Data Manipulation and Reordering the Bars**
+
+By default, `R` orders the categories of a categorical variable alphabetically in a bar chart.  What if we wanted to order them, instead, by count?  We can take the following strategy
+
++  Manipulate the `airline_tweets` data so that you have the counts for each airline.  Code is provided for you here -- you do not need to edit this.  The result is a new piece of data called `airline_counts`.
++  Create a bar chart displaying the counts of the `airline`, but using the `airline_counts` instead of the original `airline_tweets` data frame.  This is partially complete for you already.  Remember to add some labels and a title to the graph.  Change the color to something other than the default dark gray (your choice).  Store this graph as its own object, but do not plot it yet.  Notice that we use `stat="identity"` here, since the counts are already calculated (we don't need `geom_bar()` to calculate the `..count..` object for us), and we just have to plot them on the y-axis (which is why we specify `y = count`).
++  Now, create a new graph (in the same code block) that reorders the bars in **increasing** order of the counts.  See `help(reorder)` for more information on how to do this.  Store this graph as an `R` object, but do not plot it yet.  An example of how to do this is provided below.
++  Now, create a new graph (in the same code block) that reorders the bars in **decreasing** order of the counts.  See `help(reorder)` for more information on how to do this.  Store this graph as an `R` object, but do not plot it yet.
++  Plot all three graphs at once and display them in a 1x3 grid using `grid.arrange()`.  Be sure to adjust the `fig.height` and `fig.width` arguments for this code block so that your graph shows up in a visually appealing way.
+
+```{r, warning = F, message = F}
+library(data.table)
+library(dplyr)
+library(ggplot2)
+airline_tweets <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+
+#  Manipulate the airline 
+airline_counts <- airline_tweets %>%  #  Start with the airline_tweets data.frame
+  group_by(airline) %>%  #  group by the airline variable
+  summarise(count = n()) %>%  #  summarize the dataset by calculating the count of each airline
+  mutate(total = sum(count))  #  add a column with the total number of flights to the result
+
+#  The result is a new dataset that has three columns:  airline, count, and total
+print(airline_counts)
+
+#  Plot this data with ggplot
+ggplot(data = airline_counts, aes(x = airline, y = count)) + geom_bar(stat="identity")
+
+#  Example of how to reorder the bars in increasing order:
+ggplot(data = airline_counts, aes(x = reorder(airline, count), y = count)) + geom_bar(stat="identity")
+```
+
+
+***
+***
+
+
+#  Problem 6
+
+(4 points each)
+
+**More Data Manipulation and Incorporating Statistical Information Into Graphs**
+
+Using the same set-up as Problem 5, we'll add some additional information to `airline_counts`:
+
+```{r}
+#  Add the following information to the airline_counts dataset:
+#    Proportions and percentages corresponding to each category
+#    The standard error on the proportios or percentages corresponding to each category
+#    Lower bound of an (approximate) 95% confidence interval around the true proportion in each category
+#    Upper bound of an (approximate) 95% confidence interval around the true proportion in each category
+airline_counts <- mutate(airline_counts,
+                         proportion = count / total,
+                         percentage = proportion * 100,
+                         std_error = 87,
+                         lower = proportion - 1.96 * std_error,
+                         upper = proportion + 1.96 * std_error)
+
+airline_counts
+```
+
+a.  There is an obvious mistake in the code above:  the standard error is set to be 87.  Update this line of code so that the appropriate standard error is calculated.  See your notes from Monday (9/12) to do this.
+
+b.  Make a bar chart of the percentages and a bar chart of the proportions using `stat = "identity"` in `geom_bar()`.  Arrange these into a 1x2 grid (1 row, 2 columns).  Make sure the graphs are properly labeled/titled.  What is the difference between these two graphs?
+
+c.  Add error bars to the proportions graph.  To do this, use the `geom_errorbar()` function, and be sure to specify the `ymin` and `ymax` parameters so that they correspond to the already-calculated lower and upper bounds.  E.g., `ggplot(...) + ... + geom_errorbar(aes(ymin = ..., ymax = ...))`.  Are the proportions of tweets about American and US Airways significantly different?
+
+
+***
+***
+
+
+#  Problem 7
+
+(3 points each)
+
+**Even More Data Manipulation with the NYC Citi Bike Data**
+
+Add the following variables to the `bike_data` dataset:
+
++  `birth_decade`:  The decade in which a person was born
++  `date`:  The date on which the ride was started
++  `time_of_day`:  The time at which the ride was started
++  `hour_of_day`:  The hour at which the ride was started
++  `am_or_pm`:  Did the trip start in the AM or PM?
++  `day_of_week`:  On what day of the week did the trip occur?
++  `less_than_30_mins`:  Was the trip less than 30 minutes in duration?
++  `weekend`:  Was the trip on a weekend?
+
+Code is provided for you to do this for all of the above tasks.
+
+
+```{r, message = F, warning = F}
+library(reshape2)
+date_time <- colsplit(bike_data$starttime, " ", c("date", "time"))
+bike_data <- mutate(bike_data, 
+                    birth_decade = paste0(substr(`birth year`, 1, 3), "0s"),
+                    date = as.vector(date_time$date),
+                    time_of_day = as.vector(date_time$time),
+                    hour_of_day = substr(time_of_day, 1, 2),
+                    am_or_pm = ifelse(as.integer(hour_of_day) < 12, "AM", "PM"),
+                    day_of_week = weekdays(as.Date(date, format = "%m/%d/%Y")),
+                    less_than_30_mins = ifelse(tripduration < 1800, "Short Trip", "Long Trip"),
+                    weekend = ifelse(day_of_week %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
+```
+
+
+a.  Make a bar chart of the `day_of_week` variable.  What problem does this graph have?  
+
+b.  Reorder the categories in the `day_of_week` variable and re-plot it.  To do this, use the following code: `bike_data$day_of_week <- factor(bike_data$day_of_week, levels= c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"))`.  Now recreate your bar chart from (a).  Ah, much better.  Are there more riders per day on weekdays or weekends?
+
+c.  Filter the `bike_data` so that there are no people born before 1950 and no "Customer" observations in `usertype`.  Store the result in a new `data.frame` called `bike_data_subset`.  Use this subset to make a stacked bar chart that displays the marginal distrubtion of `day_of_week` and the conditional distributions of `birth_decade` given each `day_of_week`.
+
+d.  Decribe the resulting graph.  What are some interesting features of the marginal distribution of `day_of_week`?  Are there any changes in the conditional distributions of `birth_decade` for particular days of the week?  Point out any interesting features you find.
+
+e.  Recreate the graph from (c), but this time, partition the data into four categories corresponding to whether the ride took place in the AM or PM and whether or not the ride was less than 30 minutes in duration.  (You can use `facet_grid()` to do this.)  Your resulting chart should appear in a 2x2 grid.  Do this so that the upper-left graph shows long trips in the morning, while the upper-right graph shows short trips in the morning.  Are there any changes in the marginal or conditional distributions depending on the `less_than_30_mins` or `am_or_pm` variables?
+
+f.  Notice how the scales on the y-axis are all the same when using `facet_grid(am_or_pm ~ less_than_30_mins)`.  This is a nice default setting, and I recommend using it in almost all cases.  However, sometimes it may be helpful to allow the y-axis height to adjust to each particular plot.  Look at the [help documentation on facetting](http://docs.ggplot2.org/0.9.3.1/facet_grid.html) for how to do allow the scales be "free", adjusting to the height within each plot window.  Is it easier to discern the differences now?
+
+g.  Depending on how wide you make your graph, the day-of-week labels on the x-axis may be overlapping.  This is no good!  Let's rotate them so that they're easier to read.  Add the following to your graph in (f):  `+ theme(axis.text.x = element_text(angle = 0, hjust = 1))`.  Adjust the `angle` argument so that the day-of-week labels are displayed either vertically or diagonally.
+
+h.  Repeat part (g), but with side-by-side bar charts instead of stacked bar charts.  What happens to the y-axis limits when you switch to side-by-side charts?  Why?
+
+
+***
+***
+
+
+#  Problem 8
+
+(3 points each)
+
+**Changing Category Names**
+
+In Problem 3 of Lab 03, we looked at the time zones in the Airline Tweets dataset.  Unfortunately, many of the time zones had really long names, which made for an ugly-looking graph.  Let's fix this by shortening the names:
+
+```{r, warning = F, message = F}
+library(data.table)
+library(dplyr)
+library(reshape2)
+tweets_sub <- filter(airline_tweets, 
+                     user_timezone %in% c("Mountain Time (US & Canada)", 
+                                          "Pacific Time (US & Canada)", 
+                                          "Central Time (US & Canada)", 
+                                          "Eastern Time (US & Canada)"))
+
+temp <- colsplit(as.vector(tweets_sub$user_timezone), " ", c("first_word", "extra_word"))
+tweets_sub <- mutate(tweets_sub, user_timezone = temp$first_word)
+```
+
+a.  Create two side-by-side bar plots displaying the marginal distribution of `airline` and the conditional distributions of `airline_sentiment` given the different `airlines` categories.  In the first plot, facet on `user_timezone`, but make sure these are ordered from east-to-west (going right-to-left).  In the second plot, order them from west-to-east.  Arrange these graphs in a 2x1 grid.  Which graph do you prefer?  Why?
+
+b.  Sometimes, it's nice to look at the overall distribution (using all of the data) in addition to each of the facetted plots (using subsets of the data) when looking at facetted graphs.  Pick your favorite graph from part (a), then use the [help documentation on facetting](http://docs.ggplot2.org/0.9.3.1/facet_grid.html) to add a pane to your graph displaying the "all data" version of the graph.  Be sure to allow the y-axis scale to be "free", adjusting to the maximum height in each facetted graph.  Do marginal distributions displayed in the subsets/facets closely match the "overall" distribution?
+
+

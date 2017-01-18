@@ -1,0 +1,376 @@
+---
+title: "36-315 Homework 07, Spring 2016"
+author: "SOLUTIONS"
+date: "Due Wednesday, March 16, 2016 (12pm ET) on Blackboard"
+output: html_document
+---
+
+#  Homework 07:  Do the rest of the Lab Exam problems
+
+```{r, warning=FALSE, message=FALSE}
+library(gsheet)
+library(ggplot2)
+```
+
+```{r, warning=FALSE, message=FALSE, cache = T}
+moma <- gsheet2tbl("https://docs.google.com/spreadsheets/d/1fA3k9r0cgLDIz7ZXMlfP4hQmLu6_4bFj5kXbML3In_M/pub?gid=0&single=true&output=csv")
+moma <- as.data.frame(moma)
+```
+
+##  Problem 1
+
+**Art Can Be High**
+
+a.  (5 points)  Characterize the distribution of the height of the artworks in MoMA's collection.  Describe any interesting features you see.
+
+```{r, cache = T, warning = FALSE, message = FALSE}
+base_plot <- ggplot(moma, aes(x=Height)) + theme_bw()
+base_plot + geom_density(fill = "orange") +
+  ggtitle("Distribution of MoMA artwork heights")
+```
+
+The distribution of artwork height is skewed right, with a large mode around 25 cm. There are also appear to be smaller local modes around 45, 60, and 75 cm.  This may indicate that while height is generally continuous, there are some discrete choices that are particularly popular.  The bandwidth was chosen according to Silverman's rule of thumb (which is the default for `ggplot2`). This bandwidth doesn't oversmooth the local modes.
+
+b.  (5 points)  Your friend says that the heights of the artworks in MoMA'S collection follow a normal distribution with mean 25 and standard deviation 15.  Do you have any evidence to confirm or deny this claim?  Explain.
+
+```{r, cache = T, warning = FALSE, message = FALSE}
+ks.test(moma$Height, "pnorm", 15, 25)
+```
+
+The Kolmogorov-Smirnov test gives a p-value close to 0, which means there's strong evidence that the heights do not follow the claimed distribution. This makes sense given how skewed the sample was (normal distributions are symmetric about their center/mean), and the large sample size provides enough evidence to reject my friend's claim.
+
+c.  (2 points)  Add a red, dashed, vertical line to your graph (use `geom_vline()` to do this) corresponding to the mean of the distribution.  Add a blue, dashed, vertical line to your graph corresponding to the median of the distribution.
+
+```{r, cache = T, fig.width = 10, fig.height = 6, warning = FALSE, message = FALSE}
+base_plot + geom_density(fill = "orange") +
+  ggtitle("Distribution of MoMA artwork heights") + 
+  geom_vline(aes(xintercept = mean(moma$Height), color="mean"), 
+             linetype = "longdash", size=2, show_guide=TRUE) +
+  geom_vline(aes(xintercept = median(moma$Height), color="median"), 
+             linetype = "longdash", size=2, show_guide=TRUE) +
+  scale_color_manual(name = "Summary Stat", values=c("red","blue"))
+```
+
+d.  (5 points)  In addition to answering the above questions, **write 1-3 sentences describing why you made certain choices in your graphic.** 
+
+We can use `theme_bw` to remove unnecessary ink in the plot background. We choose a density plot since it provides more localized estimates than histograms (and both choices are better than boxplots). A legend is included to explain the meaning of the dashed lines in the plot.  An explanation of our choice of bandwidth is given above.
+
+
+
+
+
+
+#  Problem 3
+
+**Curator Bias?  Part One**
+
+a.  (5 points)  Is there any association between the type (`Classification`) of the artwork and whether or not it was approved by a curator?  Are curators more or less likely to have approved particular types of art in the collection?  Which types of art are more or less likely to be curator approved?
+
+```{r, fig.height=5, fig.width=7, warning=FALSE, message = FALSE, cache = T}
+ggplot(moma) + geom_bar(aes(Classification, fill=CuratorApproved)) +
+               ggtitle("Relationship between classification of artwork and curator approval")
+                                                                          
+```
+
+\ 
+&nbsp;
+
+Yes, there is an association between the classification of the artwork and whether or not it was approved by a curator. Curators are more likely to approve drawings and paintings, although it is hard to be very confident about the paintings because there are so few paintings compared to the other categories. It seems that about half of all photographs are approved and half of print pieces are approved which is less likely than both drawings and paintings. 
+
+\ 
+&nbsp;
+                                                                          
+                                                                  
+b.  (5 points)  Are `Classification` and `CuratorApproved` independent?  If not, which combinations of categories have more or fewer artworks than what would be expected under independence?
+
+                                                                          
+```{r, results='asis', cache = T, message = F, warning = F}
+library(xtable)
+class.v.curator.table <- table(moma$Classification, moma$CuratorApproved)
+print(xtable(class.v.curator.table), type='html')
+```
+
+\ 
+&nbsp;
+
+```{r, cache = T, message = F, warning = F}
+chisq.test(class.v.curator.table)
+```
+
+\ 
+&nbsp;
+
+
+They are not independent. If they were, then the classification of the artwork would have no relationship with whether or not it was curator approved. In our situation we see from our graph that the distribution of curator approved artwork differs across the classification categories. We confirm this statistically with a chi-squared test. Because our p-value of < 2.2e-16 is less than the .05 level, we have evidence to reject the null hypothesis that classification and curator approval are independent. 
+
+If they were independent, drawings and paintings would have more non-curator approved work, and/or photographs and prints would have less.  The observed proportions of curator approved paintings across all classifications would be (roughly) equal.
+
+Note the use of the `xtable` package above for formatting tabular output nicely.
+
+\ 
+&nbsp;
+
+c.  (5 points)  In addition to answering the above questions, **write 1-3 sentences describing why you made certain choices in your graphic.** 
+
+I chose a stacked bar chart so that I could visualize the distribution of classification and curator approval at the same.  There are only two levels to the curator approval variable so we fill with that and look at classification along the x-axis.  A mosaic plot may have been preferable here since the next question asked specifically about independence, but the chi-square test I provided helps to answer this question instead.
+
+\ 
+&nbsp;
+
+#  Problem 4
+
+**Curator Bias?  Part Two**
+
+a.  (5 points)  Are curator-approved artworks wider than artworks that were NOT curator-approved?  Are they taller?
+
+Creating your own legend - **for reference**
+
+```{r, fig.height=8, fig.width=4.8}
+ggplot(moma) + geom_density(aes(Width), alpha=.5, fill="navy") +
+               geom_density(aes(Height), alpha=.5, fill="pink") + 
+               facet_grid(CuratorApproved~., labeller=label_both) +
+               xlab("Centimeters") +
+               ggtitle("Density of artwork height and width by curator approval") +
+               # CREATING YOUR OWN LEGEND USING ANNOTATE !
+               annotate("rect",
+                        xmin = 60, xmax = 100, ymin = .025, ymax = .04,
+                        alpha = .4,
+                        color = "black") +
+               annotate("rect", 
+                        xmin = 62, xmax = 73, ymin = .035, ymax = .038,
+                        alpha = .5,
+                        color="black", fill="navy") +
+               annotate("rect",
+                        xmin = 62, xmax = 73, ymin = .027, ymax = .03,
+                        alpha = .5,
+                        color="black", fill="pink") + 
+               annotate("text",
+                        x = 85, y = .0365,
+                        label = "Width",
+                        size = 5,
+                        fontface="bold") +
+               annotate("text",
+                        x = 85, y = .0285,
+                        label = "Height",
+                        size = 5,
+                        fontface="bold")
+
+```
+
+
+\ 
+&nbsp;
+
+
+```{r, fig.height=8, fig.width=6, warning = F, message = F, cache = T}
+ggplot(moma) + geom_density(aes(Width, fill='Width'), alpha=.5) +
+               geom_density(aes(Height, fill='Height'), alpha=.5) +
+               scale_fill_manual(guide='legend', 
+                                 values = c("pink", "navy"),
+                                 name="Dimension") + 
+               facet_grid(CuratorApproved~., labeller=label_both) +
+               xlab("Centimeters") +
+               ggtitle("Density of artwork height and width by curator approval") + 
+  scale_color_manual(values=c("Width"="navy"))
+
+```
+
+
+\ 
+&nbsp;
+
+
+It's difficult to tell if curator approved artworks are wider than non-curator approved artworks.  While there may be some small differences, there does not appear to be any substantial differences between the distributions of height or width of artworks conditional on whether or not they were curator approved.
+
+\ 
+&nbsp;
+
+b.  (3 points)  What is the correlation between height and width for curator-approved artworks?  Compare this to the same correlation for non-curator-approved artworks, and comment on any differences you see.  Use the `cor()` function to do this.
+
+```{r, cache = T}
+
+cor(moma$Height[moma$CuratorApproved == "Y"],
+    moma$Width[moma$CuratorApproved == "Y"])
+
+cor(moma$Height[moma$CuratorApproved == "N"],
+    moma$Width[moma$CuratorApproved == "N"])
+
+```
+
+The correlation between height and width for curator-approved artwork is .775 and the correlation between height and width for non-curator-approved artwork is .69.
+
+There seems to be a very strong correlation between height and width, regardless of whether the work was curated. The correlation is slightly stronger for curator approved works than those that were not approved.
+
+\ 
+&nbsp;
+
+c.  (5 points)  In addition to the graphic you chose for part (a), create a scatterplot that has `Width` on the x-axis and `Height` on the y-axis.  Color the points by `CuratorApproved`.  Do you prefer this scatterplot to the graph you created for problems (a) and (b)?  Why or why not?
+
+```{r, fig.height=4, fig.width=6, cache = T}
+
+ggplot(moma) + geom_point(aes(x=Width, y = Height, color=CuratorApproved)) +
+               xlab("Width in Cm") +
+               ylab("Height in Cm") + 
+               ggtitle("Artwork height vs. width by curator approval") 
+
+```
+
+\ 
+&nbsp;
+
+There appears to be a roughly equal number of points (from both categories of `CuratorApproved`) on both sides of the (imaginary) y=x line, indicating that there are no obvious differences between these distributions.
+
+I do not prefer this scatterplot because it is too hard to see differences and relationships between our variables of interest.  In addition there are many overlapping points which makes it hard to see how dense an area is. We can use the parameter `alpha` to change the density of the fill of the points but this still doesn't completely fix our problems.  We can also change the `size` of the points to help aide this.  Still, it difficult to compare the marginal distributions of the two variables.  
+
+This graph does a really good job of showing the correlation between height and width but differences between curator approval are not obvious.
+
+\ 
+&nbsp;
+
+d.  (5 points)  Repeat part (c), but instead of using `geom_point()` to make the scatterplot, use `geom_text()` and label each artwork by its `CuratorApproved` value:  `+ geom_text(aes(label = CuratorApproved))`
+
+```{r, fig.height=5, fig.width=7, cache = T}
+
+ggplot(moma) + geom_text(aes(x=Width, y = Height, label=CuratorApproved, color = CuratorApproved)) +
+               xlab("Width in Cm") +
+               ylab("Height in Cm") + 
+               ggtitle("Artwork height vs. width by curator approval") 
+```
+
+This plot is nice, since it directly labels the points by their `CuratorApproved` value.  Still, it doesn't help too much in answering the original question -- similar to the previous scatterplot.
+
+\ 
+&nbsp;
+
+e.  (5 points)  In addition to answering the above questions, **write 1-3 sentences describing why you made certain choices in your graphic.** 
+
+\ 
+&nbsp;
+
+I chose to create a density plot and facet by curator approval so that we could examine similarities and differences between the 3 variables (note that facetting was not necessary, but it helps because there was a lot of overlap between the 4 densities when plotted all together).  Since we wanted to compare height and width in the same graph we needed to add our own legend (note that there are other ways to do this as well).  
+
+Grader's note:  It is important to clearly explain the features of your graphic in a legend.  Most of the time, it is not enough to talk about it below the graph.  Any color or line differences need to be shown in a legend in the graph.  The `annotate` function is very useful here.  That said, mapping a variable to one of the aesthetic arguments (via `aes()`) is preferred, since this will automatically generate a legend for you.
+
+\ 
+&nbsp;
+
+
+#  Problem 7
+
+**Untitled**
+
+a.  (5 points)  Find the subset of all artworks with the exact title "Untitled".  How many "Untitled" artworks are there, in total?  Does the frequency of "Untitled" artworks change depending on the decade in which the artwork was created?
+
+```{r, cache = T}
+moma$Decade <- paste0(10*floor(moma$Date/10),"s")
+moma.untitled <- subset(moma, Title=="Untitled")
+nrow(moma.untitled)
+ggplot(moma.untitled, aes(x = Decade)) + 
+  geom_bar(color = "black", fill = "blue") + 
+  theme_bw() + ggtitle("Untitled Work Counts by Decade of Creation")
+chisq.test(table(moma.untitled$Decade))
+moma.older <- subset(moma.untitled, Decade != "2010s")
+chisq.test(table(moma.older$Decade))
+```
+
+There are 977 "Untitled" works in total. The graph suggests that there are more "Untitled" works from the 60s, 70s and 90s, while there are fewer untitled works from 2010 onward. The latter makes sense, since the decade isn't complete yet!
+
+The chi-square test gives a p-value very close to 0, confirming that there are statistically significant differences in frequency across decade.  The test gives the same result even if we remove the 2010s.
+
+
+b.  (10 points)  Has the **proportion** of "Untitled" artworks in each particular decade (relative to the total number of artowrks in that decade) increased or decreased over the last century?  Describe what has happened to this quantity over time.  You may use a new graph to answer this question.
+
+```{r, cache = T}
+title_vs_decade <- table(moma$Decade, moma$Title == "Untitled")
+props <- data.frame(Decade = rownames(title_vs_decade), 
+                    Proportion = title_vs_decade[,2] / rowSums(title_vs_decade))
+
+ggplot(props, aes(x=Decade, y=Proportion)) + 
+  geom_bar(stat="identity", fill = "blue", color = "black") +
+  theme_bw() + ggtitle("Untitled work proportions by decade")
+
+chisq.test(title_vs_decade)
+```
+
+The graph suggests that there was a much higher proportion of "Untitled" works in the 2000s, but otherwise the proportion stayed fairly stable.  The chi-square test gives a p-value of nearly 0, confirming that the proportions in each decade are not all the same.
+
+
+c.  (5 points)  In addition to answering the above questions, **write 1-3 sentences describing why you made certain choices in your graphic.** 
+
+We use a bar graph because it is the clearest way to show 1-D categorical data. A white background is used to minimize unnecessary ink. We could also add errorbars to give additional insight into the significance of the differences between bars.
+
+d.  BONUS (5 points):  Use regular expressions to find all artworks with titles that contain the substring "untitled".  That is, the title does not have to be **exactly** "Untitled".  Your search should be case-insensitive.  How many such artworks are there?  For more on using regular expressions, see [Professor Shalizi's notes from 36-350](http://www.stat.cmu.edu/~cshalizi/statcomp/14/lectures/05/lecture-05.html#/).  Additional info [here](http://www.stat.cmu.edu/~cshalizi/statcomp/14/lectures/05/regexp-handout.pdf).
+
+
+#  Problem 8
+
+**The Famous Last Words**
+
+Some people believe that artists become more popular after they die.  Let's see if there's any evidence that this is true.
+
+Create a new variable called `date_delta` (or `date.delta`), which measures the number of years between when the artwork was created (`Date`) and when it was acquired by MoMA (first four characters of `DateAcquired`).  Store it in your `moma` `data.frame`.  
+
+a.  (5 points)  Describe the conditional distributions of `date_delta` given each type of artwork (`Classification`).  Are there any noticeable differences?  Describe any interesting features that you see.
+
+```{r, fig.width = 7, fig.height = 10}
+# Create date_delta variable
+moma$date_acquired2 <- as.Date(moma$DateAcquired)
+moma$acquisition_year <- as.numeric(format(moma$date_acquired2, "%Y"))
+moma$date_delta <- moma$acquisition_year - moma$Date
+
+# Create density histograms for each classification 
+ggplot(moma) +
+  aes(x = date_delta, fill = Classification) +
+  geom_histogram(aes(y=..density..), binwidth = 5) +
+  facet_grid(Classification ~.) +
+  labs(x = "Years between when Artwork was Acquired and Created", y = "Density") +
+  ggtitle("Difference between when Artwork was Acquired and Created by Type") 
+```
+
+As we can see from the density histograms plotted above, there are modes for all types of art at a difference in years between acquisition and creation of zero.  This suggests that many art pieces were acquired by the museum right when they were created.  Also, most of these distributions are right skewed, which means more art pieces were acquired shortly after being created.  
+
+However, there are some distributional differences to note as well.  For photographs and prints, there is another mode at about 40 years between acquisition and creation.  This suggests that works of these types are more coveted later in the artist's life or after they have died.  This also could correspond to a large acquisition of previously undervalued artworks from earlier decades that became more popular at a later date.  (For drawings and paintings, this is not the case as much.)  
+
+Finally, we also note that there was a print acquired 40 years before creation, we could be a data error, or a piece that was requested to be created by the museum in advance.  This may have been a data entry error (perhaps the dates should have been flipped?), but it also could have been a commissioned artwork.
+
+
+b.  (10 points)  Create a scatterplot of `Date` and the year in which the artwork was acquired.  Color the points by their `Classification`.  In your scatterplot, use the `annotate()` function to add the title of the potential outlying artwork in the graph just above the point.  Here is an example of how `anotate()` works (you'll have to adjust this):  `... + annotate("text", x = 2000, y = 1960, label = "hey")`
+
+```{r}
+# Identify outlier
+which(moma$acquisition_year < 1950)
+moma[858, c("Title", "Artist", "Date", "acquisition_year")]
+
+# Scatterplot of date vs year acquired
+ggplot(moma) +
+  aes(x = Date, y = acquisition_year, color = Classification) +
+  geom_point() + 
+  annotate("text", x = 2000, y = 1943, label = "War by Henri Rousseau") + 
+  labs(x = "Date Created", y = "Date Acquired") + 
+  ggtitle("Relationship between Art's Date Created and Acquired")
+```
+
+
+c.  (5 points)  Does your answer above change in this new plot?  Which plot is more effective -- the one you prepared for the Lab Exam, or the scatterplot you created here?  
+
+From this scatterplot, we can see the exact years that the art pieces were created and acquired, and not just the difference between the two dates.  This plot shows that there is a concentration of prints that were created in later years.  
+
+The scatterplot is more effective in showing the mode of art pieces being acquired after the artist's death, but this graph does a better job of displaying the actual data values.  In answer to whether artists become more popular after they die, this plot suggests that that is not the case.  There are many art pieces being acquired right after creation.  
+
+The outlying artwork, "War" by Henri Rousseau, is very interesting.  Our dataset says that Rousseau created this lithograph in 1985.  But Rousseau died in 1910!  After looking the piece up on the internet, we see that the true creation date was 1895 -- in other words, this was due to a typo when the data was entered!
+
+
+d.  (5 points)  In addition to answering the above questions, **write 1-3 sentences describing why you made certain choices in your graphic.** 
+
+I chose to make histograms faceted on the artwork's classification so that we could compare the distributions of the date differences for each art type easily -- organizing the graphs vertically (as opposed to in a 2x2 grid, or horizontally) allows for quick visual comparison of these distributions.  I chose a bandwidth of 5 years in order to be sure to capture all the modes of the distributions without distinguishing between each year individually.
+
+\ 
+&nbsp;
+
+\ 
+&nbsp;
+
+\ 
+&nbsp;
+
+

@@ -1,0 +1,155 @@
+---
+title: "36-315 Lab 02 Solutions"
+author: "Solutions"
+date: "Due Friday, September 9, 2016 (6:30pm)"
+output: html_document
+---
+
+
+##  Lab 02:  Tweets on a Plane
+
+Style Guide: Google's R Style Guide
+
+
+***
+***
+
+#  Problem 1
+
+**First Steps in Data Analysis**:  
+
+```{r, warning = F}
+library(data.table)
+
+#  Load the data into R
+airline_tweets <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+```
+
+
+
+```{r}
+dim(airline_tweets)
+```
+
+a.  The dataset has 14640 rows and 15 columns.
+
+```{r}
+### Commented out for clarity of solution key.
+# class(airline_tweets$tweet_id)
+# class(airline_tweets$airline_sentiment)
+# class(airline_tweets$airline_sentiment_confidence)
+# class(airline_tweets$negativereason)
+# class(airline_tweets$negativereason_confidence)
+# class(airline_tweets$airline)
+# class(airline_tweets$airline_sentiment_gold)
+# class(airline_tweets$name)
+# class(airline_tweets$negativereason_gold)
+# class(airline_tweets$retweet_count)
+# class(airline_tweets$text)
+# class(airline_tweets$tweet_coord)
+# class(airline_tweets$tweet_created)
+# class(airline_tweets$tweet_location)
+# class(airline_tweets$user_timezone)
+```
+
+b.  From using the `class()` function on all the columns of the dataset, we are able to determine the type of the variables in each column. By examining the data, the following variables are categorical: airline_sentiment, negativereason, airline, airline_sentiment_gold, negativereason_gold, user_timezone.
+c.  The following variables are continuous: tweet_coord, airline_sentiment_confidence, negativereason_confidence, tweet_created, and retweet_count.
+d.  Airline_sentiment and airline_sentiment_gold are ordered categorical variables. (User timezone could be considered one.)
+
+***
+***
+
+
+#  Problem 2
+
+```{r}
+unique(airline_tweets$airline)
+unique(airline_tweets$airline_sentiment)
+table(airline_tweets$airline)
+table(airline_tweets$airline_sentiment)
+```
+
+a.  There are 6 unique values in `airline`: Virgin America, United, Southwest, Delta, US Airways, and American. And there are 3 unique values in `airline_sentiment`: neutral, positive, negative.
+
+b.  The `table` function tells us the counts for each unique value, as shown in the code above.
+
+
+***
+***
+
+
+#  Problem 3
+
+a.
+```{r}
+library(ggplot2)
+airline_dist_plot <- ggplot(data = airline_tweets, aes(x=airline))
+airline_dist_plot + geom_bar() + coord_cartesian()
+```
+
+b.
+```{r}
+airline_dist_plot + geom_bar(aes(fill = airline)) + coord_cartesian()
+```
+
+c. 
+```{r}
+airline_dist_plot + geom_bar(fill = "blue") + coord_cartesian()
+```
+
+d.  
+```{r}
+airline_dist_plot + geom_bar(fill = "blue") + coord_cartesian() + ggtitle("Number of Tweets by Airlines")
+```
+
+e.  R labeled the x-axis by the name of the variable we defined in `aes`, "airline," and the categories of the variable. The bar chart has default y-axis label "count".
+
+f. 
+```{r}
+airline_dist_plot + geom_bar(fill = "blue") + coord_cartesian() + ggtitle("Number of Tweets by Airlines") + 
+  labs(x = "Airline", y = "Number of Tweets")
+```
+
+g.  United Airlines was the subject of the most tweets, and Virgin America Airline the fewest. American Airlines and US Airway had similar number of tweets, and Delta and Southwest have similar number of tweets as well. And about 500 tweets were about Virgin America.
+
+h.
+```{r}
+airline_dist_plot + geom_bar(fill = "blue") + coord_polar() + ggtitle("Number of Tweets by Airlines") + 
+  labs(x = "Airline", y = "Number of Tweets")
+```
+
+Changing to `coord_polar()` instead plots the numbers on a polar coordinate, and the count (or number) is represented by the radius of each fan-shaped graph, and this is a rose diagram.
+
+i.  I prefer the bar chart created in (f). I am more familiar with the bar chart than the latter. Though it's easier to discern the differences in a rose diagram, it is easier to estimate the exact number of tweets for each airline and compare magnitudes across different airlines on a bar chart.
+
+***
+***
+
+
+#  Problem 4
+
+a. 
+```{r}
+airline_sentiment_dist_plot <- ggplot(data = airline_tweets, aes(x=airline_sentiment))
+airline_sentiment_dist_plot + geom_bar(aes(fill = airline_sentiment)) + coord_cartesian() + 
+  labs(title = "Number of Tweets by Airline Sentiment", x = "Airline Sentiment", y = "Number of Tweets")
+```
+
+b.  Negative sentiments were the most common, around 9000 tweets, and positive were the least common.
+
+
+***
+***
+
+
+#  Problem 5
+
+```{r}
+airline_dist_plot_2 <- ggplot(data = airline_tweets, aes(x=airline, fill=airline_sentiment))
+airline_dist_plot_2 + geom_bar() + coord_cartesian() + 
+  labs(title = "Number of Tweets by Airline Sentiment", x = "Airline Sentiment", y = "Number of Tweets")
+```
+
+***
+***
+

@@ -1,0 +1,39 @@
+---
+title: "36-315 Homework 10, Fall 2016"
+author: "ALL Group Member Names Here"
+date: "Due Tuesday, November 15th, 2016"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Homework 10:  Static Graphics Poster Check-In
+
+(100 points)
+
+Sam will hold office hours on Tuesday, 11/15 at the following times:
+
++  10am to 12pm
++  1pm to 3pm
++  4pm to 8pm
+
+**Each group is required to**:
+
++  Have a draft of their poster completed by Tuesday (including all graphs, all text, and all explanations of the dataset)
++  Have at least one group member (but preferably all group members) bring the poster draft to Sam's office hours for feedback
++  Have at least one group member communicate the feedback to all group members
+
+
+When bringing the poster to Sam's office, bring a printed copy (on a 8.5x11 sheet of paper) and a computer copy.
+
+***
+***
+
+**You do not have to submit anything for this assignment.  You just have to follow the instructions above.**
+
+**If none of your group members can visit Sam's office hours on Tuesday, you need to email Sam immediately.**
+
+***
+***

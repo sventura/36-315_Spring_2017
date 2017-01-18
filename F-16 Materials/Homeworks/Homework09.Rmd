@@ -1,0 +1,368 @@
+---
+title: "36-315 Homework 09, Fall 2016"
+author: "Your Name Here"
+date: "Due Wednesday, November 9th, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Homework 09:  It's About Time
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW09.Rmd -- e.g. "sventura-HW09.Rmd") to the Homework 09 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+<div style="width:600px">
+![](https://i.ytimg.com/vi/JwYX52BP2Sk/hqdefault.jpg)
+</div>
+
+
+***
+***
+
+
+#  Problem 0
+
+**Organization, Themes, and HTML Output**
+
+(5 points)
+
+a.  For all problems in this assignment, organize your output as follows:
+
++  Organize each part of each problem into its own tab.  For Problems 2 and 5, the organization into tabs is already completed for you, giving you a template that you can use for the subsequent problems.
++  Use code folding for all code.  See [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/) for how to do this.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
+
+
+b.  For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color:
+
++  Don't use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+c.  What style guide are you using for this assignment?
+
+
+***
+***
+
+
+
+#  Problem 1
+
+(18 points total)
+
+**A Very Quick Introduction to Base R Graphics**
+
+Professor Rodu wrote a great set of summary notes / example code for base `R` graphics for last year's iteration of this course.  You can find these notes on Blackboard under Course Content.
+
+a.  (2 points each)  Load the `Cars93` dataset into `R`.  Consult Professor Rodu's notes for example code on the following tasks, which you are to complete using functions from base R graphics:
+
++  Create a 1-D barplot (`barplot()`) of a categorical variable of your choosing from the `Cars93` dataset.  Be sure to use `table()` first!
++  Create either a stacked or a side-by-side barplot of two categorical variables of your choosing from the `Cars93` dataset.
++  Create a 1-D histogram (`hist()`) of a continuous variable of your choosing from the `Cars93` dataset, displayed **at the density scale**.  Overlay a density estimate (`density()`) on the plot (see the use of `lines()` on page 20).  Use a rug plot on the same graph as well.  Specify that you want 18 bins in your histogram.
++  Create a scatterplot of two continuous variables of your choosing from the `Cars93` dataset.  Color the points by the `Type` variable.  Add a legend that details the colors.
++  Use the `kde2d()` and `persp()` functions to visualize the 2-D density estimate of two continuous variables of your choosing.  Use a non-default bandwidth in `kde2d()`.
++  Create either a contour plot or a heat map of the same two variables used in the previous bullet.
++  Recreate the scatterplot above, but this time, "facet" it on the `Origin` of the car.
+
+For all of the above, you just need to make a properly formatted graph (titles, axis labels, legends, etc).  No description is necessary.  Finally, it may help to create the `ggplot()` equivalents of these graphs to check that you got the right answers.  This is not required, though.
+
+b.  (2 points)  Write at 1-3 sentences summarizing the features you **like** (compared to `ggplot()`) in base R graphics.
+
+c.  (2 points)  Write at 1-3 sentences summarizing the features you **dislike** (compared to `ggplot()`) in base R graphics.
+
+
+***
+***
+
+#  Problem 2
+
+(2 points each)
+
+**Parallel Coordinates and Radar Charts**
+
+There are no standard `ggplot()` geometries for creating parallel coordinates plots or radar charts, but there is an implementation in the `GGally` package.
+
+a.  Create a parallel coordinates chart displaying the continuous variables in the `Cars93` dataset.  Color the lines by the `Type` of car.  Code is partially completed for you below.  Be sure to rotate the x-axis labels, update the legend, and add titles/axis labels:
+
+```{r, warning = F, message = F}
+library(MASS)
+library(ggplot2)
+library(GGally)
+library(dplyr)
+data(Cars93)
+cont_cols <- which(names(Cars93) %in% 
+                     c("Cars93", "Price", "MPG.city", "MPG.highway", "EngineSize",
+                       "Horsepower", "RPM", "Fuel.tank.capacity", "Passengers",
+                       "Length", "Wheelbase", "Width", "Turn.circle", "Weight"))
+
+ggparcoord(Cars93, columns = cont_cols) + aes(color = as.factor(Type))
+```
+
+Do any of the car types get better mileage than others?  Which car types fit the most passengers?
+
+b.  Repeat part (a), but create a radar chart instead.  To do this, simply add `+ coord_polar()` to your parallel coordinates code.  Which plot is easier to read?
+
+c.  What is the default y-axis in this implementation of parallel coordinates charts?  (Hint:  Look at the `scale` parameter.)  What could you change the scale parameter to in order to mimic the way parallel coordinates charts were introduced in class?  Do this, and create a new graph showing the result.
+
+d.  Are any adjacent pairs of variables in your graph from part (c) positively correlated?  Are any adjacent pairs of variables negatively correlated?  Answer this using your parallel coordinates plot, and explain how you obtained this answer.  (It may help to wait until Monday's lecture to answer this.)
+
+
+***
+***
+
+
+#  Problem 3
+
+(3 points each; 24 points total)
+
+**Moving Average Plots**
+
+
+In Problem 1 of Lab 09, we created a time series plot of the NYC bike dataset ("Big Bike"), visualizing the number of trips per day as a function of time.  Here, we're going to add a moving average line to the plot.
+
+a.  Moving averages are calculated as follows:  Given a "window width" `ww`, the moving average at time point `tt` in the time series is:  `mean(my_time_series[(tt-ww+1):tt])`.  Write a function, called `moving_average` that calculates the moving average of a time series vector at a single time point.  The function should take three inputs:  the time series, the window width, and the time point at which you want the moving average.  The code is started for you below.
+
+```{r}
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+#  tt:  The point at which we want the moving average (leading up to that point)
+moving_average <- function(tt, time_series, ww) {
+  #  Throw an error if the window width is too big
+  if (ww > length(time_series))  
+    stop("Window width is greater than length of time series")
+  
+  #  If the window width is greater than the time point, return NA
+  if (tt < ww)  return(NA)
+  
+  #  Your code here!
+}
+```
+
+
+b.  Write a second function, called `get_moving_averages`, that calculates _all_ moving averages for a given time series vector.  Your function should take two inputs:  the time series and the window width.  This function should call your function from part (a).  The code is started for you below.
+
+```{r}
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+get_moving_averages <- function(time_series, ww) {
+  #  Throw an error if the window width is too big
+  if (ww > length(time_series))  
+    stop("Window width is greater than length of time series")
+  
+  #  Your code here!
+}
+```
+
+
+c.  Use your function in (b) to calculate a moving average vector for the `n_trips` variable in `trips_per_day` (use a window width of 14, or two weeks), and store this in a vector called `bike_moving_average_14`.  Print the first 20 elements of this vector out.  What do you notice about the first 13 observations?  Why is this
+
+d.  Add the `bike_moving_average_14` variable to the `trips_per_day` dataset.  Recreate the plot from part (b) of Problem 1 in Lab 09.  Now, add a second line showing the moving average in blue, with no points on the line.
+
+e.  Interpret the plot in (d).  Does the moving average tend to line up closely with the actual observations?  Are there any systematic differences?  Between the moving average and the time series?  Which line is smoother, and why?
+
+f.  Write two new functions, `weighted_moving_average` and `get_weighted_moving_averages`, that mimic the functions in (a) and (b), but use a weighted moving average instead.  Your functions should take the same parameters as their counterparts in parts (a) and (b), plus an additional parameter for the weighting scheme that should be used.  The code is started for you below.
+
+
+```{r}
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+#  tt:  The point at which 
+#  weights:  the weights to be used in the moving average
+#  Note:  length(weights) should always equal ww!
+weighted_moving_average <- function(tt, time_series, ww, weights = NULL) {
+  #  Throw an error if the window width is too big
+  if (ww > length(time_series))  
+    stop("Window width is greater than length of time series")
+  
+  #  If weights are not specified, use standard weights
+  if (is.null(weights))  weights <- rep(1/ww, ww)
+  
+  #  Throw an error if the window width is too big
+  if (length(weights) != ww)  
+    stop("Weights should have the same length as the window width")
+  
+  #  If the window width is greater than the time point, return NA
+  if (tt < ww)  return(NA)
+  
+  #  Standardize the weights so they sum to 1
+  weights <- weights / sum(weights)
+  
+  #  Your code here!
+}
+
+
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+#  weights:  the weights to be used in the moving average
+#  Note:  length(weights) should always equal ww!
+get_weighted_moving_averages <- function(time_series, ww, weights) {
+  #  Throw an error if the window width is too big
+  if(ww > length(time_series))  stop("Window width is greater than length of time series")
+  
+  #  If weights are not specified, use standard weights
+  if (is.null(weights))  weights <- rep(1/ww, ww)
+  
+  #  Throw an error if the window width is too big
+  if (length(weights) != ww)  
+    stop("Weights should have the same length as the window width")
+  
+  #  Standardize the weights so they sum to 1
+  weights <- weights / sum(weights)
+  
+  #  Your code here!
+}
+```
+
+g.  Calculate the weighted moving average (window width = 7) of the number of trips per day.  Use a weighting scheme that weights the most recent observation 5 times as much as the first 5 observations, and the second most recent observation 3 times as much as the other 5, e.g. `weights = c(1,1,1,1,1,3,5)`.  Add the result to the `trips_per_day` data.frame.  Recreate your plot from (d), and add a red, dashed line (specify `linetype`) showing the weighted moving average on the plot.
+
+h.  Describe the plot from (g).  In paricular, comment on any differences between the two moving averages.
+
+
+***
+***
+
+#  Problem 4
+
+(3 points each)
+
+**Splitting a Time Series with Moving Averages**
+
+(a)  In a single plotting window, plot the time series of daily bike trips, split by gender (Male, Female, Unknown), in the Big Bike data.  That is, you should have one line for each gender category and no overall time series line.  
+
+(b)  In a separate plotting window, plot the 14-day moving average of daily bike trips, split by gender, in the Big Bike data.  Again, you should have one line for each gender category and no overall line.
+
+(c)  Describe any similarities and differences you see across the genders in the moving average time series plots.
+
+
+***
+***
+
+
+#  Problem 5
+
+(5 points)
+
+**Lag Plots**
+
+Create a lag plot of the number of trips per day in the Big Bike dataset.  Lag plots show the lagged time series on the x-axis and the "current" or "future" time series on the y-axis.  See Monday's lecture notes for more details.  It may help to create two new variables and store them in a data.frame, as follows (uncomment the following code):
+
+```{r}
+#nn <- nrow(trips_per_day)
+#lag <- 1
+#bike_lag1 <- trips_per_day$n_trips[1:(nn-lag)]
+#bike_current <- trips_per_day$n_trips[(lag+1):nn]
+#bike_df <- data.frame(bike_current, bike_lag1)
+```
+
+Now, use `bike_df` and `ggplot()` to create the lag plot.  Use `geom_line()` with `bike_current` on the y-axis and `bike_lag1` on the x-axis.  Add a $y=x$ line to the graph with `geom_abline(intercept = 0, slope = 1)`.
+
+Interpret the plot.  Is the number of daily bike trips increasing over time (i.e. is there an increasing trend in the bike trips per day time series)?  Decreasing over time?  Roughly even / constant over time?
+
+
+
+#  Problem 6
+
+(3 points each; 15 points total)
+
+**Clustering and Colored Dendrograms (US Arrest Data)**
+
+Read [this Piazza discussion](https://piazza.com/class/iskxagtqxi2365?cid=254), the accompanying issue Sam submitted to GitHub, and the package authors' solution to the issue.  Download the new version of the dendextend directly from GitHub, as specified in the example code on Piazza (you'll need to install the `devtools` package first).  Do not include your code to install either the `devtools` or new `dendextend` package in your submission (just comment it out or don't include it at all).
+
+a.  Load in the `USArrests` data into `R`, and read the help documentation for the dataset.  Scale the continuous variables, calculate the distance matrix, and submit the distance matrix to hierarchical clustering with complete linkage.  Store the result in an object called `hc_arrests`.  What variables are included in the `USArrests` Dataset?  
+
+
+```{r}
+library(datasets)
+data(USArrests)
+#  install.packages("tibble")
+```
+
+
+b.  The "State" variable is currently in the row names of the data.  Move it to a column of the data using the `rownames_to_column()` function in the `tibble` package (you may need to install this), and store it in a variable called `State`.
+
+c.  Create your own colored dendrogram for the `hc_arrests` clustering results using the `dendextend` pacakge and color the branches of the dendrogram by the five-cluster solution.  Feel free to adjust other `dendextend` plotting features as you deem necessary (e.g. colored leaves, points on nodes, line types, rectangular vs. triangular dendrograms, etc), though this is not required.  Be sure that the states are listed on the leaves of the dendrogram.
+
+d.  Describe the resulting 5-cluster solution from the dendrogram, and the dendrogram itself.  What interesting information do you see in the patterns of arrests across the different US states?  Given your knowledge about the geography of the United States, do states in similar geographic areas tend to be clustered together?
+
+e.  From the dendrogram, which two US states were linked at the first iteration of hierarchical clustering?
+
+
+
+***
+***
+
+
+#  Problem 7
+
+(12 points)
+
+**Create `ggplot()` ACF Plots**
+
+In lab, we learned about the `acf()` function and autocorrelation plots.  `acf()` uses base-R graphics.  Your task in this problem is to create a `ggplot()` version of autocorrelation plots.  Specifically, you should:
+
++  Write a function that takes a time series as input (e.g. the `n_trips` column of `trips_per_day`, or the `rand_ts` from Lab 09).
++  The function should compute the autocorrelations for the time series, and store them in a new data frame with one column indicating the lag, and another columns indicating the autocorrelation at that lag.
++  Use `geom_line()`, `geom_segment()`, `geom_hline()`, and other `ggplot()` geometries to draw a graph that mimics the autocorrelation plots from `acf()`.  That is, you should have vertical lines indicating the autocorrelation at each lag, and blue horizontal lines plotted at the values $0 +/- 1.96 / \sqrt(n)$, where $n$ is the number of rows in the dataset.
++  The function should output a `ggplot()` object that has the default title and axis labels, so that these can be added to the object after calling the function.
++  The result should render a graph that looks similar to what you get from `acf()`.
++  You are allowed (and encouraged!) to use the `acf()` function to calculate the autocorrelations.
+
+Demonstrate that your function works on the `rand_ts` object and the `trips_per_day` dataset.  Compare your graphs to the base-R `acf()` graph. 
+
+
+***
+***
+
+
+
+#  Problem 8
+
+(2 points each)
+
+**Read Your HW07 and HW08 Feedback On Blackboard**
+
+a.  Write at least one sentence about what you did well on in the assignments.
+
+b.  Write at least one sentence about what you did wrong on the assignments.
+
+
+***
+***
+
+
+
+#  BONUS:  Create `geom_acf()`
+
+(15 points)
+
+Create a new `ggplot()` geometry called `geom_acf()` that will create the same graph you made in Problem 7, but in a more typical `ggplot()` way.
+
+You should first read this vignette from Hadley Wickham on [extending the `ggplot2` package](http://docs.ggplot2.org/dev/vignettes/extending-ggplot2.html), where he demonstrates how to create new geoms and stats.
+
+After writing the `geom_acf()` function (and any necessary helper functions), demonstrate that the following code should work using your function:  
+
++  `ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + geom_acf()`
++  `ggplot(trips_per_day) + geom_acf(aes(x = start_date, y = n_trips))`
+
+Note:  This is not meant to be an easy bonus problem.  It will probably take you a few hours, at least, to learn/understand how `ggproto` works.  **Please be sure to complete all homework problems before attempting this bonus problem.**
+

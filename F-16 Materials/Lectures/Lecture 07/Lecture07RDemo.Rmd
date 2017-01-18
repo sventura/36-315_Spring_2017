@@ -1,0 +1,147 @@
+---
+title: "36-315 Lecture 07, Fall 2016"
+author: "Sam Ventura"
+date: "September 21, 2016"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  hide
+---
+
+#  Interpretting Mosaic Plots
+
+
+```{r, warning = F, message = F}
+library(data.table)
+bike_data <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv")
+
+library(reshape2)
+library(dplyr)
+date_time <- colsplit(bike_data$starttime, " ", c("date", "time"))
+bike_data <- mutate(bike_data, 
+                    birth_decade = paste0(substr(`birth year`, 1, 3), "0s"),
+                    date = as.vector(date_time$date),
+                    time_of_day = as.vector(date_time$time),
+                    hour_of_day = substr(time_of_day, 1, 2),
+                    am_or_pm = ifelse(as.integer(hour_of_day) < 12, "AM", "PM"),
+                    day_of_week = weekdays(as.Date(date, format = "%m/%d/%Y")),
+                    less_than_30_mins = ifelse(tripduration < 1800, "Short Trip", "Long Trip"),
+                    weekend = ifelse(day_of_week %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
+```
+
+***
+***
+
+
+#  Mosaic Plot -- No Association
+
+```{r}
+tab <- table(bike_data$weekend, bike_data$less_than_30_mins)
+mosaicplot(tab, xlab = "Weekend or Not?", ylab = "Duration of Trip", 
+           main = "Mosaic Plot of Weekend/Weekday vs. Duration of Trip")
+```
+
+
++  The marginal distribution of the first variable (`weekend`) is shown with the column widths.  
++  The conditional distribution of the second variable (`less_than_30_mins`) is shown with the heights of the boxes.  
++  The area of the boxes shows the joint distribution of the two variables.
++  Let's add some color to see if there's an association.
+
+**A nicer version of this plot would re-order the days of the week and re-label the genders!**
+
+
+***
+***
+
+
+```{r}
+mosaicplot(tab, xlab = "Weekend or Not?", ylab = "Duration of Trip", 
+           main = "Mosaic Plot of Weekend/Weekday vs. Duration of Trip", shade = T)
+```
+
+Okay, here's how to read mosaic plots, in general:  
+
++  The colors correspond to the standardized Pearson residuals (see notes from a few lectures ago).
++  Red boxes indicate a large negative deviation from expected in the corresponding cell of the contingency table.
++  Blue boxes indicate a large positive deviation from expected in the corresponding cell of the contingency table.
++  White boxes indicate no deviation from expected in the corresponding cell of the contingency table.
++  The darker the boxes, the larger the deviation from expected.  Specifically, the light-colored boxes correspond to residuals between 2 and 4 (or -2 and -4).  This means that we can reject the null hypothesis of independence at the alpha = 0.05 level (at least).  The darker boxes correspond to residuals greater than 4 (or less than -4).  This means that we can reject the null hypothesis of independence at the alpha = 0.0001 level (at least).
++  **The cell outlines mean...?**  The cell outlines indicate whether or not the residuals are positive or negative.  This is especially helpfful for the colorblind, who can use this information to determine whether or not a shaded deviation from expected is positive or negative.
+
+***
+***
+
+
+#  Mosaic Plot -- Associations!
+
+```{r}
+tab <- table(bike_data$day_of_week, bike_data$gender)
+mosaicplot(tab, xlab = "Day of Week", ylab = "Gender", 
+           main = "Mosaic Plot of Day of Week vs. Gender")
+
+mosaicplot(tab, xlab = "Day of Week", ylab = "Gender", 
+           main = "Mosaic Plot of Day of Week vs. Gender", shade = T)
+```
+
+**What's happening here?**
+
+***
+***
+
+
+#  Mosaic Plot -- More Associations!
+
+```{r}
+tab <- table(bike_data$day_of_week, bike_data$birth_decade)
+mosaicplot(tab, xlab = "Birth Decade", ylab = "Day of Week", 
+           main = "Mosaic Plot of Birth Decade vs. Day of Week", shade = T, las = 1)
+```
+
+**When we see a horizontal line in place of a cell, what does this mean?**
+
+***
+***
+
+
+
+#  Mosaic Plot -- When Can We Reject The Null Hypothesis?
+
+```{r}
+tab <- table(bike_data$gender, bike_data$am_or_pm)
+mosaicplot(tab, xlab = "Gender", ylab = "Time of Day", 
+           main = "Mosaic Plot of Gender vs. Time of Day", shade = T, las = 1)
+```
+
+Even if only one cell has a significantly larger or smaller than expected standardized Pearson residual, we can reject the null hypothesis of indepdendence!
+
+
+***
+***
+
+#  Mosaic Plot -- When Do We Fail To Reject The Null Hypothesis?
+
+```{r}
+tab <- table(bike_data$am_or_pm, bike_data$less_than_30_mins)
+mosaicplot(tab, xlab = "Time Of Day", ylab = "Duration of Trip", 
+           main = "Mosaic Plot of Time of Day vs. Duration of Trip", shade = T)
+```
+
+Only if all cells are white, we do not have evidence to reject the null hypothesis of indepdendence!
+
+***
+***
+
+#  Friday:  Mosaic Plots with `ggplot()`
+
+***
+***
+
+#  HW04:  Extending Mosaic Plot Benefits to Bar Charts
+
+
+***
+***
+***
+***
+

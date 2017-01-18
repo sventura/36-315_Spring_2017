@@ -1,0 +1,130 @@
+---
+title: "36-315 Lab 03"
+author: "Your Name Here"
+date: "Due Friday, September 16, 2016 (6:30pm)"
+output: html_document
+---
+
+
+##  Lab 03:  Incorporating Statistical Information in 1-D, 2-D, and 3-D Categorical Graphics
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab03.Rmd -- e.g. "sventura-Lab03.Rmd") to the Lab 03 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+In this week's assignments, we'll implement 2-D bar charts and discuss the issues of using pie charts for anything beyond 1-D categorical data analysis.
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+Here is this week's oral evaluation graphic:
+
+<div style="width:750px">
+![alt text](https://pbs.twimg.com/media/Cr_7vpxWcAA7SmH.jpg)
+</div>
+
+
+**Sam Says**:  It's important to avoid inserting your own commentary (political or otherwise) when discussing graphics like this.  Your job, as a statistician / data scientist / quantitative analyst, is to interpret the graph for the viewer.  Discuss the facts presented via the data/graphic; avoid overstepping your boundaries by inserting your own opinions into what should be a presentation of facts.
+
+
+***
+***
+
+#  Problem 1
+
+(5 points each)
+
+**Chi-Square Tests in R**:  
+
+Bar charts are usually easier to read than spine charts, pie charts, and rose diagrams.  There are several ways we can add even more useful information to bar charts.
+
+In this assignment, we'll be using data from the NYC Citi Bike program.  The NYC Citi Bike data is a tremendous resource.  We highly encourage you to explore the data on your own.  The dataset is very large, so we focus on only a small subset from June 2016 for this assignment.  For the purposes of ensuring no one has issues accessing and/or loading in the very large raw data files, we subset the data for you and temporarily make this subset available on the course GitHub page at the following link:  [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv]
+
+Additional information about the NYC Citi Bike data can be found [here](https://www.citibikenyc.com/system-data).
+
+Read the dataset in from GitHub and then complete the following questions.
+
+a.  Look at the documentation for the NYC Citi Bike data.  How is gender coded in this dataset?  What is the difference between a customer and a subscriber in the `usertype` field?
+
+b.  Examine the marginal distributions of the `gender` and `usertype` variables separately with the `table()` function.
+
+c.  Create two barplots -- one for gender, and one for user type -- and display them simultaneously with the `grid.arrange()` function in the `gridExtra` package.  (You may need to install the `gridExtra` package to do this.)  Example code is given below to do this.  Adjust the `fig.height` and `fig.width` arguments at the beginning of the code block to make sure your graph displays properly.
+
+
+```{r, fig.height = 5, fig.width = 10}
+library(gridExtra)  #  Be sure this is installed on your computer
+library(ggplot2)
+gender_plot <- ggplot() #  Put your code for the bar chart of gender here
+usertype_plot <- ggplot() #  Put your code for the bar chart of usertype here
+grid.arrange(gender_plot, usertype_plot, ncol = 2)
+```
+
+d.  Your friend thinks there are equal proportions of rides from subscribers and rides from non-subscribers ("customers").  Using your bar chart from part (c), can you say for sure whether your friend is right?
+
+e.  Let's test this statistically.  Run a chi-square test to check your friend's assertion:  `chisq.test(table(bike_data$usertype))` will check to see if the proportions in each category are the same (null hypothesis that they are the same, alternative hypothesis that they are not the same).  What information does the `chisq.test` function output?  What is the p-value for this test?  What does this mean -- is your friend right or wrong?
+
+f.  Your friend revises their assertion and says that there is actually a 55%-45% split of Subsribers-Customers.  Let's test this:  `chisq.test(table(bike_data$usertype), p = c(0.45, 0.55))` will check to see if the proportions in each category of `usertype` match the proportions your friend suggests (null hypothesis that they are the same as the proposed proportions, alternative hypothesis that at least one is different).  Is your friend right or wrong?  What evidence do you have to support this?
+
+
+***
+***
+
+
+#  Problem 2
+
+(10 points each)
+
+**2-D Bar Charts and (Empirical) Conditional Distributions**
+
+a.  Recreate the graph of `gender` from Problem 1, but color each bar by the `usertype` variable.  As always, make sure your graph is properly labeled/titled/colored and has a legend.  This is a "stacked bar chart", as we learned about in class on Wednesday.
+
+b.  Where on the graph in (a) would we find the (empirical) conditional distribution of `usertype` given that our `gender` is female?
+
+c.  Create a side-by-side version of the chart in (a).  To do create a side-by-side bar chart, specify `position = position_dodge()` in your call to `geom_bar()`.  This tells `ggplot` to reposition the bars to be side-by-side.
+
+d.  Where on the graph in (c) would we find the (empirical) conditional distribution of `usertype` given that our `gender` is female?
+
+
+***
+***
+
+
+#  Problem 3
+
+(10 points each)
+
+**3-Dimensional Categorical Data**
+
+With stacked and side-by-side bar charts, we can visualize two categorical variables at once.  With facetting, we can increase this.  Below, we'll demonstrate this with Twitter Airline data by plotting three categorical variables at once.
+
+a.  Load the Twitter Airline data from Lab 02 and Homework 02, then subset the data to include only the four major US time zones (code provided; you may need to install the `dplyr` package to do this.)  How many rows are in the subsetted version of the `airline_tweets` dataset?
+
+```{r, warning = F, message = F}
+library(data.table)
+library(dplyr)
+airline_tweets <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+airline_tweets_subset <- filter(airline_tweets, 
+                                user_timezone %in% c("Mountain Time (US & Canada)", 
+                                                     "Pacific Time (US & Canada)", 
+                                                     "Central Time (US & Canada)", 
+                                                     "Eastern Time (US & Canada)"))
+```
+
+b.  Use the `airline_tweets_subset` data.frame to create a side-by-side bar chart that displays the conditional distributions of `airline_sentiment` given `airline`.  Repeat this, but with a stacked bar chart.  Arrange these into a 1x2 grid with the `grid.arrange()` function.  In which version is it easier to visualize the marginal distribution of `airline`?
+
+c.  Again using the `airline_tweets_subset` data, choose either the stacked bar chart or the side-by-side bar chart from part (a).  Use `facet_grid()` to split the stacked or side-by-side bar chart up by time-zone (`user_timezone`), so that graphs are displayed vertically in a single column.  Are there any differences in the conditional distributions of `airline_sentiment` given `airline` across time zones?
+
+
+***
+***

@@ -1,0 +1,101 @@
+---
+title: "36-315 Lab 06"
+author: "Your Name Here"
+date: "Due Friday, October 7, 2016 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 06:  2-D Continuous Data and Violin Plots
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab06.Rmd -- e.g. "sventura-Lab06.Rmd") to the Lab 06 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+This week's oral evaluation graphic is from FiveThirtyEight:
+
+<div style="width:600px">
+![](https://s-media-cache-ak0.pinimg.com/736x/2e/52/e3/2e52e3c6c5b60e90cdf8d59eda51c7d8.jpg)
+</div>
+
+***
+
+Sam Says:  Remember to first explain the graph and discuss the main results presented in the graph (what's the main takeaway?).  Only after you've done that, you should offer any criticism of the graph or suggest changes you would make to the graph.
+
+
+***
+***
+
+
+#  Problem 1
+
+**Loading The Data**
+
+a.  (4 points)  Load the Food Facts dataset from a previous assignment.  Which variables are continuous?  What is the lower bound on the possible values of these continuous variables?
+
+b.  Download the Lecture 10 R Demo and Lecture 11 R Demo files from Blackboard / Course Content / Lectures.  Use the example code in those files to help you with this assignment.
+
+
+
+***
+***
+
+
+#  Problem 2
+
+(8 points each)
+
+**Violin Plots**
+
+a.  Create a violin plot (with the density estimates on both sides) showing the marginal distribution of the `energy_100g` variable.  Add a colored point that indicates where the mean is.  Add a separate point, in a different color, that indicates where the median is.  See the Lecture 10 R Demo on Blackboard for how to do this.  (Hint:  Use the `stat_summary()` function.)
+
+b.  Repeat part (a), but this time, display the conditional distributions of `energy_100g` given the presence or absence of additives.  Do this so that the right side of the violin plot shows the conditional distribution of `energy_100g` given the presence of additives, and the left side shows the conditional distribution of `energy_100g` given the absence of additives.  Comment on any interesting features you see in the graph.  In particular, compare the two conditional distributions to each other, pointing out any similarities or differences.
+
+
+
+***
+***
+
+
+#  Problem 3
+
+(10 points each)
+
+**Visualizing 2-D Continuous Data with Scatterplots**
+
+a.  Create a scatterplot with `carbohydrates_100g` as the independent variable (on the x-axis) and `energy_100g` as the dependent variable (on the y-axis).  Consult the Lecture 11 R Demo for how to do this.
+
+b.  Describe the joint distribution of these two variables.  What interesting features do you see?  Do the two variables appear to be associated or correlated with each other?  Is there any group structure in the data?
+
+c.  Repeat part (a), but color the points by the nutrition grade of the food.  Are there particular areas of the graph where foods with certain nutrition grades are common or uncommon?  Interpret your findings in the context of the problem.
+
+d.  Repeat part (c), but this time, facet on the nutrition grade of the food instead of coloring the points.  In your opinion, is it easier to answer the questions asked in (c) with facetting or with the colors?  Do you think this is true generally, or does it depend on the problem?
+
+e.  Repeat part (c), but this time, change the point type to correspond to the presence or absence of additives.  With so many data points, is it easy to tell if foods with or without additives occur in certain portions of the graph?
+
+f.  Repeat part (e), but this time, change either the size of the point or the shade/transparency of the point (`alpha`) to correspond to another continuous variable in the dataset.  Does the continuous variable you chose appear to be associated with either of the other two variables?
+
+g.  Repeat part (a), but this time, add a linear regression line to the plot, with no error bars.  Does the line appear to provide a good fit to the variables being plotted here?  Why or why not?
+
+h.  Repeat part (g), but this time, add a non-linear regression line to the plot instead of a linear regression line, again with no error bars.  Does the non-linear regression model appear to provide a better or worse fit than the linear model in part (g)?  Why?  Are there any particular areas of the graph where the line does not closely match the underlying data?  If so, where?
+
+
+***
+***

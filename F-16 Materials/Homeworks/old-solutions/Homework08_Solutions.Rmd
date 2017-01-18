@@ -1,0 +1,283 @@
+---
+title: "36-315 Homework 08, Spring 2016"
+author: "SOLUTIONS"
+date: "Due Wednesday, March 23, 2016 (12pm ET) on Blackboard"
+output: html_document
+---
+
+***
+***
+
+#  Homework 08:  We So Fancy
+
+This week's homework highlights several of the ways you can enhance your graphics with additional information and functionality.  
+
+***
+***
+
+***General instructions***:
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc.
++  **Submit two files to Blackboard:**  (1) an `R` Markdown file (named as:  [AndrewID]-Homework08.Rmd -- e.g. "sventura-Homework08.Rmd"), and (2) the corresponding .html file generated from `R` Markdown (named as:  [AndrewID]-Homework08.html -- e.g. "sventura-Homework08.html") to Blackboard in the Lab Exam 1 submission section on Blackboard.  You are also welcome to upload a single .zip file containing both of these.
++  Your file should contain the code/commands to answer each question in its own code block; your code should produce plots that will be automatically embedded in the output file.
++  Each answer must be supported by written statements (unless otherwise specified).
++  Include the style guide you used at the top of the file.
+
+***
+***
+
+##  Use Your Theme!
+
+Be sure to use the custom `ggplot` theme you created a few assignments ago.  Feel free to adjust it given the feedback of the instructor/TAs.
+
+***
+
+```{r, warning=FALSE, message=FALSE}
+library(gsheet)
+library(ggplot2)
+olive <- as.data.frame(gsheet2tbl("https://docs.google.com/spreadsheets/d/1OfAR-K-KnYAYvPUCgm-c1WYhBBe746eeboQpVPAZuj8/pubhtml"))
+olive$area <- as.factor(olive$area)
+olive$region <- as.factor(olive$region)
+moma <- as.data.frame(gsheet2tbl("https://docs.google.com/spreadsheets/d/1fA3k9r0cgLDIz7ZXMlfP4hQmLu6_4bFj5kXbML3In_M/pub?gid=0&single=true&output=csv"))
+```
+
+***
+
+
+
+##  Problem 1
+
+(35 points)
+
+**Automatically Specify Bin Width**
+
+Write a function called `auto_binwidth()` that automates the choice of a bin width for a 1-D histogram.
+
+That is, it should select the bin width automatically given, as input, the variable you are plotting on the x-axis.
+
+Your function should take into account some combination of the following features:
+
++  The minimum and maximum (or the range/spread) of the variable
++  The variance (or standard deviation) of the variable
++  The skewness of the variable
++  The number of observations
++  Other important statistics (e.g. mean, median, quantiles, etc)
+
+The function should output a single number, specifying the bin width to be used in the histogram (adjusted with an adjustment factor specified by the user).
+
+Other than that, how you define your function is up to you.  Ideally, your bin width will adapt to different types of distributions and be dependent on the sample size.  For example, if you only have 20 observations, you probably don't want a histogram with 30 bins!
+
+Demonstrate that your function works on:
+
+```{r}
+# One simple option
+auto_binwidth <- function(x, adjust = 1) {
+  binwidth <- (max(x) - min(x)) / sqrt(length(x))
+  return(adjust * binwidth)
+}
+
+# One continuous variable from the olive oil dataset
+ggplot(data = olive, aes(x = palmitic)) + 
+  geom_histogram(binwidth = auto_binwidth(olive$palmitic)) +
+  ggtitle("The Distribution of Palmitic Acid")
+
+# One continuous variable from the MoMA dataset (Lab Exam 1)
+ggplot(moma, aes(x = Width)) + 
+  geom_histogram(binwidth = auto_binwidth(moma$Width)) +
+  ggtitle("The Distribution of Art Width")
+
+# A random sample of size 100 from a Normal(0,1) distribution (use `rnorm()`)
+set.seed(50)
+my_data <- data.frame(my_x = rnorm(100))
+ggplot(data = my_data, aes(x = my_x)) + 
+  geom_histogram(binwidth = auto_binwidth(my_data$my_x)) +
+  ggtitle("A Sample From a Standard Normal Distribution")
+
+# A random sample of size 10000 from a Normal(0,100) distribution (use `rnorm()`)
+my_data <- data.frame(my_x = rnorm(10000, sd=100))
+ggplot(data = my_data, aes(x = my_x)) + 
+  geom_histogram(binwidth = auto_binwidth(my_data$my_x)) +
+  ggtitle("A Sample From a Normal Distribution with SD 100")
+```
+
+
+There are number of existing heuristics for choosing the binwidth or the number of bins. Some are described on [Wikipedia](https://en.wikipedia.org/wiki/Histogram#Number_of_bins_and_width). There are also a number of bandwidth selection methods for density estimates [available in R](https://stat.ethz.ch/R-manual/R-patched/library/stats/html/bandwidth.html). As a general principle, the bin width should be increasing in measures of spread (e.g. range, standard deviation, IQR) and decreasing in sample size. The bin width is inversely proportional to the number of bins, so it is important not to conflate heuristics for the two.
+
+Our solution here is not perfect:  The bin width for the distribution of Art Width is likely too small, which is causing our histogram to have several local modes and appear to be very rigid.  A similar result occrs for the sample of 10000 draws from a normal distribution.  This is likely indicative that our chosen bin width is not taking the size of the dataset into account in proper way.  We might raising $n$ to a different power (other than -1/2) in our calculation.  (Note:  We are keeping our imperfect solution here to demonstrate some of the ideas you should be thinking about when choosing a bin width.)
+
+
+***
+***
+
+#  Problem 2
+
+(5 points each)
+
+**More Text Annotations on Graphs**
+
+Load the olive oil data from Lab 08.
+
+a.  Create a bar chart of the `region` variable.  Use the `geom_text()` function to add the counts in each bar **above** each bar in the bar chart.  E.g., `ggplot(...) + ... + geom_text(stat = "count", aes(y = ..count.., label = ..count..))`.  Adjust the `vjust` parameter in `geom_text()` in order to place the numbers in a more appropriate place.  Use a non-default color for the bars.
+
+```{r}
+# Create bar chart of region
+ggplot(olive, aes(x = as.factor(region))) + 
+  geom_bar(fill = "red") +
+  ggtitle("Number of Olive Oils per Region") +
+  labs(x = "Region", y = "Count") + 
+  geom_text(stat = "count", aes(y = ..count.., label = ..count.., vjust = -0.5))
+```
+
+
+b.  Create a bar chart of the `area` variable.  Use the `geom_text()` function to add the counts in each bar **in the middle** of each bar (i..e halfway up each bar) in the bar chart.  Use a large font size for the text.  Use a non-default color for the bars, and change the color of the text so that it contrasts well with the color of the bars.  
+
+```{r}
+# Calculate frequencies
+counts <- table(olive$area)
+
+# Create bar chart of area
+ggplot(olive, aes(x = area)) + 
+  geom_bar(fill = "purple") +
+  ggtitle("Number of Olive Oils per Area") +
+  labs(x = "Area", y = "Count") + 
+  geom_text(stat = "count", aes(y = ..count.., label = ..count..), 
+            y = (0.5 * counts), size = 8, colour = "white")
+````
+
+
+c.  Repeat part (b), but use `label = scales::percent((..count..)/sum(..count..)))` to put percentages on the plot instead of the raw count scale.  This is nice, since it allows you to quickly see both the percentages and the counts (height of the bars) in each category.
+
+```{r}
+# Create bar chart of area
+ggplot(olive, aes(x = area)) + 
+  geom_bar(fill = "purple") +
+  ggtitle("Number (and Percentage) of Olive Oils per Area") +
+  labs(x = "Area", y = "Count") + 
+  geom_text(stat = "count", aes(y = ..count.., label = scales::percent((..count..)/sum(..count..))), 
+            y = (0.5 * counts), size = 8, colour = "white")
+```
+
+
+***
+***
+
+#  Problem 3
+
+(5 points each)
+
+**plotly**
+
+Install the `plotly` package into your version of RStudio, and load it into R in your R Markdown document.
+
+a.  Copy your code from Problem 2, part (c) here.  This time, add the following line of code to the end of the code block:  `ggplotly()`.  What happens?  What are the advantages to this functionality?  What are the disadvantages, if any?
+
+```{r}
+library(plotly)
+# Create bar chart of area
+my_plot <- ggplot(olive, aes(x = area)) + 
+  geom_bar(fill = "purple") +
+  ggtitle("Distribution of Area") +
+  labs(x = "Area", y = "Count") + 
+  geom_text(stat = "count", aes(y = ..count.., label = scales::percent((..count..)/sum(..count..))), 
+            y = (0.5 * counts), size = 8, colour = "white") 
+ggplotly(my_plot)
+```
+
+This function allows you to hover over your graphic and see features, such as the count. You can also zoom and select a portion of the graph. Advantages are that it is interactive and you get more information and can see more features easily. Disadvantages are that it can be distracting, and if you have a large dataset it could take a longer time to compute the different values as you hover over different places. Additionally, our text showing the percentages has disappeared!
+
+
+b.  Pick two variables from the `olive` dataset and create a scatterplot of these variables.  Color the points by their `area`.  Add linear regression line(s) to the plot, with 99% confidence bands.  How many lines are plotted?  Why does this happen?
+
+```{r}
+olive$area <- as.factor(olive$area)
+# Scatterplot of palmitic vs stearic
+ggplot(olive, aes(x = palmitic, y = stearic, color = area)) + 
+  geom_point() +
+  geom_smooth(method = "lm", level = 0.99) +
+  ggtitle("Relationship between Palmitic and Stearic") +
+  labs(x = "Palmitic", y = "Stearic")
+```
+
+Three regression lines are plotted because area is a factor variable, and so there are different model fits for each area.  
+
+Note that if we specify `color = area` in the call to `aes()` within `geom_point()` but NOT in the `aes()` call within `ggplot()`, it will fit a single regression line.  This is actually a really nice feature of `ggplot()` -- if you specify aesthetics in `ggplot()`, they will be inherited by all future geometries used in that plot (unless otherwise overwritten).
+
+
+c.  Use `ggplotly()` for your plot in part (b).  Try out the pan and zoom in/out functionality.  Click the "Compare Data On Hover" icon.  What happens?  Comment on the functionality of `ggplotly()` here.
+
+```{r}
+# Scatterplot of palmitic vs stearic
+ggplot(olive, aes(x = palmitic, y = stearic, color = area)) + 
+  geom_point() +
+  geom_smooth(method = "lm", level = 0.99) +
+  ggtitle("Relationship between Palmitic and Stearic") +
+  labs(x = "Palmitic", y = "Stearic")
+ggplotly()
+```
+
+Zoom in and out perform as expected, by enlarging or reducing the size of the graph. Pan allows us to pull and recenter the graph with our mouse. The compare data on hover feature allows us to hover over a data point and be shown the values on each regression line at that value of x. `ggplotly()` is great for exploratory variable analysis and inspecting individual features of the data.  
+
+***
+***
+
+
+#  Problem 4
+
+(35 points)
+
+**Getting Fancy with Pairs Plots**
+
+Create a subset of the `olive` dataset.  Include the `area` and `region` variables in your subset, and pick three continuous variables to include in your subset (your choice).  Call this subset `olive_sub`.  In your subset, overwrite the `area` and `region` variables so that they are treated as factor variables, using lines of code like:  `olive_sub$area <- as.factor(olive_sub$area)`.
+
+Create a pairs plot of your subset.  Within the `ggpairs()` function, manually specify the `upper` triangle of plots to change type of information shown.
+
+It may help to use the following code as an outline of your solution:
+
+
+```{r}
+
+olive_sub <- olive[,c(1:5)]
+olive_sub$area <- as.factor(olive_sub$area)
+olive_sub$region <- as.factor(olive_sub$region)
+
+```
+
+
+```{r, fig.height=9, fig.width=10}
+library(GGally)
+names(olive_sub)
+ggpairs(data = olive_sub,
+        upper = list(continuous = "density",
+                     discrete = "ratio",
+                     combo = "facetdensity"),
+        title = "Exploring Discrete and Continuous Variables in Olive Data"
+)
+```
+
+In the upper triangle:
+
++  Use a 2-D density estimate for pairs of continuous variables
++  Show the ratio for pairs of discrete variables
++  Use a faceted density estimate for a combination of a discrete and a continuous variable
+
+See the [examples in the help documentation](http://www.inside-r.org/packages/cran/GGally/docs/ggpairs) for how to do this.
+
+
+**2-D Density:** We use 2-D density graphs to explore differences between continuous variables. This graph adds contour lines to the graph to show the relationship. It follows the same pattern as a scatterplot (we could overlay these lines on a scatterplot) but it also helps identify groupings. If the lines are farther apart there are less values there. 
+
+**Ratio:** We see 9x3=27 boxes representing the 9 regions and 3 areas. Within each of the boxes is a shaded area representing the amount of observations in that box. Each box contains one area region combination. This is the graphical representation of `with(olive_sub, table(area, region))`. We see the same thing we saw in our table that regions are contained within areas. 
+
+Note that the current `ggpairs()` implementation actually makes a mistake!  (Or, at least, it displays the plot in an unintuitive way.)  The ratio plot in the first row, second column should have its axes flipped, so that the categories of `region` are on the x-axis, and the categories of `area` are on the y-axis.  As we've seen many times, we will often run into these types of issues when working with new technologies and packages like this one.
+
+**Faceted density estimates:** We see density plots of each continuous variable faceted on the categorical variable. For example there are three density plots for each categorical variable representing each of the three areas.  For the `region` variable, these are difficult to interpret -- nine density lines packed into such a small space isn't the best visualization!  This further supports what we've said many times:  That pairs plots are useful for our own personal exploratory analyses, but probably aren't good plots to include in formal analyses.
+
+**Interpretation:**  We see a strong positive relationship between palmitoleic and palmitic and our 2D-density graph also helps us see 2 main nodes to the relationship that isn't as clear with just the scatter plot. There seems to be two groups in the stearic palmitoleic graph but it isn't obvious with just this graph; we would likley want to adjust the bandwidth and examine these variables in other ways before drawing any definitive conclusions.  Stearic is approximately uni-modal while palmitoleic and palmitic are bi-modal. There seem to be relationships between area/region and palmitoleic/palmitic while there doesn't seem to be as strong a relationship between area/region and stearic.  Again, many of these statements are very inconclusive, since many parts of the pairs plot are difficult to read and interpret.
+
+
+***
+***
+***
+***
+***
+
+

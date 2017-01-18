@@ -1,0 +1,132 @@
+---
+title: "36-315 Lab 03"
+author: "Solutions"
+date: "Due Friday, September 16, 2016 (6:30pm)"
+output: html_document
+---
+***Wickham Style Guide***  
+
+##  Lab 03:  Incorporating Statistical Information in 1-D, 2-D, and 3-D Categorical Graphics
+
+***
+***
+
+#  Problem 1
+(5 points each)
+
+**Chi-Square Tests in R**:  
+
+```{r}
+library(data.table)
+bike_data <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv")
+```
+
+a. Gender is either a 0 if it unknown, 1 if it is a male and 2 if it is a female. Customer = 24-hour pass or 7-day pass user; Subscriber = Annual Member.
+
+b.  There are 2221 people with unknown genders, 1532 males and 606 females.
+There are 1984 Customers and 2375 Subscribers. 
+```{r}
+attach(bike_data)
+table(gender)
+table(usertype)
+```
+
+c.  Below are two barplots -- one for gender, and the other for user type.
+```{r, fig.height = 5, fig.width = 10}
+library(gridExtra)  #  Be sure this is installed on your computer
+library(ggplot2)
+gender_plot <- ggplot(data = bike_data, aes(x = gender)) + geom_bar(aes(fill = gender)) + coord_cartesian() + ggtitle("Gender of Citi Bike Users") + xlab("Gender") + ylab("Frequency") + scale_fill_discrete(name = "Gender", labels = c("Unknown", "Male", "Female"))
+
+usertype_plot <- ggplot(data = bike_data, aes(x = usertype)) + geom_bar(aes(fill = usertype)) + coord_cartesian() + ggtitle("Usertype of Citi Bike Users") + xlab("Usertype") + ylab("Frequency") + scale_fill_discrete(name = "User Type")
+  
+grid.arrange(gender_plot, usertype_plot, ncol = 2)
+```
+
+d.  There doesn't seem to be equal proportions of rides from subscribers and rides from customers as the subscribers bar looks substantially higher.  To explore whether or not the difference is statistically significant, we have to perform a statistical test.  
+
+e.  
+```{r}
+chisq.test(table(bike_data$usertype))
+```
+
+The function outputs the test statistic, degrees of freedom and the p-value. The p-value, 3.2e-09, is less than any reasonable alpha level.  Thus, we reject the null hypothesis in favor of the alternative hypothesis that the two proportions are not equal and there is evidence against our friend's assertion.  
+
+f.  
+```{r}
+chisq.test(table(bike_data$usertype), p = c(0.45, 0.55))
+```
+
+There is not sufficient evidence against our friend's hypothesis because the chi-squared test outputted a p-value of .4943. At an alpha of .05, there is not enough sufficient evidence to reject the null hypothesis in favor of the alternative.   
+
+***
+***
+
+
+#  Problem 2
+
+(10 points each)
+
+**2-D Bar Charts and (Empirical) Conditional Distributions**
+
+a.  Below is the graph of `gender` from problem 1, but colored by the `usertype` variable.
+```{r}
+bike_plot <- ggplot(data = bike_data, aes(x = gender))
+
+bike_plot + geom_bar(aes(fill = usertype)) + coord_cartesian() + ggtitle("Usertype frequency by Gender") + xlab("Gender") + ylab("Frequency")
+```
+
+b.  The third stacked bar from part (a) shows the conditional distribution of `usertype` given that the gender is female. Because that bar is only one color, we know all women were subscribers, not customers.
+
+c.  Below is a side-by-side verison of the charts in (a).  
+```{r}
+ggplot(data = bike_data, aes(x = gender)) + geom_bar(aes(fill = usertype), position = position_dodge()) + coord_cartesian() + ggtitle("Gender of Citi Bike users by User Type") + xlab("Gender") + ylab("Frequency")
+```
+
+
+d. We find the conditional distribution of `usertype` given that our `gender` is female by looking at the bars above the number `2` on the x-axis. The blue bar represents all the women that are subscribers, but since there are no female customers, there is no red bar above the `2`.   
+
+***
+***
+
+#  Problem 3
+(10 points each)
+
+a.  There are 7252 rows in the `airline_tweets_subset` data. 
+
+```{r, warning = F, message = F}
+library(data.table)
+library(dplyr)
+airline_tweets <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+airline_tweets_subset <- filter(airline_tweets, 
+                      user_timezone %in% c("Mountain Time (US & Canada)", 
+                      "Pacific Time (US & Canada)", 
+                      "Central Time (US & Canada)", 
+                      "Eastern Time (US & Canada)"))
+
+nrow(airline_tweets_subset)
+```
+
+
+b.  Below is a side-by-side comparison of a bar chart and a stacked bar chart that show the conditional distributions of `airline_sentiment` given airline. 
+```{r, fig.width = 13}
+airline_plot_sbs <- ggplot(data = airline_tweets_subset, aes(x = airline)) + geom_bar(aes(fill = airline_sentiment), position = position_dodge()) + coord_cartesian() + ggtitle(" Mentions of Airlines on Twitter by Sentiment") + xlab("Airline") + ylab("Frequency")
+
+airline_plot_stacked <- ggplot(data = airline_tweets_subset, aes(x=airline)) + geom_bar(aes(fill = airline_sentiment)) + coord_cartesian() + ggtitle("Mentions of Airlines on Twitter Colored by Sentiment") + xlab("Airline") + ylab("Frequency")
+
+grid.arrange(airline_plot_sbs, airline_plot_stacked, ncol = 2)
+```
+  
+It is easier to visualize the marginal distribution of `airline` in the stacked bar chart. 
+
+c.  Below the side by side bar plot is faceted by `timezone'. 
+
+```{r, fig.height=8}
+
+ggplot(data = airline_tweets_subset, aes(x = airline)) + geom_bar(aes(fill = airline_sentiment), position = position_dodge()) + coord_cartesian() + facet_grid(user_timezone~.) + ggtitle(" Mentions of Airlines on Twitter by Sentiment") + xlab("Airline") + ylab("Frequency")
+
+```
+
+There are some differences in the conditional distributions of `airline_sentiment` given `airline` across the 4 time zones.  We see that the proportions of tweets with negative sentiments for American Airlines & United are higher in Central and Eastern time zones than in Mountain and Pacific Time.  In addition, the proportion of tweets with negative sentiments is also greater in Eastern Time for Delta and Southwest.  However we notice that across almost all airlines and all time zones, the bar for negative sentiment is the highest, followed by neutral and positive sentiments.  
+
+***
+***

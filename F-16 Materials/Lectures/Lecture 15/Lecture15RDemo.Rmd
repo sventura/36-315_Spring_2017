@@ -1,0 +1,130 @@
+---
+title: "Lecture 15 + R Demo"
+author: "Sam Ventura"
+date: "October 24, 2016"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+The graphs below don't have proper titles, axis labels, legends, etc.  Please take care to do this on your own graphs.
+
+***
+
+#  So far...
+
+We've been working with "tidy data" -- data that has $n$ rows and $p$ columns, where each row is an observation, and each column is a variable describing some feature of each observation.  
+
+Now, we're going to move on to different and more complicated data structures.
+
+
+#  Distance Matrices and Calculating Distances
+
+
+A distance matrix is a data structure that specifies the "distance" between each pair of observations in the original $n$-row, $p$-column dataset.  For each pair of observations (e.g. $x_i, x_j$) in the original dataset, we compute the distance between those observations, denoted as $d(x_i, x_j)$ or $d_{ij}$ for short.
+
+A variety of approaches for calculating the distance between a pair of observations can be used.  The most commonly used approach (when we have continuous variables) is called "Euclidean Distance".  The Euclidean distance between observations $x_i$ and $x_j$ is defined as follows:  $d(x_i, x_j) = \sum_{l = 1}^p (x_{i,l} - x_{j,l}) ^ 2$.  That is, it is the sum of squared differences between each column ($l \in \{1, ..., p\}$) of $x_i$ and $x_j$ (remember, there are $p$ original columns / variables).
+
+Note that if some variables in our dataset have substantially higher variance than others, the high-variance variables will dominate the calculation of distance, skewing our resulting distances towards the differences in these variables.  As such, it's common to scale the original continuous dataset before calculating the distance, so that each variable is on the same scale.
+
+
+```{r, cache = T}
+wine_red <- read.csv("http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv", sep = ";")
+
+#  Subset only the continuous variables (remove quality column)
+wine_red_cont <- wine_red[,-12]
+
+#  Take the first 5 rows of wine_red_cont
+wine_red_small <- wine_red_cont[1:5,]
+
+#  Calculate distance matrix.  Include upper triangle?  Diagonal of matrix?
+dist(wine_red_small)
+dist(wine_red_small, diag = T)
+dist(wine_red_small, upper = T)
+dist(wine_red_small, upper = T, diag = T)
+dist_wine_red_small <- dist(wine_red_small)
+
+#  Use alternative distance functions
+dist(wine_red_small)
+dist(wine_red_small, method = "euclidean")  #  "as the Nazgul flies" distance
+dist(wine_red_small, method = "manhattan")  #  "city block"" distance
+```
+
+In the distance matrices above (created iwth the `dist()` function), explore the different ways to present the data (`diag`, `upper`, etc) and the different ways to measure the distance between points (`euclidean`, `manhattan`, etc).
+
+
+#  Visualizing Distance Structure with Hierarchical Linkage Clustering and Dendrograms
+
+Dendrogram:  Tree-like structure used for visualizing distances.
+
+y-axis:  Distance at which a pair of obs are linked
+x-axis:  A rough grouping of points
+
+
+```{r, cache = T}
+hc <- hclust(dist_wine_red_small, method = "single")
+par(mfrow = c(1,2))
+mds <- cmdscale(dist_wine_red_small, k = 2)
+plot(mds[,1], mds[,2], type = 'n')
+text(mds[,1], mds[,2], 1:5)
+plot(hc, ylab = "Pairwise Distance")
+```
+
+In the above code, we take the first five rows of our "red wine" dataset for illustrative purposes.  Notice how observations that are closer to each other in the graph are linked to each other at lower distances (lower on the y-axis) in the dendrogram.
+
+In lab, we'll learn how to make `ggplot()` versions of these graphs.
+
+
+#  Dendrogram of Full Dataset
+
+```{r, cache = T}
+par(mfrow = c(1,1))
+dist_wine <- dist(wine_red_cont)
+hc_full <- hclust(dist_wine, method = "complete")
+plot(hc_full, ylab = "Pairwise Distance")
+```
+
+Wow, this is ugly!  But it's mainly because by default, the obsevation IDs are displayed in overlapping fashion at the leaves of the tree.
+
+That said, notice how you can see the rough structure of the data in a dendrogram -- the different branches of the tree correspond to groups of observations that are similar to each other ("clusters").
+
+Again, we'll learn how to make prettier versions of this in lab.
+
+
+#  Multi-Dimensional Scaling -- Using k > 2
+
+As will be discussed in class last Monday, there are many methods to "project" high-dimensional data into a lower-dimensional subspace.  One of these is called "multi-dimensional scaling".
+
+Multi-dimensional scaling (MDS) tries to find the "best" $k$-dimensional projection of the original $p$-dimensional dataset ($k < p$).  
+
+By "best", we mean that our resulting projection (which will have $n$ rows and $k$ columns/variables) will maintain the important features of the original $p$-dimensional dataset (e.g. group structure).  
+
+As such, MDS tries to preserve the _order_ of the pairwise distances (which are stored in our distance matrix from part (b)).  That is, pairs of observations with low distances in the original $p$-column dataset will still be have low distances in the smaller $k$-column dataset.  Similarly, pairs of observations with high distances in the original $p$-column dataset will still be have high distances in the smaller $k$-column dataset.
+
+
+#  3-D Scatterplots
+
+This is more "for fun" than anything else, but sometimes it can be useful to look at 3-D scatterplots.  There's a package in `R` that does this for us -- `scatterplot3d`.
+
+**I strongly recommend running the following code at the command line, NOT within your `R` Markdown document!!!**
+
+```{r, include = F, cache = T}
+#library(scatterplot3d)
+
+#  Use K = 3 Projection for MDS
+#wine_red_mds <- cmdscale(dist(wine_red_cont), k = 3)
+
+#  Display the projection in a 3-D scatterplot at the default angle
+#random_colors <- rpois(nrow(wine_red_mds), lambda = 1) + 1
+#scatterplot3d(wine_red_mds, color = random_colors, pch = 16)
+
+#  Rotate the 3-D scatterplot, trying many angles
+#for(ii in 0:360){
+#  scatterplot3d(wine_red_mds, angle = ii, color = random_colors, pch = 16)
+#  Sys.sleep(0.1)
+#}
+```
+

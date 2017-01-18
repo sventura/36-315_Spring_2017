@@ -1,0 +1,355 @@
+ ---
+title: "36-315 Homework 04, Spring 2016"
+author: "Solutions"
+date: "Due Wednesday, February 10, 2016 (12pm ET) on Blackboard"
+output: html_document
+---
+
+#  Homework 04:  Contingency Tables, Chi-Square Tests, Odds Ratios, Four Fold Plots, Mosaic Plots
+
+##  Bob Ross Guides Us To Understanding Categorical Data
+
+***General instructions for homeworks***: 
+
++  Use this file as the template for your homework submission.  Delete the unecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Submit two files to Blackboard:  (1) an `R` Markdown file (named as:  [AndrewID]-HW04.Rmd -- e.g. "sventura-HW04.Rmd"), and (2) the corresponding .html file generated from `R` Markdown (named as:  [AndrewID]-HW04.html -- e.g. "sventura-HW04.html") to Blackboard in the Homework 04 submission section on Blackboard.  You are also welcome to upload a single .zip file containing both of these.
++  Your file should contain the code/commands to answer each question in its own code block; your code should produce plots that will be automatically embedded in the output file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+#  Problem 1
+
+**Critiquing Graphs**:
+
+Find a graph from the internet (last 7 days -- e.g. a news article, blog post, etc) or from an academic journal (last 60 days).  Describe and critique your graph:
+
+a.  (5 points)  **Include the graph in your assignment**.  Two choices here:  (1) embed the graph/image in the .html file (see below for instructions) and submit it along with your other files on Blackboard, or (2) include a link to the graph in your answer to this question.
+b.  (5 points)  **Describe the graph**.  What does the graph show?  What variables are plotted on the axes, via color, or via other features of the graph?
+c.  (5 points)  **Critique the graph**.  Does the graph do a good job of achieving its goals?  Does the graph use an unnecessary amount of data ink?  Does the graph distort the actual effect/data/relationship?  What are the strengths and weaknesses (if any) of the graphic?  What would you change (if anything) about this graphic?
+d.  (5 points)  **Critique the caption and/or surrounding text**.  Does the text enhance the user's understanding of the graphic?  What else would you include in the caption/surrounding text to help the viewer understand the graphic?
+
+To include an image from the internet in your `R` Markdown output, use the following code (adjust the width and height as necessary):
+
+(Note:  If you're viewing the .html file, you'll see an image below; the code to render this image is in the .Rmd file.)
+
+<div style="width:400px">
+![alt text](http://s.newsweek.com/sites/www.newsweek.com/files/2014/09/29/1003bobrosstoc.jpg)
+</div>
+
+\ 
+&nbsp;
+
+**See solutions to previous homework assignments.**
+
+
+#  Problem 2
+
+(5 points each)
+
+**Comparing Mosaic Plots and Four Fold Plots to Previous Graphics**:  
+
+a.  Mosaic plots are similar to stacked bar charts.  Explain the key differences between the two types of graphs.  Be sure to comment on what types of distributions are displayed, and which pieces of the graph show this information.  Also be sure to comment on the coloring systems.
+
+Mosaic plots show the marginal distribution of one variable in the column widths, while stacked bar charts show this in the column heights.  The conditional distributions are shown in roughly the same way (heights of the boxes), except that in mosaic plots, they show the relative proportion of each category of variable 2 given variable 1, where in stacked bar charts, the heights of the boxes show the counts of each category of variable 2 given variable 1.  Additionally, the area of each box in a mosaic plot is proportional to the joint distribution of the two variables.  Finally, the mosaic plots include some additional statistical information, performing a statistical test and coloring the cells by the standardized Pearson residuals.
+
+b.  Four fold plots are similar to rose diagrams.  Explain the key differences between the two types of graphs.  Be sure to comment on what pieces of the graph show what information.
+
+In four fold plots the cell frequencies f[i,j] of each 2 x 2 table are shown as a quarter circle whose radius is proportional to sqrt(f[i,j]) so that its area is proportional to the cell frequency. In a rose plot the radii of the sectors are by default equal to the square root of the relative frequencies of observations in each group. This ensures that the area of the sector is proportional to the group frequency. In four fold plots, the radii of the opposite cells (A vs. D or B vs. C) are identical (by default), while in Rose diagrams there is no such restriction.  Also, with Rose diagrams, you are not limited to four categories. In a four fold plot confidence rings for the odds ratio can be superimposed to provide a visual test of the hypothesis of no association in each stratum. The width of the confidence rings gives a visual indication of the precision of the data.  Finally, remember that a four fold plot is displaying two binary categorical variables, while a rose diagram is only displaying a single categorical variable (with any number of categories).
+
+Sources: <http://www.datavis.ca/papers/4fold/4fold.pdf>, <http://www.inside-r.org/packages/cran/circular/docs/rose.diag>, <https://stat.ethz.ch/R-manual/R-devel/library/graphics/html/fourfoldplot.html>
+
+
+
+#  Problem 3
+
+(30 points)
+
+**Mosaic Plot vs. Stacked Bar Chart vs. Side-by-Side Bar Chart**
+
+Repeat parts (a) and (b) from Problem 6 of Homework 03.  This time, remove the row where the gender is equal to 0, so that you only have 1s and 2s in your dataset (males and females).  (Note:  This is strictly for the purposes of having cleaner graphs and easier-to-interpret analyses.)
+
+Now, create a mosaic plot with the same variables from this problem.  Be careful when deciding on the order of the two variables in the mosaic plot!  Your plot should display the same marginal and conditional distributions as the stacked and side-by-side bar charts from HW03, Problem 6, parts (a) and (b).  
+
+Comment on your graphs.  Describe the (relative) strengths and weaknesses of each.  In which graph is it easiest to see the marginal distribution of the first variable?  In which graph is it easiest to see the conditional distribution of the second variable given the first variable?  In which graph is it easy to see the outcome of a statistical test?  
+
+Overall, which of these graphs do you like the most?  (There is no right answer, but please justify your choice.)  Feel free to say something like "It depends on the purpose for which I am using the graphic", but please explain if you do so!
+
+```{r, fig.height=8, fig.width=12}
+# Load in the data
+library(gsheet)
+bike_data <- gsheet2tbl("https://docs.google.com/spreadsheets/d/143-u41MokWNU6w4_hptUypQ_sIc4ZIfEDsABq4MzDhA/edit?usp=sharing")
+bike_data <- as.data.frame(bike_data)
+# Omit rows with missing values
+bike_data_no_NA <- na.omit(bike_data)
+# Remove rows with gender = 0
+bike_data_final <- bike_data_no_NA[-which(bike_data_no_NA$gender == 0),]
+# Create birth_decade variable
+bike_data_final$birth_decade <- substr(bike_data_final$birth.year, 1, 3)
+bike_data_final$birth_decade <- paste(bike_data_final$birth_decade, "0s", sep="")
+
+library(ggplot2)
+# Create stacked bar chart showing birth decade given gender
+plot.a <- ggplot(bike_data_final, aes(gender, fill=birth_decade)) + geom_bar() + xlab("Gender") + ylab("Count") + ggtitle("Distribution of Gender by Birth Decade")
+plot.a
+
+# Create side by side bar chart showing birth decade given gender
+plot.b <- ggplot(bike_data_final, aes(gender, fill=birth_decade)) + geom_bar(position = "dodge") + xlab("Gender") + ylab("Count") + ggtitle("Comparison of birth decade distribution for each gender")
+plot.b
+
+# Create contingency table for birth decade and gender
+decade_gender <- table(bike_data_final$gender, bike_data_final$birth_decade)
+rownames(decade_gender) <- c("Male", "Female")
+decade_gender
+# Create mosaic plot
+mosaicplot(decade_gender, main = "Mosaic Plot of Birth Decade and Gender", xlab = "Gender", ylab = "Birth Decade", shade = TRUE, las = 1)
+```
+
+The strengths of the stacked bar chart are that the marginal distribution of gender can easily be seen by looking at the total height of each bar, and the conditional distributions of birth decade given gender are somewhat easy to interpret.  In fact, it is easiest to see the marginal distribution of the first variable in this graph, compared to the other graphics.  However, the weakness is that it is harder to compare conditional distributions.  For example, it is harder to compare the frequency of male riders born in the 1960s versus the frequency of male riders born in the 1950s. 
+
+This is an advantage of the side-by-side bar chart.  This plot most clearly shows the conditional distribution of birth decade given gender, because the bars can easily be compared since they are no longer stacked.  The disadvantage of this plot is that it is harder to visualize the marginal distribution of the gender, since we would need the total count in each of the bars for each gender in order to obtain this information.  
+
+The advantage of the mosaic plot is via the use of shading, mosaic plots easily show outcomes of a statistical test of independence between gender and birth year.  There are some disadvantages, however.  For instance, using the column widths to indicate the marginal distribution of gender is not as easy to read/interpret as using the heights in a stacked bar chart.  Additionally, the conditional distributions of birth decade given gender may appear distorted, since our eyes naturally compare the areas of adjacent cells (as opposed to the heights, which display the conditional distributions).  Rectangles represent percentages rather than absolute numbers; this is neither an advantage nor a disadvantage, since which measure is desired depends wholly on the application/problem.  
+
+It is easiest to see the marginal distribution of variable 1 in the stacked bar chart.     
+It is easiest to see the conditional distribution of variable 2 given variable 1 in the side by side bar charts.   
+It is easiest to see the results of a statistical test for independence in the mosaic plot.   
+
+
+
+#  Problem 4
+
+(5 points each)
+
+**Four Fold Plot vs. Stacked Bar Chart vs. Side-by-Side Bar Chart**
+
+FiveThirtyEight has compiled one of the most valuable datasets of our generation:  A dataset about Bob Ross paintings.  If you don't know who Bob Ross is, see the video [here](https://www.youtube.com/watch?v=0FYfo94qefg).
+
+The dataset has several binary variables.  Each variable indicates whether or not that particular object (e.g. "FENCE") was painted by Bob Ross in each of the 403 paintings in the dataset (1 if included in the painting, 0 otherwise).
+
+Load the data into R directly from GitHub, where the data is hosted.  Take a look at the first few rows of the dataset so you get a feel for how the data is arranged.  (There is no need to print these in your output, however.)
+
+Your friend asks you:  Is there a positive association between paintings with lakes and paintings with mountains
+
+We'll answer your friend's question in the following problems.
+
+
+```{r, cache=TRUE}
+bob_ross <- read.csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/bob-ross/elements-by-episode.csv")
+```
+
+a.  Use the `colSums()` function to find how many times each object appears in the 403 paintings.  Sort the output.  What are the five most common objects in Bob Ross's paintings?  You can use the following code to do this:  
+
+```{r, cache=TRUE}
+sort(colSums(bob_ross[, -(1:2)]), decreasing = T)[1:8]
+```
+
+The top four objects are variants on trees being painted.  The fifth is clouds.  If you were to consider the trees to be a single object here, mountains, lakes and grass also make the top five.
+
+
+b.  Create a stacked bar chart showing the marginal distribution of the `LAKE` variable and the conditional distributions of the `MOUNTAIN` variable.  As always, use proper colors, titles, and labels.  Describe your graph.
+
+```{r, cache=TRUE}
+library(ggplot2)
+bob_ross$LAKE <- factor(bob_ross$LAKE, labels=c("Doesn't Have a Lake",
+                                                "Has a Lake"))
+bob_ross$MOUNTAIN <- factor(bob_ross$MOUNTAIN, 
+                            labels=c("Doesn't Have a Mountain",
+                                     "Has a Mountain"))
+
+ggplot(bob_ross, aes(x=LAKE, fill=MOUNTAIN)) + geom_bar() + 
+  ggtitle("Use of Lakes and Mountains in Bob Ross Episodes") +
+  scale_fill_manual(values=c("dodger blue","orange")) # sets fill colors
+```
+
+The graph shows the marginal distribution of lake episodes using the full bars.  The x-axis indicates whether lakes were included.  The conditional distributions of the presenece of mountains given the presence of lakes are shown within each bar using color.  
+
+As we can see in the first bar, it appears that paintings that do not have lakes are also likely to not have mountains (vs. have mountains).  From the second bar, it appears that paintings that have lakes are slightly more likely to have mountains as well (vs. not have mountains).  We can not deduce whether this association is statistically significant from this graph.
+
+c.  Repeat (c), but create a side-by-side bar chart instead.  As always, use proper colors, titles, and labels.  Describe your graph.
+
+```{r, cache=TRUE}
+ggplot(bob_ross, aes(x=LAKE, fill=MOUNTAIN)) +
+  geom_bar(position=position_dodge()) + 
+  ggtitle("Use of Lakes and Mountains in Bob Ross Episodes") +
+  scale_fill_manual(values=c("dodger blue","orange"))
+```
+
+The graph has two pairs of bars along the x-axis. The left pair show cases where a lake didn't appear in the episode. The right pair show cases where lake does appear in the episode.  Therefore the marginal distribution can be seen by adding together the heights of each pair of bars.  Each pair of bars compares the count of episodes that include mountains to those that don't, conditioning on whether a lake appeared.
+
+As we can see in the first pair of bars, it appears that paintings that do not have lakes are also likely to not have mountains (vs. have mountains).  From the second pair of bars, it appears that paintings that have lakes are slightly more likely to have mountains as well (vs. not have mountains).  We can not deduce whether this association is statistically significant from this graph.
+
+
+d.  Create a 2x2 contingency table of the `LAKE` and `MOUNTAIN` variables.  Store the contingency table in an R object called `tab_lake_mountain`.  Use the `rownames()` and `colnames()` functions to rename the categories of the contingency table to something more appropriate, e.g. "Has A Lake" and "Does Not Have A Lake".  `colnames(tab_lake_mountain) <- c("new name 1", "new name 2")`
+
+```{r}
+tab_lake_mountain <- table(bob_ross$LAKE, bob_ross$MOUNTAIN)
+tab_lake_mountain
+# note that the names were set in part b
+```
+
+e.  Create a function called `odds_ratio` that takes as input a 2x2 contingency table and outputs the odds ratio corresponding to that table.   Demonstrate that your `odds_ratio` function works by calculating the odds ratio for `tab_lake_mountain` using both your function and using an approach similar to Lab04.  Do you think there is an association between Bob Ross including lakes and mountains in his paintings?  If so, is it a positive or negative association?
+
+```{r, cache=TRUE}
+odds_ratio <- function(tab) {
+  tab[1,1] * tab[2,2] / (tab[1,2] * tab[2,1])
+}
+odds_ratio(tab_lake_mountain)
+# Lab 4 method
+(tab_lake_mountain[2,2] / tab_lake_mountain[2,1]) /
+  (tab_lake_mountain[1,2] / tab_lake_mountain[1,1])
+```
+
+The calculated odds ratios match.  The odds ratio indicates that there is a positive association between including lakes and mountains.
+
+f.  Create a four fold plot of the contingency table.  Be sure to use a proper title, labels, and colors.  Use the `main` argument in the `fourfoldplot` function to include a title on your graph.
+
+```{r}
+fourfoldplot(tab_lake_mountain, color=c("dodger blue","orange"), 
+             main="Joint Distribution of Lakes and Mountains")
+```
+
+g.  Interpret the plot.  Comment on any association you see in the graph.
+
+The pattern in the plot suggests a positive association between inclusion of mountains and lakes. As the confidence bands don't overlap, we can conclude that the association is statistically significant.
+
+h.  Answer your friend's question:  Is there a positive association between paintings with lakes and paintings with mountains?  What evidence do you have for this?
+
+There does appear to be a positive association between paintings with lakes and paintings and mountains. Both the odds ratio, which is much larger than 1, and the four fold plot provide evidence of this positive association.
+
+
+#  Problem 5
+
+(BONUS:  10 points each)
+
+**Create `ggplot` Versions of Four Fold Plots and Mosaic Plots**
+
+This will be challenging!  Consult Wasserman's R Intro document on Blackboard for more on writing functions.
+
+a.  Write a function, `ggplot_four_fold`, that takes a 2x2 contingency table as input (plus any other necessary inputs) and outputs a `ggplot` object that will display a four fold plot.
+
+```{r}
+# taken from fourfoldplot
+# creates a 2x2 table with desired odds ratio and margins
+findTable <- function(or, tab) {
+  m <- rowSums(tab)[1L]
+  n <- rowSums(tab)[2L]
+  t <- colSums(tab)[1L]
+  if (or == 1) 
+    x <- t * n/(m + n)
+  else if (or == Inf) 
+    x <- max(0, t - m)
+  else {
+    A <- or - 1
+    B <- or * (m - t) + (n + t)
+    C <- -t * n
+    x <- (-B + sqrt(B^2 - 4 * A * C))/(2 * A)
+  }
+  matrix(c(t - x, x, m - t + x, n - x), nrow = 2)
+}
+
+ggplot_four_fold <- function(tab, title, colors=c("dodger blue","orange")) {
+  ord <- c(3,4,2,1) # set order of quadrants
+  tab2 <- tab
+  # create standardized table by calculating geometric means
+  tab2[c(1,4)] <- sqrt(prod(tab[c(1,4)]))
+  tab2[c(2,3)] <- sqrt(prod(tab[c(2,3)]))
+  
+  # calculate confidence interval for odds ratio
+  or <- odds_ratio(tab)
+  psi <- log(or)
+  se_psi <- sqrt(sum(1/tab))
+  or_int <- exp(c(psi-2*se_psi,psi+2*se_psi))
+  
+  # use OR interval to make confidence band tables
+  lower <- findTable(or_int[1], tab)
+  lower[c(1,4)] <- sqrt(prod(lower[c(1,4)]))
+  lower[c(2,3)] <- sqrt(prod(lower[c(2,3)]))
+  upper <- findTable(or_int[2], tab)
+  upper[c(1,4)] <- sqrt(prod(upper[c(1,4)]))
+  upper[c(2,3)] <- sqrt(prod(upper[c(2,3)]))
+  
+  # extract category names for labeling
+  cat_names <- paste(rep(colnames(tab), each=2), 
+                     rep(rownames(tab), times=2), sep = " and ")
+  # create data frame for ggplot input
+  df <- data.frame(counts = sqrt(tab2[ord]), 
+                   names = factor(cat_names[ord],
+                                  levels = cat_names[ord]),
+                   lower = sqrt(lower[ord]),
+                   upper = sqrt(upper[ord]))
+  ggplot(df) + aes(x=names,y = counts) + coord_polar() + ggtitle(title) + 
+    geom_bar(stat="identity", fill = rep(colors,2), width=1) + 
+    geom_errorbar(aes(ymin=lower, ymax=upper), width=1)
+}
+ggplot_four_fold(tab_lake_mountain, "Joint Distribution of Lakes and Mountains")
+```
+
+This is an incomplete implementation of a four fold plot but gives the basic structure. A complete implementation should give an error for incorrect input, allow the user to choose a confidence level, and allow for control over labels.
+
+
+b.  Write a function, `ggplot_mosaic`, that takes a contingency table as input (plus any other necessary inputs) and outputs a `ggplot` object that will display a mosaic plot.
+
+```{r}
+ggplot_mosaic <- function(tab, shade = FALSE) {
+  # calculate expected counts in each cell assuming independence
+  # the outer function calculate the “outer product” - a table with all pairwise products
+  expected <- outer(rowSums(tab),colSums(tab))/sum(tab)
+  # standardize the residuals and split into categories
+  std_resid <- (tab-expected)/sqrt(expected)
+  resid_cat <- factor(ifelse(std_resid>4, ">4",
+                      ifelse(std_resid>2, "2:4",
+                      ifelse(std_resid> 0, "0:2",
+                      ifelse(std_resid> -2, "-2:0",
+                      ifelse(std_resid> -4, "-4:-2",
+                      "<-4"))))))
+  # set row sums equal to one
+  marg_1 <- rowSums(tab)
+  tab[1,] <- tab[1,]/marg_1[1]
+  tab[2,] <- tab[2,]/marg_1[2]
+  marg_1 <- marg_1/max(marg_1) # set margin for width
+  
+  # create data frame for ggplot input
+  df <- data.frame(a = c(1,1), b = tab[,2], names = c("one","two"),
+                   a_r = resid_cat[1:2], b_r = resid_cat[3:4], marg_1)
+  
+  if (shade) {
+    ggplot(df) + geom_bar(aes(x=names, y=a, fill=a_r,width=marg_1),
+                          stat="identity", color="black") + 
+      geom_bar(aes(x=names,y=b,fill=b_r,width=marg_1), stat="identity",
+               color="black")
+  } else {
+    ggplot(df) + geom_bar(aes(x=names, y=a, width=marg_1), stat="identity",
+                          color="black") + 
+      geom_bar(aes(x=names,y=b,width=marg_1), stat="identity",fill="blue",
+               color="black")
+  }
+}
+ggplot_mosaic(tab)
+ggplot_mosaic(tab_lake_mountain, shade = TRUE)
+mosaicplot(tab_lake_mountain, shade = TRUE)
+
+```
+
+This is an incomplete implementation of a mosaic plot but gives the basic structure. A complete implementation would return an error if there’s incorrect input, use a reasonable color scheme (and potentially give control to the user), use a reasonable legend, and use reasonable labels. Ideally the user could also have optional control over these things. The gap between columns is also not ideal.
+
+
+#  Problem 6
+
+(BONUS:  1 point)
+
+Watch the video at the link in Problem 4.  What does Bob Ross say from the 24:14 mark to the 24:29 mark?  
+
+This quote happens to also provide great advice when it comes to working in `R`, trying out new functions, and learning new tasks.
+
+Until next week, happy coding!
+
+   
+**"Experiment. Practice. It's unbelievable what you can do if you'll just take the time to practice a little bit and enjoy it. Just have a super good time."**
+
+
+
+<div style="width:600px">
+![alt text](http://www.azquotes.com/picture-quotes/quote-we-don-t-make-mistakes-just-happy-little-accidents-bob-ross-34-64-84.jpg)
+</div>
+
