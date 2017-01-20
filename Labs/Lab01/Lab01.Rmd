@@ -1,0 +1,242 @@
+---
+title: "36-315 Lab 01"
+author: "Your Name Here"
+date: "Due Saturday, January 21st, 2017 (6:30pm)"
+output: html_document
+---
+
+##  Lab 01:  Hello, world!  Introduction to R, RStudio, & RMarkdown
+
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab01.Rmd -- e.g. "sventura-Lab01.Rmd") to the Lab 01 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+***
+***
+
+Todays lab will introduce different aspects of `R`.  We will reference a long handout on the Blackboard site under Labs (Rintro-wasserman.pdf).
+
+
+***
+***
+
+##  This week only, the assignment is due on Saturday at 6:30pm.  Normally, lab assignments will be due on Fridays at 6:30pm.
+
+***
+***
+
+#  Oral Evaluation Graphic
+
+This week, you do not have to do an oral evaluation.  Instead, Sam will do an example oral evaluation for everyone in lab.  We'll use this graphic:
+
+<div style="width:750px">
+![alt text](https://pbs.twimg.com/media/CqAAH9yW8AA2Jj6.jpg)
+</div>
+
+
+***
+***
+
+
+#  Before You Start
+
+This lab is an introduction to `R`.  This will be review for many of you, and it will be brand new to many others.  **If you have trouble completing the lab on time, don't worry.**
+
+Let your TAs know what you're having trouble with, and they will help you.
+
+If you still are unable to complete the lab on time, let Sam know.  This lab is for your benefit; we're most concerned about you learning and understanding `R` and `R Markdown`.  Do not worry about your grade on this lab -- we will be lenient.
+
+
+***
+***
+
+
+#  Problem 1
+
+**Storing Your Work and Storing Your `R` Commands**:  
+
+First, open the RStudio program on your computer.  
+
+With R Markdown, you can simultaneously store your commands, execute your commands, and generate an output file automatically.  Because of this, we will use R Markdown files (.Rmd) to store our code and answers for all Lab and Homework assignments.
+    
+Use the Lab01.Rmd file as a template for your submission.  Click "Knit HTML" at the top (or Command+Shift+K on Mac).  This should produce an HTML page that executes the code you write.  You can edit this .Rmd file to produce your lab submission.
+
+Notice how the text you write in the .Rmd file shows up in the output HTML file each time you click "Knit HTML".  
+
+For more tips/tricks on how to format things in R Markdown, [see here](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf)
+
+
+**Code Blocks**:  
+
+When you open a new R Markdown file, you should see a block of code (beginning with three [grave accent marks](https://en.wikipedia.org/wiki/Grave_accent) -- similar to apostrophes, but located next to the 1 key on a standard keyboard -- then an "`{r}`", then three more accent marks).  This block should have a light gray background color in R Studio.  This is a code block!  You can type commands into this block, and they will be executed by `R` and included in your output.
+
+Let's test out the following command, the following command:
+
+```{r}
+#  This is a comment.
+print("Hello, World!")
+```
+
+Change the above code so that it outputs the following text:  "Hello, World!  My name is [your name]."
+
+
+**Code Comments**:  
+
+Comments should be used frequently when writing code to give insight into what each piece of code is doing.  To add a comment to your code, start a new line with the `#` symbol.  
+
+Change the existing comment in your first code block so that it says "I am printing 'Hello, World!' in R Markdown".
+
+Add another comment that says what your major is.  
+
+Notice that the text in the comments shows up in the code block in the output file, but not in the actual output when you click "Knit HTML".  Comments exist to help you and others who read your code.
+
+
+**Where is my output file?**
+
+Find where you stored your [AndrewID]-Lab01.Rmd file on your computer.  
+
+In the same directory, there should be a file called [AndrewID]-Lab01.html.  
+
+Open it.  It should automatically open in a browser, and it should contain the output.  
+
+
+***
+***
+
+
+#  Problem 2
+
+**Getting Started**:  Create a single code block that contains R commands to do all of the following:
+
+a.  $(6+3)*4 - 5$
+b.  $4^2$
+c.  $e^{-5}$  (hint:  type ```help(exp)``` at the command line in R Studio
+d.  Let $y=8$.  Let $x = 5-6y$.  Print $x$.
+e.  Repeat (d) for $y=0$, $y=1$, and $y=5/6$.
+
+
+***
+***
+
+
+#  Problem 3
+
+**Built-in Help and Documentation**:  Using the `help()` and `help.search()` functions at the command line, use R to do the following:
+
+a.  Find the help documentation for the `quantile` function.  This function takes a vector of numbers and computes quantiles for the vectors.  What is the description of the `probs` argument?
+b.  Find the help docuemntation for the `mean` function.  This function takes a vector of numbers and computes their average.  What is the example code at the bottom of the help page?
+c.  Use the help pages to find the name of hte function in `R` that finds the standard deviation of a vector.
+
+Note that because everything is online, you can use online search engines to achieve many of these same goals. Feel free to do so for all of your future assignments. 
+
+
+***
+***
+
+
+#  Problem 4
+
+**Loading a library in R**:  In `R`, there are many libraries or packages/groups of programs that are not permanently stored in `R`, so we have to load them when we want to use them.  We can load the library into `R` by typing `library(library-name)` at the command line.  (Sometimes we need to download the library first; more on this later.)
+
+a.  Load the `MASS` library into R.  Open the help documentation for the MASS package.  What is the official name of this `MASS` package?  It may help to use `library(help=MASS)` to solve this problem.
+b.  Load the `datasets` library.  Find the help documentation for its `trees` dataset.  Describe this dataset using information from the help pages.
+c.  Load the `graphics` library into `R` and open its help documentation.  This library is full of graphics/visualization functions that we may use in this class.  Find a function that creates a 1-D Scatterplot. Describe its argument `x`.
+
+
+***
+***
+
+
+#  Problem 5
+
+**Installing Packages**
+
+In this class, we'll use many `R` libraries ("packages") that are not currently installed on your computer or the lab computers.  There are some security measures in place to prevent you from installing packages to CMU-wide repository of packages.  Luckily, there are some ways around this.
+
+a.  At the command line / Console (NOT in a code block), type `install.packages("tidyverse")`.  What happens?  
+
+If you're using one of the CMU cluster computers, the package may not install.  This happens because CMU does not allow us to install new packages to the default location.  As a result, we have to specify a new directory where we can install new `R` packages.
+
+If the package installed with no issues, you can skip the following parts!  If you could not install the package, take the following steps:
+
+
+b.  Create a new directory on your computer called "36-315", and create a new sub-directory called "Packages".  The filepath to this directory should be something like:
+
++  "C:/Users/YourName/Desktop/36-315/Packages" if you use Windows
++  "/Users/YourName/Desktop/36-315/Packages" if you use Mac
++  "..." if you are using the CMU cluster computers
+
+c.  In a code block, store the filepath in an object called `package_path`, e.g. `package_path <- "/Users/YourName/Desktop/36-315/Packages"`.  Repeat this at the command line / Console as well.
+
+d.  In the same code block, include the following line of code:  `.libPaths(c(package_path, .libPaths()))`
+
+e.  At the command line / Console (NOT in a code block), type `install.packages("tidyverse", lib = package_path)`.  This should install the `tidyverse` package.
+
+f.  Finally, add `library(tidyverse)` to your code block from above.  This should load the `tidyverse` package so that you can use it for the next problem.
+
+Important note:  Never install new packages in a code block.  Always install new packages at the command line / Console.  That is, the `install.packages()` function should never be in your submitted code.  The `library()` function, however, should be in most of your submitted code.
+
+
+***
+***
+
+
+#  Problem 6
+
+**Reading, Manipulating, and Plotting Data**
+
+We will use the `read_csv()` function to read in a dataset from the internet.  We'll use the dataset at [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/lab1.txt] for this lab.
+
+(Note that this data is in a GitHub repository called "315-code-and-datasets".  We'll use this repository for sharing various datasets and code snippets throughout the semester.)
+
+All code is provided for you for the following problems -- just uncomment the code in the code block below:
+
+a.  Load the `tidyverse` library.
+b.  Read in the "Pittsburgh Bridges" dataset.
+c.  Create a new column in the dataset that indicates whether the bridge crosses the Allegheny River ("yes" or "no").
+d.  Create a new column in the dataset that indicates whether the bridge is at least 3000 feet long ("long" or "short").
+e.  Create a well-labled bar plot of the `river` variable.
+
+Although we provided the code for you here, it is important that you take some time to understand what the code does!  Study it in detail, and be prepared to do similar tasks in subsequent assignments.
+
+```{r}
+#  Load the tidyverse library
+#library(tidyverse)
+
+#  Read in the data
+#bridges <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv")
+
+#  Create the new variables
+#bridges <- mutate(bridges, 
+#                  over_allegheny = ifelse(river == "A", "yes", "no"),
+#                  length_binary = ifelse(length >= 3000, "long", "short"))
+
+#  Create the bar plot
+#ggplot(bridges, aes(x = river)) + 
+#  geom_bar(fill = "darkblue") + 
+#  labs(
+#    title = "Number of Bridges in Pittsburgh by River",
+#    subtitle = "A = Allegheny River, M = Monongahela River, O = Ohio River",
+#    x = "River",
+#    y = "Number of Bridges",
+#    caption = "Source:  Pittsburgh Bridges Dataset"
+#  )
+```
+
+
+***
+***
+***
+***
+***
+***
+
+
