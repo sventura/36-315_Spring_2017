@@ -1,0 +1,241 @@
+---
+title: "36-315 Homework 01, Fall 2016"
+author: "Your Name Here"
+date: "Due Wednesday, January 25, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Introduction to `R`, RStudio, Data Types, and Critiquing Graphics
+
+***
+***
+
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW01.Rmd -- e.g. "sventura-HW01.Rmd") to the Homework 01 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+#  Problem 1
+
+(12 points)
+
+**Downloading R and R Studio**:  
+
+If you are using your own, personal computer, you will need to download and install `R` and RStudio.  Follow the instructions here to do so (be sure to choose the correct operating system, and 64-bit R if possible/compatible):  [https://www.rstudio.com/products/rstudio/download/]
+
+Once you get RStudio open, download the Homework01.Rmd file from Blackboard and open it in RStudio (File / Open...).  We recommend using the Homework01.Rmd file on Blackboard as a template for your submission.  If you do, be sure to delete all of the problem statements and additional text, as these are not necessary to include in your submission.
+
+Notice how the text you write in the .Rmd file shows up in the output file each time you click "Knit HTML".  
+
+For more tips/tricks on how to format things in R Markdown, go to [https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf]
+
+**Customizing the RStudio User Interface**:
+
+The first thing you'll notice is that, in the RStudio window, there are several panes that contain various things (Console, Help, Environment, History, Plots, etc).
+
+If you're using Mac, go to RStudio / Preferences / Pane Layout.  If you're using Windows, go to Tools / Global Options.  Change the menu options to arrange the panes as you see fit.  
+
+**In your answer to this problem**, describe your chosen Pane Layout and give a brief explanation for why you chose this.
+
+Personally, Sam prefers to have:
+
++  Source in its own pane on the top-right-hand side
++  Console in it's own pane on the top-left-hand side of the window
++  Help and Git on the bottom-right
++  Everything else on the bottom-left
+
+Click Apply.  Now click Appearance and choose an appropriate font, font size, and theme.  I personally prefer a fixed-width font like Courier.
+
+Click Apply and okay.  Finally, when coding, I prefer to minimize the bottom-left and bottom-right panes so that I have more vertical space to see the code I'm writing and the output it's generating.  I'm also okay with swapping the Source and Console windows above, though this obviously is up to you.
+
+
+**Where is my output file?**
+
+Find where you stored your [AndrewID]-HW01.Rmd file on your computer.  
+
+In the same directory, there should be a file called [AndrewID]-HW01.html.  
+
+Open it.  It should automatically open in a browser, and it should contain the output.  
+
+You'll submit these .html files along with your .Rmd files for all homeworks and labs.
+
+
+**Additional Customization Advice** (not required):
+
++  Under Preferences / Code / Display, you might consider adding the margin column and setting it to 80 characters, since most style guides suggest that you should always keep lines of code at 80 characters or less when possible.
++  You can set your background color, font, font size, etc under Preferences / Appearance.  Personally, Sam uses the "Tomorrow Night" theme since it's easier on the eyes and works well if you have Flux installed on a Mac.  That said, this is strictly a personal preference, so you should choose something that you like.
++  Under Preferences / Packages, I recommend that you change your CRAN mirror to the "Global (CDN) - RStudio" option, as it is very reliable.
++  Under Preferences / Git/SVN, you can configure your version control preferences.  Although not required, I highly recommend that you use Git with RStudio.  The interface is easy to use even if you're a beginner programmer or Git user.  [This link](https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN) and [this link](https://jennybc.github.io/2014-05-12-ubc/ubc-r/session03_git.html) have more information on this, if you're interested (again, not required).
+
+
+***
+***
+
+
+#  Problem 2
+
+**Critiquing Graphs**:
+
+Find a graph from the internet (last 7 days -- e.g. a news article, blog post, etc) or from an academic journal (last 60 days).  Describe and critique your graph using the suggestions below.  In parts (b)-(d), you do not have to address each bullet below -- these are just suggestions of things you can discuss when describing/critiquing your graph.
+
+a.  (5 points)  **Include the graph in your assignment**.  Two choices here:  
+
++  embed the graph/image in the .html file (see below for instructions) and submit it along with your other files on Blackboard, or 
++  include a link to the graph in your answer to this question.
+
+b.  (5 points)  **Describe the graph**.  
+
++  What does the graph show?  
++  What variables are plotted on the axes, via color, or via other features of the graph?
++  **What is the main result of the graph?**
+
+c.  (5 points)  **Critique the graph**.
+
++  Does the graph do a good job of achieving its goals?  
++  Does the graph use an unnecessary amount of data ink?  
++  Does the graph distort the actual effect/data/relationship?  
++  What are the strengths and weaknesses (if any) of the graphic?  
++  What would you change (if anything) about this graphic?
+
+d.  (5 points)  **Critique the caption and/or surrounding text**.  
+
++  Does the text enhance the user's understanding of the graphic?  
++  What else would you include in the caption/surrounding text to help the viewer understand the graphic?
+
+To include an image from the internet in your `R` Markdown output, use the following code (adjust the width and height as necessary):
+
+(Note:  If you're viewing the .html file, you'll see CMU's logo below; the code to render this image is in the .Rmd file.)
+
+<div style="width:300px">
+![](https://upload.wikimedia.org/wikipedia/en/thumb/b/bb/Carnegie_Mellon_University_seal.svg/1024px-Carnegie_Mellon_University_seal.svg.png)
+</div>
+
+
+
+***
+***
+
+
+#  Problem 3
+
+**Writing R Functions and Working with Vectors**:  
+
+Read section 5 of Wasserman's R Intro document on Blackboard about writing functions in R.  Functions help us reuse code and enhance the reproduciblity of our code.
+
+a.  (5 points)  Write an R function called `quadratic` that computes the quadratic formula.  That is, write a function that has four inputs -- `a`, `b`, `c`, and `x` and returns the quantity $ax^2 + bx + c$.
+
+b.  (2 points)  Test your function out and demonstrate that it works for at least there different combinations of the parameters.
+
+c.  (2 points)  Type `quadratic(x=2)` into your code block.  What happens when you only specify one argument?  (Note:  When knitting your document for submission, comment this line of code out, so that it does not produce an error.)
+
+c.  (2 points)  Create a new function, `quadratic2`, that has default values for `a=1`, `b=1`, and `c=1`.  Type `quadratic2(x=2)` into your code block.  What happens when you only specify one argument?
+
+d.  (2 points)  Type `1:10` at the command line in `R`.  What happens?  
+
+e.  (2 points)  What happens when you call the function with the following input:  `quadratic2(x = 1:10)`.  Why does this happen?
+
+f.  (5 points)  Type `plot(1:10, quadratic2(x=1:10))` into your code block.  Describe the graph that shows up.
+
+
+***
+***
+
+
+#  Problem 4
+
+**Introduction to ggplot2**:  
+
+In `R`, there are several libraries or packages/groups of programs that are not permanently stored in `R`.  One that will be particularly useful in our class is called `ggplot2`.
+
+a.  (2 points)  Type `library(ggplot2)` at the command line.  Is the `ggplot2` package installed on your computer?  If not, type `install.packages("ggplot2")`, then repeat the `library(ggplot2)` command above.  
+
+Note that the `ggplot2` library is contained within the `tidyverse` library from Lab 01.  I recommend just using the `tidyverse` library from here on out (i.e., you should include `library(tidyverse)` at the beginning of all of your .Rmd files for this course).
+
+b.  (2 points)  The Comprehensive R Archive Network, or CRAN, stores most publicly accessible, open-source R packages for anyone to use.  Find CRAN's documentation on the `ggplot2` package (e.g. by searching "ggplot2 in R" on the internet).  You should find a PDF document that has 189 pages of documentation about `ggplot2`.  What does the "gg" in `ggplot2` stand for?
+
+c.  (2 points)  Who are the authors of the `ggplot2` package?  Who is the maintainer of the `ggplot2` package?  Search this person's name on the internet.  What are some other `R` packages this person has written?  (Just name a few.)
+
+d.  (2 points)  Type `library(MASS)`. Load the `Cars93` dataset into `R` by typing `data(Cars93)`.  Type `head(Cars93)` to view the first few rows of this dataset.  How many columns does the dataset have?  (Try `ncol(Cars93)`.)  What are the names of the columns?  (Try `colnames(Cars93)`.)
+
+e.  (30 points)  Code is provided below to create some graphs with `ggplot2` with the `Cars93` dataset.  Study the code carefully, then answer the questions below.
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(MASS)
+data(Cars93)
+
+#  First graph
+ggplot(data = Cars93) + 
+  geom_bar(aes(x = Type), fill = "darkblue", color = "black")
+
+#  Second graph
+ggplot(data = Cars93) + 
+  geom_histogram(aes(x = MPG.city), fill = "darkred", color = "black")
+
+#  Third graph
+ggplot(data = Cars93) + 
+  geom_point(aes(x = Fuel.tank.capacity, y = MPG.city, color = Type))
+
+#  Fourth graph
+ggplot(data = Cars93) + 
+  geom_text(aes(x = Fuel.tank.capacity, y = MPG.city, 
+                label = Type, color = Type))
+```
+
+
++  (5 points)  In the first graph, add an appropriate title, axis labels, and (if you want) a subtitle and a caption (use the approach from Lab 01 to do this)
++  (2 points)  In the second graph, fill the bars so that they are orange instead of dark red
++  (3 points)  In the third graph, plot `MPG.highway` on the y-axis instead of `MPG.city`
++  (10 points)  In the fourth graph, color the points by whether or not they have USA or non-USA `origin`.  Add a title indicating the two main variables in the graph, axis labels (with units, if applicable), a subtitle indicating which additional variables are included in the graph, and caption indicating the original source of the data.  See `help(Cars93)` if you do not know any of this information.
++  (10 points)  Interpret the updated fourth graph.  What information can you get from studying this graph?  Be detailed.
+
+
+***
+***
+
+
+#  Problem 5
+
+**Enroll in Piazza for 36-315**:
+
+All questions about homeworks, labs, the lab exam, projects, course material, etc should be posted to the discussion board on Piazza.  
+
+a.  (1 points)  If you're not already signed up, enrolled in our Piazza course [here](piazza.com/cmu/spring2017/36315/home).  **IT IS CRITICAL THAT YOU ENROLL IN THE COURSE ON PIAZZA.**  Important course discussion and information will only be distributed via Piazza.  You are responsible for understanding all content that is posted to Piazza.
+
+b.  (0 points)  On the course Piazza page, in the top-right corner, click the Settings gear/wheel icon.  Under Class & Email Settings, click Edit Email Notifications.  I recommend choosing Real Time for both parts and checking the "Automatically follow every question and note" checkbox.  That said, you are free to choose your own settings.
+
+c.  (2 points)  Write the following sentence:  "I certify that I understand that I am responsible for reading and understanding all material and content posted on the course Piazza page."
+
+d.  (2 points)  Write the following sentence:  "I certify that I will not abuse the use of anonymous posting on the course Piazza page."
+
+
+***
+***
+
+
+#  Problem 6
+
+(5 points)
+
+**Consent to Use Lab Solutions**:
+
+If you do very well on a lab, we would like to post your solutions for that lab assignment to Blackboard for other students to see.  Posted solutions will, of course, be anonymized, so that other students will not know that the solutions are yours.  We will not post homework or lab exam solutions to Blackboard.
+
+You are welcome to opt out of this if you want to.  Just answer the following question:  Do you consent to having your (anonymized) lab solutions posted to Blackboard?  (Just type "Yes", or "No".)
+
+(You will receive 5 points regardless of what you answer -- we just need to know ahead of time!)
+
