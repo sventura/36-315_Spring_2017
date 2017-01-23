@@ -1,0 +1,671 @@
+---
+title: "36-315 Homework 09, Fall 2016"
+author: "Your Name Here"
+date: "Due Wednesday, November 9th, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Homework 09:  It's About Time
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW09.Rmd -- e.g. "sventura-HW09.Rmd") to the Homework 09 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+
+```{r, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+library(data.table)
+library(devtools)
+library(MASS)
+
+my_theme <- theme(
+    axis.text = element_text(size = 12, family = 'mono', colour = 'black'),
+    axis.title = element_text(size = 12, family = 'mono', colour = 'black'),
+    legend.title = element_text(size = 10, family = 'mono', colour = 'black'),
+    plot.title = element_text(size = 14,  family = 'mono', colour = 'black'),
+    legend.text = element_text(size = 8, family = 'mono', colour = 'black'),
+    legend.key = element_rect(fill = "white"),
+    legend.background = element_rect(fill = "white"),
+    panel.grid.major = element_line(colour = "grey"),
+    panel.grid.minor = element_blank(),
+    panel.background = element_rect(fill = "white")
+  )
+
+```
+
+#  Problem 0
+
+**Organization, Themes, and HTML Output**
+
+(5 points)
+
+a.  For all problems in this assignment, organize your output as follows:
+
++  Organize each part of each problem into its own tab.  For Problems 2 and 5, the organization into tabs is already completed for you, giving you a template that you can use for the subsequent problems.
++  Use code folding for all code.  See [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/) for how to do this.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
+
+
+b.  For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color:
+
++  Don't use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+c.  What style guide are you using for this assignment?
+
+```{r}
+library(ggplot2)
+
+my_theme <-  theme_bw() + # White background, black and white theme
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+```
+***
+***
+
+
+
+#  Problem 1 {.tabset}
+
+(18 points total)
+
+**A Very Quick Introduction to Base R Graphics**
+
+```{r, message = FALSE, warning = FALSE}
+library(MASS)
+library(dplyr)
+data(Cars93)
+```
+
+## Barplot
+
+```{r}
+barplot(table(as.factor(Cars93$Cylinders)), 
+        main = "Car Cylinders in '93 Models", 
+        xlab = "Cylinder Type", ylab = "Number of Models")
+```
+
+## Side-By-Side
+```{r}
+barplot(table(as.factor(Cars93$Cylinders),Cars93$Origin), 
+        beside = T, main = "Car Cylinders in '93 Models by Origin", 
+        xlab = "Origin", ylab = "Number of Models", col = c(1, 2, 4, 5, 6))
+legend(x="topright", legend = c("3","4","5","6","8","Rotary"), col = c(1, 2, 4, 5, 6), pch=19)
+```
+
+## Histogram
+```{r}
+hist(Cars93$Max.Price, main = "Max Price of '93 Models", 
+     xlab = "Max Price", ylab = "Proportion of Models", 
+     freq = FALSE, breaks = 18)
+lines(density(Cars93$Max.Price))
+rug(Cars93$Max.Price)
+```
+
+## Scatterplot
+```{r}
+plot(x = Cars93$Rev.per.mile, y = Cars93$Length, 
+     main = "Car Length vs. Revolution per Mile of '93 Models", 
+     xlab = "Revolutions per Mile", ylab = "Length (in.)", 
+     pch = 20, col = as.numeric(Cars93$Type) + 2)
+legend(x="topright", legend = levels(Cars93$Type), col = c(3:8), pch=19)
+```
+
+## 2D Density
+```{r}
+persp(kde2d(x = Cars93$Weight, y = Cars93$RPM, h = c(750, 750)), 
+      main = "2-D KDE of RPM at Max Horsepower vs. \n Weight of '93 Models", 
+      xlab = "Weight (lbs.)", ylab = "RPM", zlab = "Density", theta = -45)
+```
+
+## Heatmap
+```{r}
+image(kde2d(x = Cars93$Weight, y = Cars93$RPM, h = c(750, 750)), 
+      main = "Heatmap of RPM at Max Horsepower vs. Weight of '93 Models", 
+      xlab = "Weight", ylab = "RPM")
+```
+
+## Faceted Scatterplot
+```{r fig.width = 10}
+par(mfrow = c(1, 2))
+sub1 <- filter(Cars93, Origin == "USA")
+plot(x = sub1$Rev.per.mile, y = sub1$Length, 
+     main = "Car Length vs. \n Revolution per Mile \n of '93 USA Models", 
+     xlab = "Revolutions per Mile", ylab = "Length (in.)", 
+     pch = 20, col = as.numeric(Cars93$Type) + 2)
+legend(x="topright", legend = levels(Cars93$Type), 
+       col = c(3:8), pch=19, cex = 0.8)
+
+sub2 <- filter(Cars93, Origin == "non-USA")
+plot(x = sub2$Rev.per.mile, y = sub2$Length, 
+     main = "Car Length vs. \n Revolution per Mile \n of '93 non- USA Models", 
+     xlab = "Revolutions per Mile", ylab = "Length (in.)", 
+     pch = 20, col = as.numeric(Cars93$Type) + 2)
+legend(x="topright", legend = levels(Cars93$Type), 
+       col = c(3:8), pch=19, cex = 0.8)
+```
+
+
+## b. 
+
+*Possible answers:*
+
+- Length of the code is sometimes shorter when using base R graphics compared to ggplot. 
+
+- Potentially useful defaults for plots if not specified (titles, labels, etc.)
+
+- Automatic white background.
+
+- Has methods to plot many other classes besides data frames. 
+
+- Compatible with many R packages, especially older ones.
+
+## c. 
+
+*Possible answers:*
+
+- Harder to change from one type of graphic to another
+
+- Non-intuitive argument names.
+
+- Different class-specific methods have different options/arguments; difficult to find the specifics of each one.
+
+- Facetting is more difficult.
+
+- Different functions for adding layers to the plot vs. creating a base plot.
+
+- Have to hard code variable and and data frame names.
+
+- Creating a legend is not automatic and much more difficult.
+
+***
+***
+
+#  Problem 2 {.tabset}
+
+(2 points each)
+
+**Parallel Coordinates and Radar Charts**
+
+## a. 
+
+```{r, warning = F, message = F}
+library(GGally)
+cont_cols <- which(names(Cars93) %in% 
+                     c("Cars93", "Price", "MPG.city", "MPG.highway", "EngineSize",
+                       "Horsepower", "RPM", "Fuel.tank.capacity", "Passengers",
+                       "Length", "Wheelbase", "Width", "Turn.circle", "Weight"))
+
+ggparcoord(Cars93, columns = cont_cols) + 
+  aes(color = factor(Type, labels = levels(Cars93$Type))) +
+  labs(x = "Variable in Cars93 Dataset", y = "Standard Deviations from Mean",
+       color = "Type of Car") +
+  ggtitle("Comparing the Cars93 Continuous Variables") +
+  scale_color_manual(labels = c("Compact", "Large", "Midsize", "Small", "Sporty", "Van"),
+                     values=c("red", "orange", "blue", "yellow", "purple", "brown")) + 
+  my_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Small and compact cars tend to get better gas mileage compared to the other types. Vans and large cars tend to fit more passengers compare to the other types of cars. 
+
+## b.
+
+```{r, warning = F, message = F}
+ggparcoord(Cars93, columns = cont_cols) + 
+  aes(color = factor(Type, labels = levels(Cars93$Type))) +
+  labs(x = "Variable in Cars93 Dataset", y = "Standard Deviations from Mean",
+       color = "Type of Car") +
+  ggtitle("Comparing the Cars93 Continuous Variables") +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  coord_polar()
+```
+
+The parallel coordinates chart seems easier to read. The y-axis is always vertical in that chart compared to the radar chart, and the lines are straight as opposed to round in the radar chart. 
+
+## c.
+
+The default y-axis in this implementation is the number of standard deviations away from the mean. We can change the scale such that the minimum  value of each variable is 0 and the maximum is 1. 
+
+```{r, warning = F, message = F}
+ggparcoord(Cars93, columns = cont_cols) + 
+  aes(color = factor(Type, labels = levels(Cars93$Type))) +
+  labs(x = "Variable in Cars93 Dataset", y = "Value (scaled between 0 and 1)",
+       color = "Type of Car") +
+  ggtitle("Comparing the Cars93 Continuous Variables") +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+```
+
+## d.
+
+*Potential positive correlations:*
+
+- MPG in the city and MPG on the highway
+
+- Engine Size and Horsepower
+
+- Length and Wheelbase
+
+- Width and Turn Circle
+
+*Potential negative correlations:*
+
+- Price and MPG in the city
+
+- MPG on the highway and Engine Size
+
+- RPM and Fuel Tank Capacity
+
+- Horsepower and RPM
+
+***
+***
+
+
+#  Problem 3 {.tabset}
+
+(3 points each; 24 points total)
+
+**Moving Average Plots**
+
+In Problem 1 of Lab 09, we created a time series plot of the NYC bike dataset ("Big Bike"), visualizing the number of trips per day as a function of time.  Here, we're going to add a moving average line to the plot.
+
+## Part A
+
+```{r}
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+#  tt:  The point at which we want the moving average (leading up to that point)
+moving_average <- function(tt, time_series, ww) {
+  #  Throw an error if the window width is too big
+  if (ww > length(time_series))  
+    stop("Window width is greater than length of time series")
+
+  #  If the window width is greater than the time point, return NA
+  if (tt < ww)  return(NA)
+
+  #  Your code here!
+  return (mean(time_series[(tt-ww+1):tt]))
+}
+```
+
+
+## Part B 
+
+```{r}
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+get_moving_averages <- function(time_series, ww) {
+  #  Throw an error if the window width is too big
+  if (ww > length(time_series))  
+    stop("Window width is greater than length of time series")
+
+  #  Your code here!
+  return (sapply(1:length(time_series), moving_average, time_series, ww))
+}
+```
+
+
+## Part C
+
+```{r, warning=FALSE, message=FALSE}
+library(data.table)
+big_bike <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/big_bike.csv")
+
+#  Add start_date variable to big_bike, and a bunch of other variables
+big_bike <- mutate(big_bike,
+                   start_date = as.Date(start_date),
+                   birth_decade = paste0(substr(`birth year`, 1, 3), "0s"),
+                   hour_of_day = as.integer(substr(time_of_day, 1, 2)),
+                   am_or_pm = ifelse(hour_of_day < 12, "AM", "PM"),
+                   day_of_week = weekdays(start_date),
+                   less_than_30_mins = ifelse(tripduration < 1800, "Short Trip", "Long Trip"),
+                   weekend = ifelse(day_of_week %in% c("Saturday", "Sunday"), "Weekend", "Weekday"))
+
+by_date <- dplyr::group_by(big_bike, start_date)
+trips_per_day <- dplyr::summarize(by_date, n_trips = n())
+
+bike_moving_average_14 <- get_moving_averages(trips_per_day$n_trips, 14)
+bike_moving_average_14[1:20]
+```
+
+The first 13 observations are NA because the window width is 14, so there is not enough past data to calculate the moving average at these times. 
+
+## Part D 
+
+```{r, warning=FALSE, message=FALSE}
+trips_per_day$bike_moving_average_14 <- bike_moving_average_14
+
+ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + 
+    geom_line(aes(colour = "Original Data")) + 
+    geom_point() + 
+    scale_x_date() + 
+    labs(x = "Start Date", y = "Number of Bike Trips") + 
+    geom_line(aes(x = start_date, y = bike_moving_average_14, colour = "Moving Average")) + 
+    scale_color_manual(name = "Series", values = c("Original Data" = "black", "Moving Average" = "blue")) + 
+    ggtitle("Time Series Plot of Number of Bike Trips\n Over Time in NYC Since 2013")
+```
+
+## Part E 
+
+The moving average always has a lag from the original data. That is, the moving average follows the same pattern as the data, but does so a few days later. This is because it is looking at the past 14 days of data to calculate its current value, so it is more similar to the past data than the future.
+
+The moving average line is smoother.  This makes sense since it is an average of the number of bike trips during 14 day periods. As such, the peaks and valleys are not as high/low as they are in the original data.
+
+## Part F 
+
+```{r}
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+#  tt:  The point at which 
+#  weights:  the weights to be used in the moving average
+#  Note:  length(weights) should always equal ww!
+weighted_moving_average <- function(tt, time_series, ww, weights = NULL) {
+  #  Throw an error if the window width is too big
+  if (ww > length(time_series))  
+    stop("Window width is greater than length of time series")
+
+  #  If weights are not specified, use standard weights
+  if (is.null(weights))  weights <- rep(1/ww, ww)
+
+  #  Throw an error if the window width is too big
+  if (length(weights) != ww)  
+    stop("Weights should have the same length as the window width")
+
+  #  If the window width is greater than the time point, return NA
+  if (tt < ww)  return(NA)
+
+  #  Standardize the weights so they sum to 1
+  weights <- weights / sum(weights)
+
+  #  Your code here!
+  return (sum(weights * time_series[(tt-ww+1):tt]))
+}
+
+
+#  time_series:  A vector containing the time series values
+#  ww:  The window width for the moving average
+#  weights:  the weights to be used in the moving average
+#  Note:  length(weights) should always equal ww!
+get_weighted_moving_averages <- function(time_series, ww, weights) {
+  #  Throw an error if the window width is too big
+  if(ww > length(time_series))  stop("Window width is greater than length of time series")
+
+  #  If weights are not specified, use standard weights
+  if (is.null(weights))  weights <- rep(1/ww, ww)
+
+  #  Throw an error if the window width is too big
+  if (length(weights) != ww)  
+    stop("Weights should have the same length as the window width")
+
+  #  Standardize the weights so they sum to 1
+  weights <- weights / sum(weights)
+
+  #  Your code here!
+  return(sapply(1:length(time_series), weighted_moving_average, time_series, ww, weights))
+}
+```
+
+## Part G 
+
+```{r, warning=FALSE, message=FALSE}
+weighted_moving_average7 <- get_weighted_moving_averages(trips_per_day$n_trips, 7, weights = c(1,1,1,1,1,3,5))
+
+trips_per_day$weighted_moving_average7 <- weighted_moving_average7
+
+#  Create a time series plot with the dates on the x-axis and the number of
+#  trips per day on the y-axis
+# Add moving average lines
+ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + 
+    geom_line(aes(colour = "Original Data")) + 
+    scale_x_date() + 
+    geom_point() +
+    geom_line(aes(x = start_date, y = bike_moving_average_14, colour = "Moving Average")) +
+    geom_line(aes(x = start_date, y = weighted_moving_average7, colour = "Weighted Moving Average"), linetype = 2) +
+    scale_color_manual(name = "Series", values = c("Original Data" = "black", "Moving Average" = "blue", "Weighted Moving Average" = "red")) +
+    ggtitle("Time Series Plot of Number of Bike Trips\n Over Time in NYC Since 2013") + 
+    labs(x = "Start Date", y = "Number of Trips")
+```
+
+## Part H 
+
+The weighted moving average is closer to the original data, as it weighted the more recent data higher and thus takes less time to react to changes in the data since it puts more weight on them.  Both moving averages are also smoother than the original data and do not have as high peaks and valleys since it is averaging over 14 days.
+
+***
+***
+
+#  Problem 4 {.tabset}
+
+(3 points each)
+
+**Splitting a Time Series with Moving Averages**
+
+## Part A 
+
+```{r}
+by_date_gender <- dplyr::group_by(big_bike, start_date, gender)
+trips_by_gender<- dplyr::summarize(by_date_gender, n_trips = n())
+
+ggplot(trips_by_gender, aes(x = start_date, y = n_trips)) + 
+    geom_line(aes(color = gender)) + 
+    scale_x_date() + 
+    ggtitle("Daily Bike Trips by Gender") + 
+    scale_color_manual(name = "Gender", labels= c("Unknown", "Male", "Female"), values = c("black", "blue", "red")) +
+    labs(x = "Start Date", y = "Number of Bike Trips")
+```
+
+## Part B
+
+```{r, warning=FALSE, message=FALSE}
+# Time series split by gender 
+MA_unknown <- get_moving_averages(filter(trips_by_gender, gender == 0)$n_trips, 14)
+MA_male <- get_moving_averages(filter(trips_by_gender, gender == 1)$n_trips, 14)
+MA_female <- get_moving_averages(filter(trips_by_gender, gender == 2)$n_trips, 14)
+
+ggplot() + 
+    geom_line(data = filter(trips_by_gender, gender == 0), aes(x = start_date, y = MA_unknown, colour = "Unknown")) + 
+    geom_line(data = filter(trips_by_gender, gender ==1), aes(x = start_date, y = MA_male, colour = "Male")) + 
+    geom_line(data = filter(trips_by_gender, gender == 2), aes(x = start_date, y = MA_female, colour = "Female")) + 
+    scale_color_manual(name = "Gender", values = c("orange", "red", "blue")) +
+    labs(x = "Start Date", y = "Number of Trips") + 
+    ggtitle("14-Day Moving Average of Daily Bike Trips by Gender")
+```
+
+## Part C 
+
+The moving average time series plots for males, females and unknown gender follow the same overall trend.  They tend to have peaks and valleys at the same dates.  However, the moving average time series plot for males is always above that for females and unknown gender.  While the moving average time series for females tends to peak at the same dates as the other distributions, it has less fluctuation. 
+
+***
+***
+
+
+#  Problem 5
+
+**Lag Plots**
+
+```{r}
+nn <- nrow(trips_per_day)
+lag <- 1
+bike_lag1 <- trips_per_day$n_trips[1:(nn-lag)]
+bike_current <- trips_per_day$n_trips[(lag+1):nn]
+bike_df <- data.frame(bike_current, bike_lag1)
+
+ggplot(data = bike_df) +
+  geom_line(aes(y = bike_current, x = bike_lag1)) +
+  geom_abline(intercept = 0, slope = 1, color = "red") +
+  geom_smooth(aes(y = bike_current, x = bike_lag1), method = "loess") + 
+  labs(y = "Number of Trips, Current Day", x = "Number of Trips, Yesterday") +
+  ggtitle("Lag Plot, Daily Bike Trips \n Lag = 1 Day ") +
+  my_theme
+```
+
+I added a loess smoother in order to better see the trends in the lag plot. There seems to be a slight increasing trend for days with small numbers of trips, while there seems to be a slight decreasing trend for days with large numbers of trips. This can be seen from the result of the loess smoother, which shows that, on average, $n_t > n_{t-1}$ for small trip values and $n_t < n_{t-1}$ for large trip values.
+
+#  Problem 6
+
+(3 points each; 15 points total)
+
+**Clustering and Colored Dendrograms (US Arrest Data)**
+
+Read [this Piazza discussion](https://piazza.com/class/iskxagtqxi2365?cid=254), the accompanying issue Sam submitted to GitHub, and the package authors' solution to the issue.  Download the new version of the dendextend directly from GitHub, as specified in the example code on Piazza (you'll need to install the `devtools` package first).  Do not include your code to install either the `devtools` or new `dendextend` package in your submission (just comment it out or don't include it at all).
+
+a.  Load in the `USArrests` data into `R`, and read the help documentation for the dataset.  Scale the continuous variables, calculate the distance matrix, and submit the distance matrix to hierarchical clustering with complete linkage.  Store the result in an object called `hc_arrests`.  What variables are included in the `USArrests` Dataset?  
+
+
+```{r, warning = F, message = F}
+library(datasets)
+data(USArrests)
+hc_arrests <- USArrests %>% scale %>% dist %>% hclust
+```
+
+The `USArrests` Dataset includes the variables `r names(USArrests)[1]`, `r names(USArrests)[2]`, `r names(USArrests)[3]`, and `r names(USArrests)[1]`
+
+b.  The "State" variable is currently in the row names of the data.  Move it to a column of the data using the `rownames_to_column()` function in the `tibble` package (you may need to install this), and store it in a variable called `State`.
+
+```{r}
+USArrests <- tibble::rownames_to_column(USArrests, var = "State")
+```
+
+c.  Create your own colored dendrogram for the `hc_arrests` clustering results using the `dendextend` package and color the branches of the dendrogram by the five-cluster solution.  Feel free to adjust other `dendextend` plotting features as you deem necessary (e.g. colored leaves, points on nodes, line types, rectangular vs. triangular dendrograms, etc), though this is not required.  Be sure that the states are listed on the leaves of the dendrogram.
+
+```{r, warning = F, message = F, fig.align='center', fig.height = 8}
+library(dendextend)
+palette <- c("#CCCDC3", "#00467F", "#7FB9C2", "#EF4623", "#6A7277")
+labels_complete_5 <- cutree(hc_arrests, k = 5)
+
+hc_arrests %>% as.dendrogram %>%
+    color_branches(k = 5, col = palette) %>%
+    set("labels_cex", 0.6) %>%
+    set("labels", USArrests$State, order_value = T) %>% 
+    ggplot(theme = my_theme, horiz = T) + 
+    ggtitle("Dendrogram of State Arrest Data") +
+    labs(y = "Pairwise Euclidean Distance") + 
+    theme(axis.title.y = element_blank(), axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank())
+```
+
+d.  Describe the resulting 5-cluster solution from the dendrogram, and the dendrogram itself.  What interesting information do you see in the patterns of arrests across the different US states?  Given your knowledge about the geography of the United States, do states in similar geographic areas tend to be clustered together?
+
+The first cluster seems to contain primarily southern states, and the second cluster contains only Alaska.  It is not that surprising to see Alaska in a cluster by itself given how removed it is from the other states.  It is less clear what makes the states within the 3rd and 4th clusters similar with both containing states from a wide range of geographic areas.  The final cluster seems to contain primarily rural states with small populations.
+
+e.  From the dendrogram, which two US states were linked at the first iteration of hierarchical clustering?
+
+The first two states to be linked are New Hampshire and Iowa, we can also see this from `hc_arrests$merge` where the first row indicates that states 15 and 29, corresponding to Iowa and New Hampshire respectively were merged.
+
+
+***
+***
+
+
+#  Problem 7
+
+(12 points)
+
+**Create `ggplot()` ACF Plots**
+
+In lab, we learned about the `acf()` function and autocorrelation plots.  `acf()` uses base-R graphics.  Your task in this problem is to create a `ggplot()` version of autocorrelation plots.  Specifically, you should:
+
++  Write a function that takes a time series as input (e.g. the `n_trips` column of `trips_per_day`, or the `rand_ts` from Lab 09).
++  The function should compute the autocorrelations for the time series, and store them in a new data frame with one column indicating the lag, and another columns indicating the autocorrelation at that lag.
++  Use `geom_line()`, `geom_segment()`, `geom_hline()`, and other `ggplot()` geometries to draw a graph that mimics the autocorrelation plots from `acf()`.  That is, you should have vertical lines indicating the autocorrelation at each lag, and blue horizontal lines plotted at the values $0 +/- 1.96 / \sqrt(n)$, where $n$ is the number of rows in the dataset.
++  The function should output a `ggplot()` object that has the default title and axis labels, so that these can be added to the object after calling the function.
++  The result should render a graph that looks similar to what you get from `acf()`.
++  You are allowed (and encouraged!) to use the `acf()` function to calculate the autocorrelations.
+
+Demonstrate that your function works on the `rand_ts` object and the `trips_per_day` dataset.  Compare your graphs to the base-R `acf()` graph.
+
+```{r}
+acf.ggplot <- function(ts, lag.max = NULL){
+    acf.obj <- acf(ts, plot = F)
+    n <- length(ts)
+    quants <- c(qnorm(0.025) / sqrt(n), qnorm(0.975) / sqrt(n))
+    df <- data.frame(acf = c(acf.obj$acf), lag = c(acf.obj$lag))
+    gg <- ggplot(df, aes(x = lag, xend = lag, y = 0, yend = acf)) + geom_segment() + 
+        geom_hline(yintercept = quants, linetype = "dashed", colour = "blue") + 
+        ylab("ACF") + xlab("Lag") + ggtitle("Time Series ACF")
+    return(gg)
+}
+```
+
+```{r}
+set.seed(479013)
+rand_ts <- rnorm(1000)
+acf.ggplot(rand_ts) +
+    ggtitle("Autocorrelation Function for Random Time Series") + 
+    my_theme
+acf(rand_ts, main = "Autocorrelation Function for Random Time Series")
+```
+
+The graphs match.
+
+```{r}
+by_date <- dplyr::group_by(big_bike, start_date)
+trips_per_day <- dplyr::summarize(by_date, n_trips = n())
+acf.ggplot(trips_per_day$n_trips) +
+    ggtitle("Autocorrelation Function for Number of Bike Trips\nper Day") + 
+    my_theme
+acf(trips_per_day$n_trips, main = "Autocorrelation Function for Number of Bike Trips\nper Day")
+```
+
+The graphs match.
+
+***
+***
+
+
+
+#  Problem 8
+
+(2 points each)
+
+**Read Your HW07 and HW08 Feedback On Blackboard**
+
+a.  Write at least one sentence about what you did well on in the assignments.
+
+b.  Write at least one sentence about what you did wrong on the assignments.
+
+
+***
+***
+
+
+
+#  BONUS:  Create `geom_acf()`
+
+(15 points)
+
+Create a new `ggplot()` geometry called `geom_acf()` that will create the same graph you made in Problem 7, but in a more typical `ggplot()` way.
+
+You should first read this vignette from Hadley Wickham on [extending the `ggplot2` package](http://docs.ggplot2.org/dev/vignettes/extending-ggplot2.html), where he demonstrates how to create new geoms and stats.
+
+After writing the `geom_acf()` function (and any necessary helper functions), demonstrate that the following code should work using your function:  
+
++  `ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + geom_acf()`
++  `ggplot(trips_per_day) + geom_acf(aes(x = start_date, y = n_trips))`
+
+Note:  This is not meant to be an easy bonus problem.  It will probably take you a few hours, at least, to learn/understand how `ggproto` works.  **Please be sure to complete all homework problems before attempting this bonus problem.**
+

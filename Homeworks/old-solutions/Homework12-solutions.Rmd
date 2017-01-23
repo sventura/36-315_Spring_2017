@@ -1,0 +1,476 @@
+---
+title: "36-315 Homework 12, Fall 2016"
+author: "Your Name Here"
+date: "Due Wednesday, December 7th, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Homework 12:  Text Data, Choropleth Maps, New `ggplot2` Features
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW11.Rmd -- e.g. "sventura-HW11.Rmd") to the Homework 11 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+###  This week only, you can work on and turn in your assignment as a group!  
+
++  This does not apply to bonus problems, which must be worked on and turned in individually.
++  Most of the code is given for you below, so the assignment should be somewhat easy.
++  Only one person from each group needs to turn in the assignment.
++  Please include all group member names on the assignment.
++  When turning in bonus problems individually, please turn them in in the Bonus Problems section on Blackboard.
+
+
+***
+***
+
+<div style="width:600px">
+![alt text](http://indiemapper.com/app/images/classed_choropleth.jpg)
+</div>
+
+
+***
+***
+
+#  Easy Problems
+
+##  Problem 0
+
+(4 points)
+
+**Organization, Themes, and HTML Output**
+
+a.  For all problems in this assignment, organize your output as follows:
+
++  Organize each part of each problem into its own tab.  For Problems 2 and 5, the organization into tabs is already completed for you, giving you a template that you can use for the subsequent problems.
++  Use code folding for all code.  See [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/) for how to do this.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
+
+
+b.  For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color:
+
++  Don't use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+c.  What style guide are you using for this assignment?
+
+```{r}
+library(ggplot2)
+# We so fancy with our custom theme
+my_theme <-  theme_bw() + # White background, black and white theme
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+```
+
+
+***
+***
+
+
+##  Problem 1
+
+(10 points)
+
+**World War II Data Visualization Video**
+
+Watch the interactive version of [this video](http://www.fallen.io/ww2/).  What do you like about it from a data visualization perspective (1-3 sentences)?  What do you dislike, if anything (1-3 sentences)?
+
+I the video did a nice job of showing relative scales in terms of number of both civilian and military deaths, and I thought transforming the display from area plots to bar plots what effective at points.  Also showing the deaths with and without adjusting for whole population was a helpful comparison.
+
+A consistent lack of y-axis on the bar plots was a bit of a problem.  Particularly when the total scale was not clear from context, adding some horizontal grid lines to the plot might also have made them more readable.  Additionally at one point where the number of soviet deaths were being shown the movie crossed the line from lingering to add emphasis to lingering to the point where many views might get bored.
+
+***
+***
+
+
+#  Regular Problems
+
+##  Problem 2 {.tabset}
+
+(18 points)
+
+**Correlation Matrices for High-D Continuous Data Visualization**
+
+### a.  
+
+```{r, warning = F, message = F}
+library(MASS)
+library(dplyr)
+data(Cars93)
+cars_cont <- dplyr::select(Cars93, Price, MPG.city, MPG.highway, EngineSize, 
+                           Horsepower, RPM, Fuel.tank.capacity, Passengers,
+                           Length, Wheelbase, Width, Turn.circle, Weight)
+```
+
+### b.
+
+
+```{r, warning = F, message = F}
+library(reshape2)
+library(ggplot2)
+correlation_matrix <- cor(cars_cont)
+melted_cormat <- melt(correlation_matrix)
+
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() +
+  scale_fill_gradient2(low = "darkred", high = "darkblue", mid = "lightgrey", 
+                       midpoint = 0, limit = c(-1,1)) +
+  labs(x = "Variable 1", y = "Variable 2", fill = "Pearson Correlation") +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90)) +
+  ggtitle("Correlation Heatmap of Cars93 Data")
+```
+
+### c.  
+
+**Highly positively correlated:**
+
+- Any variable with itself
+
+- Fuel tank capacity and Weight
+
+- Engine size and Width
+
+- MPG highway and MPG city
+
+- Engine size and Weight
+
+- Wheelbase and Weight
+
+**Highly negatively correlated:**
+
+- Weight and MPG city
+
+- Fuel tank capacity and MPG city
+
+- Weight and MPG highway
+
+- Fuel tank capacity and MPG highway
+
+- Width and MPG city
+
+- Engine size and MPG city
+
+**No correlation:**
+
+- RPM and Price
+
+- Passengers and Price
+
+- Passengers and Horsepower
+
+- RPM and Horsepower
+
+### d.
+
+A heatmap shows the values of each variable for each observation in a dataset as a box on a grid. The correlation heatmap shows the correlation between two variables as a box on a grid. 
+
+### e.  
+
+This may be reminiscent of a mosaic plot. 
+
+### f.  
+
+```{r, warning = F, message = F, fig.width = 10}
+library(reshape2)
+library(ggplot2)
+#Reorder variables randomly for fun
+reorder_cols <- sample(ncol(cars_cont))
+cars_cont <- cars_cont[, reorder_cols]
+correlation_matrix <- cor(cars_cont)
+#Remove the lower triangle
+correlation_matrix[lower.tri(correlation_matrix)] <- NA
+melted_cormat <- melt(correlation_matrix)
+
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile() +
+  #Add rounded correlation
+  geom_text(aes(x = Var1, y = Var2, label = round(value, 2))) +
+  scale_fill_gradient2(low = "darkred", high = "darkblue", mid = "lightgrey", 
+                       midpoint = 0, limit = c(-1,1)) +
+  labs(x = "Variable 1", y = "Variable 2", fill = "Pearson Correlation") +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90)) +
+  ggtitle("New Correlation Heatmap of Cars93 Data")
+```
+
+
+
+##  Problem 3 {.tabset}
+
+(6 points each; 42 points total)
+
+**Choropleth Maps**
+
+### a.  
+
+
+```{r, warning = F, message = F}
+library(data.table)
+#Load data
+unemp <- fread("http://datasets.flowingdata.com/unemployment09.csv")
+
+#Rename
+names(unemp) <- c("id", "state_fips", "county_fips", "name", "year", 
+                  "unknown1", "unknown2", "unknown3", "rate")
+
+#Pull county names and state abbreviations
+unemp <- mutate(unemp,
+                county = tolower(gsub(" County, [A-Z]{2}", "", name)),
+                state = gsub("^.*([A-Z]{2}).*$", "\\1", name))
+```
+
+
+### b.
+
+```{r, warning = F, message = F}
+library(ggmap)
+#Create 2 data framces from map_data
+county_df <- map_data("county")
+state_df <- map_data("state")
+
+#Rename
+names(county_df) <- c("long", "lat", "group", "order", "state_name", "county")
+
+#Convert state names to state abbreviations
+county_df <- county_df %>%
+  mutate(state = state.abb[match(county_df$state_name, 
+                                 tolower(state.name))]) %>%
+  select(-state_name)
+```
+
+
+### c.
+
+```{r}
+#Left join the data frames
+choropleth_df <- county_df %>%
+  left_join(unemp, by = c("state", "county")) %>%
+  #Sort by order
+  arrange(order) %>%
+  #Add rate_discrete
+  mutate(rate_discrete = cut_interval(rate, 9))
+
+#choropleth_df <- choropleth_df[order(choropleth_df$order), ]
+#choropleth_df$rate_discrete <- cut_interval(choropleth_df$rate, 9)
+```
+
+### d.
+
+```{r, warning = F, message = F, fig.width = 10}
+ggplot(data = choropleth_df, aes(x = long, y = lat, group = group)) +
+  #Fill each country by rate category, and outline each country
+  geom_polygon(aes(fill = rate_discrete), color = "black", size = 0.7) +  
+  #Draw state borders
+  geom_polygon(data = state_df, color = "black", fill = NA, size = 0.7) +
+  #Color gradient
+  scale_fill_discrete(h = c(180, 90)) + 
+  my_theme +
+  ggtitle("Counties in the U.S. \n by Unemployment Rate") + 
+  labs(fill = "Unemployment Rate", x = "Longitutde", y = "Latitude")
+```
+
+
+### e.
+
+The graph shows unemployment rate across United States counties as a categorical variable. In the map, green-blue represents lower unemployment and yellow represents higher unemployment, while grey represents missing data. The unemployment rate is highest in the southwestern Pacific and southeastern regions of the U.S. The unemployment rate is lowest in the Great Plains and Rockies regions. There seems to be higher unemployment rates in the coastal areas compared to the middle time zones. It is potentially interesting that areas which intuitively tend to have higher average income, such as California and New York, also have fairly high rates of unemployment. 
+
+### f.  
+
+Available map projections include the mercator projection, which has equally spaced straight meridians and conformal, straight compass courses, the sinusoidal projection, which has equally spaced parallels and equal areas, the cylindrical projection, which is a projection on to a tangent cylinder, the rectangular projection, which has equally spaced parallels and meridians, and the stereographic projection, which is conformal and projected from the poles. 
+
+*Note: There are many, many, many more projections listed.*
+
+### g. 
+
+*Note: Examples are shown below. Other possibilities exist.*
+
+```{r, warning = F, message = F}
+ggplot(data = choropleth_df, aes(x = long, y = lat, group = group)) +
+  #Fill each country by rate category, and outline each country
+  geom_polygon(aes(fill = rate_discrete), color = "black") +  
+  #Draw state borders
+  geom_polygon(data = state_df, color = "black", fill = NA) +
+  coord_map("sinusoidal") +
+  #Color gradient
+  scale_fill_discrete(h = c(180, 90)) + 
+  my_theme +
+  ggtitle("Counties in the U.S. \n by Unemployment Rate") + 
+  labs(fill = "Unemployment Rate", x = "Longitutde", y = "Latitude")
+```
+
+```{r, warning = F, message = F}
+ggplot(data = choropleth_df, aes(x = long, y = lat, group = group)) +
+  #Fill each country by rate category, and outline each country
+  geom_polygon(aes(fill = rate_discrete), color = "black") +  
+  #Draw state borders
+  geom_polygon(data = state_df, color = "black", fill = NA) +
+  coord_map("gilbert") +
+  #Color gradient
+  scale_fill_discrete(h = c(180, 90)) + 
+  my_theme +
+  ggtitle("Counties in the U.S. \n by Unemployment Rate") + 
+  labs(fill = "Unemployment Rate", x = "Longitutde", y = "Latitude")
+```
+
+The sinusoidal projection changes the perspective such that it looks like the opening crawl in a Star Wars movie. The Gilbert projection seems to stretch out the map horizontally. 
+
+***
+***
+
+
+
+##  Problem 4 {.tabset}
+
+(16 points)
+
+
+### a. 
+
+The `unnest_tokens()` function extracts individual words, or 'tokens', from text and formats it into a tidy data structure which has one token per document per row.  In addition, the function converts words to lowercase and removes punctuation.
+
+### b. 
+
+The column `text` contains the tweets.  As expected with a dataset about airlines, words frequently tweeted were 'flight', 'cancelled', 'hours', 'time', 'delayed', and the names of different airlines.  
+
+
+```{r, warning = F, message = F}
+#install.packages("tidytext")
+#install.packages("wordcloud")
+library(tidytext)
+library(wordcloud)
+library(dplyr)
+library(data.table)
+data(stop_words)
+
+airline_tweets <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+
+my_tweets <- dplyr::select(airline_tweets, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 100))
+title(main = list("Word Cloud for Airline Tweets", col = 'blue'))
+```
+
+### c.
+
+```{r, warning=FALSE, message=FALSE}
+virgin_america <- filter(airline_tweets, airline == "Virgin America")
+united <- filter(airline_tweets, airline == "United")
+southwest <- filter(airline_tweets, airline == "Southwest")
+delta <- filter(airline_tweets, airline == "Delta")
+us_airways <- filter(airline_tweets, airline == "US Airways")
+american <- filter(airline_tweets, airline == "American")
+
+par(mfrow = c(2,3))
+
+va_wordcloud <- dplyr::select(virgin_america, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main = list("Virgin America", col = 'blue'))
+
+united_wordcloud <- dplyr::select(united, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main = list("United Airlines", col = 'blue'))
+
+southwest_wordcloud <- dplyr::select(southwest, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main = list("Southwest", col = 'blue'))
+
+delta_wordcloud <- dplyr::select(delta, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main = list("Delta Airlines", col = 'blue'))
+
+usairways_wordcloud <- dplyr::select(us_airways, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main =  list("US Airways", col = 'blue'))
+
+american_wordcloud <- dplyr::select(american, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75, main = "Title")) 
+title(main = list("American Airlines", col = 'blue'))
+```
+
+For each airline, frequently tweeted words were 'flight' and the name of the airline.  'Cancelled' was more frequently tweeted with regards to Southwest, American Airlines and US Airways.  In addition, 'jetblue' was frequently tweeted with regards to Delta Airlines. 
+
+***
+***
+
+##  Problem 5 {.tabset}
+
+
+### a. 
+
+```{r, warning=FALSE, message=FALSE}
+library(ggforce)
+library(MASS)
+
+food <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv")
+
+ggplot(food) + 
+    aes(x = carbohydrates_100g, y = energy_100g, color = nutrition_grade_fr) +
+    geom_point() + 
+    labs(
+        title = "Energy vs. Carbohydrates per 100g of Various Foods",
+        subtitle = "Less than 10 Grams of Carbohydrates per 100g of Food",
+        caption = "(Source:  Food Dataset)",
+        x = "Carbohydrates per 100g (g)",
+        y = "Energy per 100g (kj)",
+        color = "Nutrition Grade"
+  ) + facet_zoom(x = carbohydrates_100g == 0:10) + 
+    my_theme
+```
+
+### b. 
+
+In the original scatterplot, we see points are extremely concentrated at lower values for Carbohydrates (grams per 100g of food). Thus, due to the many overlapping points, it is hard to discern nutrition grade, as visualized by color of the points.  By zooming into values of less than 10 grams of carbohydrates (per 100 grams of food), we are able to more clearly visualize the distribution of nutrition grade. For example, we now see that each nutrition grade is represented in this range of values for carbohydrates.  However, in this range, nutrition grades 'd' and 'e' are associated with higher energy content, and nutrition grades of a and b are associated with lower energy content in kj. 
+
+***
+***
+
+
+#  Bonus Problems
+
+See Bonus Problems.html on Blackboard for five bonus problems you can turn in for extra credit on HW 12.
+
+
+***
+***
+***
+***
+***
+***
+
+

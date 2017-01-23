@@ -1,0 +1,319 @@
+---
+title: "36-315 Homework 01, Fall 2016"
+author: "Solutions"
+date: "Due Wednesday, September 7, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+**Style Guide**:  We are using Hadley Wickham's style guide.
+
+
+Note that we include a floating table of contents in the homework solutions, to allow the viewer easier navigation between problems.  See the code in the header of the document for how to do this, and please feel free to include this in your future assignments!
+
+
+##  Problem 1
+
+Personally, Sam prefers to have:
+
++  Source in its own pane on the top-right-hand side
++  Console in it's own pane on the top-left-hand side of the window
++  Help and Git on the bottom-right
++  Everything else on the bottom-left
+
+Sam personally prefers a fixed-width font like Courier.  Finally, when coding, Sam prefers to minimize the bottom-left and bottom-right panes so that he has more vertical space to see the code he's writing and the output it's generating.  Sam's also okay with swapping the Source and Console windows above, though this obviously is up to you.
+
+
+***
+***
+
+
+##  Problem 2
+
+**Critiquing Graphs**:
+
+a.  (5 points)  **Include the graph in your assignment**
+We'll use the graphic from lab:
+
+<div style="width:750px">
+![alt text](https://pbs.twimg.com/media/CqAAH9yW8AA2Jj6.jpg)
+</div>
+
+b.  (5 points)  **Describe the graph**
+The graph shows ratings posted on Rate My Professor.  The ratings are grouped into bins Good (5 - 3.5), Average (3.4 - 2.5) and Poor (2.4 - 1). The x-axis indicates the bin corresponding to the range of the ratings while the y-axis shows the frequency of the ratings.
+
+c.  (5 points)  **Critique the graph**
+I do not like that the bin widths are not constant, which may give a distorted view of the data.  A density plot or additional bins might be more appropriate in this case.  Additionally, the ordering of the categories from highest to lowest is counterintuitive.  We prefer to order the categories from 1 to 5.
+
+d.  (5 points)  **Critique the caption and/or surrounding text**
+There is no caption on the y-axis so we cannot be sure of the scale.  Additionally it is unclear if this is all ratings or a subset.  Including a footnote or caption offering more clarity on what data was looked at would also be helpful.
+
+
+***
+***
+
+
+##  Problem 3
+
+**Writing R Functions and Working with Vectors**:  
+
+a.  (5 points)  Write an R function called `quadratic` that computes the quadratic formula.  That is, write a function that has four inputs -- ```a```, ```b```, ```c```, and ```x``` and returns the quantity $ax^2 + bx + c$.
+
+```{r}
+quadratic <- function(a, b, c, x) {
+  return(a * x^2 + b * x + c)
+}
+```
+
+b.  (2 points)  Test your function out and demonstrate that it works for at least there different combinations of the parameters.
+
+```{r}
+# example tests
+all(
+  quadratic(1, 5, 2, 0) == 2,
+  quadratic(0, 5, 2, 1) == 7,
+  quadratic(1, 0, 1, 10) == 101,
+  quadratic(2, 3, 0, 5) == 65,
+  quadratic(-1, 5, 5, 5) == 5
+)
+# note:  the all() function returns TRUE if all input expressions are true, and FALSE otherwise
+```
+
+Our function works correctly on a variety of examples, as demonstrated above.
+
+c.  (2 points)  Type `quadratic(x=2)` into your code block.  What happens when you only specify one argument?
+
+We get an error message: `Error in quadratic(x = 2) : argument "a" is missing, with no default Calls`.
+
+d.  (2 points)  Create a new function, `quadratic2`, that has default values for ```a=1```, ```b=1```, and ```c=1```.  Type `quadratic2(x=2)` into your code block.  What happens when you only specify one argument?
+
+```{r}
+quadratic2 <- function(a=1, b=1, c=1, x) {
+  return(a * x^2 + b * x + c)
+}
+quadratic2(x=2)
+```
+Since the other arguments were given default values, R uses the default values along with the one specified argument and runs successfully.
+
+e.  (2 points)  Type `1:10` at the command line in R.  What happens?  
+```{r}
+1:10
+```
+We get a vector with all of the integers between 1 and 10, inclusive.
+
+f.  (2 points)  What happens when you call the function with the following input:  `quadratic2(x = 1:10)`.  Why does this happen?
+```{r}
+quadratic2(x = 1:10)
+```
+We get a vector with the output of `quadratic2` for each of the values in `1:10` (and the given default values for the coefficients). This happens because R does element-wise arithmetic on vectors.
+
+g.  (5 points)  Type `plot(1:10, quadratic2(x=1:10))` into your code block.  Describe the graph that shows up.
+```{r fig.width=5, fig.height=5, fig.align='center'}
+plot(1:10, quadratic2(x = 1:10))
+```
+The graph is a scatterplot, with x values from the vector `1:10` and the output of `quadratic2` as the corresponding y values.  The graph does not have appropriate axis labeling or a descriptive title.
+
+
+***
+***
+
+
+##  Problem 4
+
+**Introduction to ggplot2**:  
+
+In R, there are several libraries or packages/groups of programs that are not used enough to have them permanently stored in R. One that will be particularly useful in our class is called ggplot2.
+
+a.  (2 points) Type library(ggplot2) at the command line. Is the ggplot2 package installed on your computer? If not, type install.packages("ggplot2"), then repeat the library(ggplot2) command above.
+
+```{r}
+library(ggplot2)
+```
+
+b.  (2 points) The Comprehensive R Archive Network, or CRAN, stores most publicly accessible, open-source R packages for anyone to use. Find CRAN’s documentation on the ggplot2 package (e.g. by searching “ggplot2 in R” on the internet). You should find a PDF document that has 198 pages of documentation about ggplot2. What does the “gg” in ggplot2 stand for?
+
+<https://cran.r-project.org/web/packages/ggplot2/ggplot2.pdf>
+
+**GG:** Grammar of Graphics
+
+c.  (2 points) Who are the authors of the ggplot2 package? Who is the maintainer of the ggplot2 package? Search this person’s name on the internet. What are some other R packages this person has written?
+
+**Authors:** Hadley Wickham, Winston Chang, RStudio
+**Maintainer:** Hadley Wickham hadley@rstudio.com
+**Some packages:** classifly, clusterfly, meifly, DescribeDisplay, rggobi, plyr, testthat, profr, reshape <http://had.co.nz>
+
+d.  (2 points) Type library(datasets). Load the trees dataset into R by typing data(trees). Type head(trees) to view the first few rows of this dataset. How many columns does the dataset have? What are the names of the columns?
+
+```{r}
+library(datasets)
+data(trees)
+head(trees)
+```
+
+**Number of columns** 
+```{r}
+ncol(trees)
+```
+
+**Number of rows** 
+```{r}
+nrow(trees)
+```
+
+**Number of rows and columns, together** 
+```{r}
+dim(trees)
+```
+
+**Name of columns** 
+```{r}
+names(trees)
+```
+
+e.  (12 points)  Make your first `ggplot2` graphic:  
+
+    +  Type `my.plot <- ggplot(data = trees, aes(x = Girth, y = Height))`.  This will create the graph object.
+    +  Type `my.plot <- my.plot + geom_point(data = trees, aes(colour = Volume), size = 4)`.  This will add points to the graph object, colored by Volume.
+    +  Type `my.plot <- my.plot + ggtitle("Title Here") + labs(x = "x axis label here", y = "y axis label here")`
+    +  Change the above code to give the graph an informative title and informative axis labels.  Include units in the axis labels if possible.  See `help(trees)` for more information about the units.
+    +  Critique your own graph.  What do you like?  What do you dislike?  What would you change in the future?
+    +  Is there any unnecessary data ink used in this graph?
+
+
+```{r, fig.height=3.3, fig.width=11}
+my.plot <- ggplot(data = trees, aes(x = Girth, y = Height))
+#  Note that if you try to view this plot there are no layers which is alright, so we will add some!
+my.plot <- my.plot + geom_point(data = trees, aes(colour = Volume), size = 4)
+my.plot1 <- my.plot
+
+my.plot <- my.plot + ggtitle("Title Here") + labs(x = "x axis label here", y = "y axis label here")
+my.plot2 <- my.plot
+
+my.plot3 <- my.plot1 + ggtitle("Girth vs. Height by Volume in Cubic Feet") + labs(x = "Girth - Diameter in Inches", y = "Height in Feet")
+
+library(gridExtra)
+grid.arrange(my.plot1, my.plot2, my.plot3, ncol=3) #plot ggplot graphs side by side
+```
+
+Note: these are just examples but you must put something down for each
+
+**Likes:** Blue’s a pretty good color, plot is very neat and professional
+
+**Dislikes:** Not enough ticks along the y-axis – especially at the minimum and maximum values.
+
+**Changes:** Could change colors, size of dots, number of ticks in axes, size of font in axes, change x vs. y
+
+**Unnecessary data ink:** Unnecessary grid lines/background shading
+
+***
+***
+
+Also, note that you do not need to split this code on multiple lines.  You can do it all on one line of code, which is often much easier to read, e.g.:
+
+```{r, fig.height=3.3, fig.width=11}
+ggplot(data = trees, aes(x = Girth, y = Height)) + 
+  geom_point(data = trees, aes(colour = Volume), size = 4) + 
+  ggtitle("Girth vs. Height by Volume in Cubic Feet") + 
+  labs(x = "Girth - Diameter in Inches", y = "Height in Feet")
+```
+
+
+***
+***
+
+##  Problem 5
+
+**Cornell Tuition**:  
+
+
+Read the Cornell Tuition document (cornell.pdf) in the Homework 01 section on Blackboard.  
+
+a.  (5 points)  What are the main issues outlined by the author in the document?  
+
+This is taken directly from the document.
+
++  The ranking graph covers an 11 year period, the tuition graph 35 years, yet they are shown simultaneously (the same apparent width) on the same horizontal "scale".
++  The vertical scale for tuition and ranking could not possibly have common units, but the ranking graph is placed under the tuition graph creating the impression that cost exceeds quality.
++  The differing time units are cleverly disguised by printing them rotated 90 deg.
++  And here is the masterstroke: the sharp "drop" in the ranking graph over the past few years actually represents the fact that Cornell's rank has IMPROVED from 15th TO 6th
+    
+b.  (5 points)  What would you change about the graph?
+
+**Note:** This is not an exhaustive list, just a few ideas:
+
++  It is most important here to indicate that a decrease in ranking is actually good!
++  We could create two plots of year (x) vs. ranking (y) and year (x) vs. tuition (y) side-by-side
++  We could create a plot of tuition (x) vs. ranking (y) and label each point with the corresponding year
++  We could adjust the horizontal axis to include the same years, preferably all 35
++  We should ensure that the vertical scaling is correct and accurate
++  The time units should be uniform
++  No matter what, our graphic and explanation should be consistant
++  We could make some type of comparison of tuition to GDP or the economy
++  We could add lines for multiple schools to compare Cornell to other universities
++  Here is a recent example of a similarly misleading graphic (associated with planned parenthood court case):  <http://reverbpress.com/wp-content/uploads/2015/09/Abortion-chart-used-by-House-Oversight-Committee.jpg>
+
+
+***
+***
+
+##  Problem 6
+
+**The Shrinking Doctor**:  
+
+a. (2 points)  Critque this graphic.  Is there any data distortion?
+
+This is a bar graph which shows the percentage of doctors in the state of California who are devoted solely to family practice in different years. 
+
+There are a number of problems with this graph:
+
+- Both the height and the width of the bars are scaled according to the data. This causes a distortion in the graph, as the bars overexaggerate the difference between the years. Ideally, only the height should scale with the data.
+
+- The usage of drawing of a doctor to represent each bar is an unecessary decoration and distracting to the viewer. It also helps to create the distortion, since the artist presumably wanted to keep the doctor's proportions the same across all the bars. 
+
+- The x-axis is oddly spaced. The distance between the bars for 1964 and 1975 is larger than the distance between 1975 and 1990, even though the gap in years is larger in the latter.
+
+- There is no y-axis whatsoever.
+
+- The bases of the bars are not horizontally aligned with the x-axis.
+
+- The graph lists 3 separate numerical variables next to each year/bar. While it does provide more information, this also makes it confusing for the reader to discern what the bars in the graph are actually supposed to represent. This information could be put in accompanying text instead.
+
+b.  (2 points)  What are the actual data quantities being visualized?
+
+The actual data quantities being visualized are the percentages of doctors in California who are solely family practicioners.
+
+c.  (6 points)  Calculate the Lie Factors for 1975 and 1990, relative to the baseline of 1964, by comparing the
+change in area of the graphics to the change in the fraction of family practice doctors.  (You might need a ruler to do this!) *(Answers will be approximate, and specific calculations will depend on window and computer screen size.)*
+
+**From Tufte:**
+
+$LF = \frac{size of effect in graphic}{size of effect in data}$
+
+$Size = \frac{\abs{second value - first value}}{first value}$ 
+
+**1965 vs. 1974:**
+
+$LF = \frac{\frac{1.9-0.8}{1.9}}{\frac{27-16}{27}} = \frac{\frac{1.1}{1.9}}{\frac{11}{27}} = \frac{0.5789}{0.4074} = 1.4210$
+
+**1965 vs. 1990:**
+
+$LF = \frac{\frac{1.9-0.55}{1.9}}{\frac{27-12}{27}} = \frac{\frac{1.35}{1.9}}{\frac{15}{27}} = \frac{0.7105}{0.5556} = 1.2789$
+
+In both cases, the bars of the graph are distorted such that the change in the percentage of the doctors who are family practicioners is enhanced visually. 
+
+
+***
+***
+
+
+##  Problem 7
+
+**Remember to use Piazza if you have questions on the homework!**:  
+
+
+
+
+

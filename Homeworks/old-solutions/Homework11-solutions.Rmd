@@ -1,0 +1,522 @@
+---
+title: "36-315 Homework 11, Fall 2016"
+author: "Your Name Here"
+date: "Due Wednesday, November 30th, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Homework 11:  Maps and Networks
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW11.Rmd -- e.g. "sventura-HW11.Rmd") to the Homework 11 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+<div style="width:600px">
+![](https://upload.wikimedia.org/wikipedia/commons/9/9b/Social_Network_Analysis_Visualization.png)
+</div>
+
+
+***
+***
+
+#  Easy Problems
+
+##  Problem 0
+
+(4 points)
+
+**Organization, Themes, and HTML Output**
+
+a.  For all problems in this assignment, organize your output as follows:
+
++  Organize each part of each problem into its own tab.  For Problems 2 and 5, the organization into tabs is already completed for you, giving you a template that you can use for the subsequent problems.
++  Use code folding for all code.  See [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/) for how to do this.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
+
+
+b.  For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color:
+
++  Don't use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+c.  What style guide are you using for this assignment?
+
+```{r}
+library(ggplot2)
+# We so fancy with our custom theme
+my_theme <-  theme_bw() + # White background, black and white theme
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+```
+***
+***
+
+
+##  Problem 1 {.tabset}
+
+(2 points each)
+
+**Read**
+
+### Part A 
+
+Read [this article](https://www.washingtonpost.com/news/wonk/wp/2016/04/11/the-dirty-little-secret-that-data-journalists-arent-telling-you/).  Write 1-3 sentences about what you learned from it.
+
+Setting evenly spaced bins does not always give an informative portrayal of the data, particularly if there are several extreme outliers.  When applying colors if there are change points that may be important, such as distinction between positive and negative one should consider using a bivariate color distribution to highlight this.
+
+### Part B
+
+Read [this article](http://www.spoon-tamago.com/2016/10/28/hajime-narukawa-authagraph/).  Write 1-3 sentences about what you learned from it.
+
+The standard map of the world does not accurately reflex relative sizes, particularly for Antarctica and Greenland.  The version of the world map that won the design contest preserves the relative sizes across 96 different regions of the world.  This might be particular useful in changing perspectives when addressing issues like climate change where portrayal of changes at the poles matters.
+
+### Part C 
+
+Read the in-depth description of the `ggmap` package in the short paper by David Kahle and Hadley Wickham [here](http://stat405.had.co.nz/ggmap.pdf).  Write 1-3 sentences about what you learned from it.
+
+The `get_map()` function is used to download and format an image.  The function can query maps from a variety of online sources but needs to be supplied with either a latitude/longitude pair and a zoom or other location information such as a bounding box.  Once a map has been made using `ggmap()` faceting with keep the same base map but will apply to layers that have been added.
+
+### Part D 
+
+Read the article on `ggmap` [here](http://blog.dominodatalab.com/geographic-visualization-with-rs-ggmaps/).  Which functions can you use to create geographic heat maps?
+
+Use `stat_density2d(fill = ..level..)` along with `scale_fill_gradient()` to add a heatmap layer to a ggmap base.
+
+### Part E
+
+Read [this description](http://www.r-bloggers.com/ggnetwork-network-geometries-for-ggplot2/) of the `ggnetwork` package.  What does the `fortify()` function do for networks?
+
+
+The `fortify()` method implemented by ggnetwork “flattenes” the network to a data.frame. The resulting data.frame contains x and y coordinates for each vertex of the graph (each node of the network), based on a graph layout that defaults to the Fruchterman-Reingold force-directed node placement algorithm.
+
+***
+***
+
+
+
+##  Problem 2
+
+(2 points)
+
+**Requesting Final Project Group Members**
+
+Fill out the survey [here](https://goo.gl/forms/QgTdRBtBhZhddb6K2).  Even if you don't have any requests for group members for the final project, please still fill out the survey.
+
+**You must fill this out by Tuesday at 5pm in order to receive credit and have your group member requests considered.**
+
+We cannot guarantee that any of your final partner requests will be granted.
+
+***
+***
+
+
+
+##  Problem 3 {.tabset}
+
+(2 points each)
+
+**Maps with `ggmap`**
+
+### Part A 
+'get_map' creates a ggmap object for plotting by querying one of the map servers for a map at a requested location and zoom. The possible map sources are Google Maps, OpenStreetMap, Stamen Maps, and Naver Map. 
+
+### Part B.  
+The 'zoom' parameter determines the zoom size or detail of the map requested. It ranges from 3, the size of a continent, to 21, which zooms down to a building level. A city square with one mile width would probably require a zoom level of 16-18.
+
+### Part C.  
+We can choose the types "terrain", "terrain-background", "satellite", "roadmap", and "hybrid", "watercolor", and "toner." The "hybrid" type is unique to Google Maps. 
+
+### Part D.  
+The map shows Carnegie Mellon University, Phipps, and part of Schenley Park. The direct center of the map seems to be Baker Hall. In `get_map()`, 'location' tells where the center of the map is, the 'color' is telling the map to be in color, the 'source' tells the function to pull the map from Google Maps, the 'maptype' is specifying the map theme, and the zoom tells the map to zoom in to about a square mile. In `ggmap()`, the 'extent' says how large the map should be relative to the plotting device, and the 'xlab' and 'ylab' label the x and y axes.
+
+```{r, warning = F, message = F}
+#devtools::install_github('hadley/ggplot2')
+#devtools::install_github('thomasp85/ggforce')
+#devtools::install_github('thomasp85/ggraph')
+#devtools::install_github('slowkow/ggrepel')
+library(ggmap)
+map_base <- get_map(location = c(lon = -79.944248, lat = 40.4415861),
+                    color = "color",
+                    source = "google",
+                    maptype = "hybrid",
+                    zoom = 16)
+
+map_object <- ggmap(map_base,
+                    extent = "device",
+                    ylab = "Latitude",
+                    xlab = "Longitude")
+map_object
+```
+
+### Part E.  
+```{r}
+# map_base_2 <- get_map(location = c(lon = -79.944248, lat = 40.4415861),
+#                     color = "color",
+#                     source = "google",
+#                     maptype = "hybrid",
+#                     zoom = 16.5)
+# 
+# map_object_2 <- ggmap(map_base_2,
+#                     extent = "device",
+#                     ylab = "Latitude",
+#                     xlab = "Longitude")
+# map_object_2
+```
+
+The function does not work with a non-integer value for the zoom parameter.
+
+### Part F.  
+The map object is of class 'ggplot', which also inherits from class 'gg'.
+
+
+***
+***
+
+
+##  Problem 4 {.tabset}
+
+(2 points each)
+
+**Finding Latitudes and Longitudes**
+
+There are many ways to find latitude and longitude coordinates of specific places.  Here's one easy way:
+
+### Part A  
+The latitude is 40.7588995, and the longitude is -73.9873197.
+
+### Part B
+The latitude and longitude should not change when the zoom is changed.
+
+### Part C
+
+```{r}
+map_base_NYC <- get_map(location = c(lon = -73.9873197, lat = 40.758899),
+                    color = "bw",
+                    source = "google",
+                    maptype = "roadmap",
+                    zoom = 12)
+
+map_object_NYC <- ggmap(map_base_NYC,
+                    extent = "device",
+                    ylab = "Latitude",
+                    xlab = "Longitude")
+map_object_NYC
+```
+
+This outputs a greyscale map, pulled from Google Maps, which displays the road and highway information around Manhattan, Brooklyn, and Jersey City. 
+
+***
+***
+
+
+##  Problem 5
+(2 points each)
+
+**Read Your HW09 Feedback On Blackboard**
+
+a.  Write at least one sentence about what you did well on in the assignment.
+
+b.  Write at least one sentence about what you did wrong on the assignment.
+
+
+***
+***
+
+
+#  Hard Problems
+
+##  Problem 6 {.tabset}
+(30 points total)
+
+**Mapping US Flights**
+
+### Part A 
+
+```{r, warning=FALSE, message=FALSE}
+library(dplyr)
+
+airports <- read.csv("https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat", header = FALSE)
+colnames(airports) <- c("ID", "name", "city", "country", "IATA_FAA", "ICAO", "lat", "lon", "altitude", "timezone", "DST", "misc_loc")
+
+routes <- read.csv("https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat", header=F)
+colnames(routes) <- c("airline", "airlineID", "sourceAirport", "sourceAirportID", "destinationAirport", "destinationAirportID", "codeshare", "stops", "equipment")
+
+departures <- routes %>%
+  dplyr::group_by(sourceAirportID) %>%
+  dplyr::summarize(flights = n()) %>%
+  mutate(sourceAirportID = as.integer(as.vector(sourceAirportID)))
+
+arrivals <- routes %>%
+  dplyr::group_by(destinationAirportID) %>%
+  dplyr::summarize(flights = n()) %>%
+  mutate(destinationAirportID = as.integer(as.vector(destinationAirportID)))
+
+#  Merge each of the arrivals/departures data.frames with the airports data.frame above
+airportD <- left_join(airports, departures, by = c("ID" = "sourceAirportID"))
+airportA <- left_join(airports, arrivals, by = c("ID" = "destinationAirportID"))
+
+map <- get_map(location = 'United States', zoom = 4)
+
+mapPoints <- ggmap(map) +
+    geom_point(aes(x = lon, y = lat, size = flights, color = DST), 
+        data = airportA, alpha = .5) + 
+    ggtitle("Location of Airports Sized by Number of Arriving Flights")
+
+#  Add a custom legend to the plot
+mapPointsLegend <- mapPoints +
+  scale_size_area(breaks = c(10, 50, 100, 500, 900), 
+                  labels =c(10, 50, 100, 500, 900), 
+                  name = "Number of Arriving Routes")
+mapPointsLegend
+```
+
+### Part B
+
+```{r, warning=FALSE, message=FALSE}
+my_airport_code <- "LAX"
+lax_routes <- dplyr::filter(routes, 
+                           sourceAirport == my_airport_code | 
+                            destinationAirport == my_airport_code)
+
+lax_airport<- lax_routes %>%
+    left_join(airports, by = c("sourceAirport" = "IATA_FAA")) %>%
+    dplyr::select(destinationAirport, lat, lon, timezone) %>%
+    dplyr::rename(source_lat = lat, source_lon = lon, source_timezone = timezone) %>%
+    left_join(airports, by = c("destinationAirport" = "IATA_FAA")) %>%
+    dplyr::select(source_lat, source_lon, source_timezone, lat, lon, timezone) %>%
+    dplyr::rename(dest_lat = lat, dest_lon = lon, dest_timezone = timezone)
+
+ggmap(map) + 
+    geom_segment(aes(x = source_lon, y = source_lat, xend = dest_lon,
+                   yend = dest_lat), data = lax_airport, alpha=.15) +
+    labs(x = "Longitude", y = "Latitude") +
+    ggtitle("Flights To and From Los Angeles")
+```
+
+### Part C
+
+```{r, warning=FALSE, message=FALSE}
+ggmap(map) + 
+    geom_curve(aes(x = source_lon, y = source_lat, xend = dest_lon,
+             yend = dest_lat), data = lax_airport, 
+             arrow = arrow(length = unit(0.02, "npc")), alpha=.15) +
+    labs(x = "Longitude", y = "Latitude") +
+    coord_cartesian() + 
+    ggtitle("Flights To and From Los Angeles")
+```
+
+### Part D 
+
+```{r, warning=FALSE, message=FALSE}
+lax_airport$change_timezone <- lax_airport$source_timezone - lax_airport$dest_timezone
+# Filter by routes that wil be shown on map
+
+lax_airport <- lax_airport[which(abs(lax_airport$change_timezone) <= 3), ]
+
+ggmap(map) + 
+  geom_curve(aes(x = source_lon, y = source_lat, xend = dest_lon,
+                   yend = dest_lat, color = change_timezone), data = lax_airport, 
+             arrow = arrow(length = unit(0.02, "npc")), alpha=.15) +
+    labs(x = "Longitude", y = "Latitude") +
+    coord_cartesian() + 
+    scale_color_gradient("Change in \nTime Zone \nin Hours", 
+                         low = 'blue', high = 'red') +
+    ggtitle("Flights To and From Los Angeles")
+```
+
+
+***
+***
+
+
+##  Problem 7 {.tabset}
+
+(4 points each; 32 points total)
+
+**Networks, `igraph`, and `ggnetwork`**
+
+The `igraph` package makes network analysis easy!  Install and load the `igraph` and `igraphdata` packages.  Load the `UKfaculty` network into `R`:
+
+```{r, warning = FALSE, message = FALSE}
+#install.packages("igraph")
+#install.packages("igraphdata")
+library(igraph)
+library(igraphdata)
+data(UKfaculty)
+```
+
+### Part A 
+```{r}
+vcount(UKfaculty)
+ecount(UKfaculty)
+```
+
+There are 81 vertices and 817 edges in the network. 
+
+
+### Part B
+
+```{r}
+neighbors(UKfaculty, 11, mode = "out")
+neighbors(UKfaculty, 11, mode = "in")
+```
+
+Faculty #11 claims to have no friends. Two faculty members, #46 and #58, claim #11 is their friend.
+
+### Part C
+
+```{r}
+#  node:  The node index in the network
+#  network:  The network to use in the degree calculations
+#  type:  The degree type; must be either "in" or "out"
+get_degree <- function(node, network, type) {
+  degree_node <- length(neighbors(network, node, mode = type))
+  return(degree_node)
+}
+```
+
+### Part D 
+
+```{r}
+#  network:  The network to use in the degree calculations
+#  type:  The degree type; must be either "in" or "out"
+get_all_degrees <- function(network, type) {
+  return(sapply(1:vcount(network), get_degree, network = network, type = type))
+}
+```
+
+### Part E  
+```{r, warning = FALSE, message = FALSE}
+UKfaculty_degrees <- data.frame(nodes = as.factor(1:vcount(UKfaculty)), in_deg = get_all_degrees(UKfaculty, "in"), 
+                                out_deg = get_all_degrees(UKfaculty, "out"))
+```
+
+### Part F 
+
+```{r}
+ggplot(data = UKfaculty_degrees) + 
+  geom_text(aes(x = out_deg, y = in_deg, label = nodes)) + 
+  lims(x = c(0, 40), y = c(0,40)) +
+  geom_abline(slope = 1, intercept = 0, color = "red", linetype = "dashed") +
+  ggtitle("UK Faculty Data In-Degrees vs. Out-Degrees") + 
+  labs(y = "In-Degrees", x = "Out-Degrees") + 
+  my_theme 
+```
+
+The graph shows the number of people who each faculty member claims to be a friend vs. the number of people that claims the same faculty member to be a friend. Faculty that are above the dashed line are overconfident in their popularity, while those that are below the dashed line are underconfident lie below the line. Nodes 54, 18, 52, and 69 are particularly underconfident. Nodes 37, 62, 5, and 52 are particularly overconfident.
+
+
+### Part G
+
+```{r, warning = FALSE, message = FALSE}
+#devtools::install_github("briatte/ggnetwork")
+#devtools::install_github("mbojan/intergraph")
+library(ggnetwork)
+
+uk_data <- fortify(UKfaculty)
+node_degrees <- igraph::degree(UKfaculty, mode = "in")
+uk_degrees <- node_degrees[match(uk_data$vertex.names, 1:length(node_degrees))]
+uk_data$degree <- uk_degrees
+ggplot(uk_data, 
+       aes(x, y, xend = xend, yend = yend)) +
+  geom_nodetext(aes(label = vertex.names, size = degree * 1.5), 
+                color = "blue", fontface = "bold") +
+  geom_edges(arrow = arrow(length = unit(0.3, "lines")), 
+             aes(color = as.factor(Group)), alpha = 0.5) +
+  ggtitle("UK Faculty Network Graph") + 
+  labs(x = "", y = "", color = "Group", size  = "In-degree") + 
+  my_theme +
+    theme(axis.text = element_blank(), axis.ticks = element_blank(),
+        panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+```
+
+### Part H
+There seems to be 3-4 poential cliques in the graph- one in the top left, one in the top right, one in the bottom middle, and potential small one in thhe middle of the graph. The size of the nodes in the graph correpsonds to the in-degree of the respective node. The color of the edges corresponds to the group that the edge belogns to. The graph is a directed graph.
+
+
+***
+***
+
+
+#  Bonus Problems
+
+
+##  Bonus 1
+
+(15 points)
+
+**Create `geom_acf()`**
+
+Many of you didn't have time to complete this last week, so you get another shot this week.  If you already turned in something for this problem, you can resubmit an updated version, but you will only receive bonus credit for this assignment (not for a previous assignment).
+
+***
+
+Create a new `ggplot()` geometry called `geom_acf()` that will create the same graph you made in Problem 7 of Homework 09, but in a more typical `ggplot()` way.
+
+You should first read this vignette from Hadley Wickham on [extending the `ggplot2` package](http://docs.ggplot2.org/dev/vignettes/extending-ggplot2.html), where he demonstrates how to create new geoms and stats.
+
+Write two functions:
+
++  `fortify()`:  This function should take two inputs -- a data.frame (e.g. `trips_per_day`) and a column name specifying the column of the data.frame that contains the time series data (e.g. "n_trips").  It should output a data.frame with two columns -- `lag` and `ac`.  Lag should contain the lag ID number, and `ac` should contain the autocorrelation of the time series at that lag.
++  `geom_acf()` (and, if necessary, `StatACF()`)
+
+Demonstrate that the following code works once you write these functions:
+
++  `ggplot(fortify(trips_per_day), aes(x = lag, y = ac)) + geom_acf()`
++  `ggplot(fortify(trips_per_day)) + geom_acf(aes(x = lag, y = ac))`
+
+
+***
+***
+
+
+##  Bonus 2
+
+(15 points)
+
+**Airport Network**
+
+Your task in this problem is to create a network diagram of the airport / flight data from Problem 6.  To do this, take the following steps:
+
+a.  Create an adjacency matrix for all airports in the dataset, and store it in an object called `airport_adj`.  You should create the matrix so that `airport_adj[ii,jj]` is proportional to the number of flights between airport `ii` and airport `jj` in the dataset.
+
+b.  Use the `graph_from_adjacency_matrix()` function in the `igraph` package to convert your adjacency matrix to an object of class `igraph`.
+
+c.  Use an approach similar to what you did in Problem 7 to create a `ggplot()` network diagram of the airports data.  In your graph, do all of the following:
+
++  Give the graph an appropriate title, and remove all axis elements (axes, labels, tick marks, etc)
++  Size the edges by the frequency of flights between the two nodes (airports)
++  Color the nodes by their continent, and include an appropriate legend
++  Change the line type of the edges so that domestic flights (flights between two airports in the same country) solid lines and international flights (flights between two airports in different countries) have dotted or dashed lines, and include an appropriate legend
+
+d.  Describe the resulting network diagram.  Point out any interesting features you see.
+
+
+***
+***
+***
+***
+***
+***
+
+
