@@ -14,8 +14,7 @@ output:
 
 Note that we include a floating table of contents in the homework solutions, to allow the viewer easier navigation between problems.  See the code in the header of the document for how to do this, and please feel free to include this in your future assignments!
 
-
-##  Problem 1
+#  Problem 1
 
 **Customizing the RStudio User Interface:**
 
@@ -35,11 +34,11 @@ Essentially any configuration is acceptable with justification.
 ***
 
 
-##  Problem 3
+#  Problem 3
 
 **Writing R Functions and Working with Vectors**:  
 
-a.  (5 points)  Write an R function called `quadratic` that computes the quadratic formula.  That is, write a function that has four inputs -- ```a```, ```b```, ```c```, and ```x``` and returns the quantity $ax^2 + bx + c$.
+### a.
 
 ```{r}
 quadratic <- function(a, b, c, x) {
@@ -47,7 +46,7 @@ quadratic <- function(a, b, c, x) {
 }
 ```
 
-b.  (2 points)  Test your function out and demonstrate that it works for at least there different combinations of the parameters.
+### b.
 
 ```{r}
 # example tests
@@ -63,11 +62,11 @@ all(
 
 Our function works correctly on a variety of examples, as demonstrated above.
 
-c.  (2 points)  Type `quadratic(x=2)` into your code block.  What happens when you only specify one argument?
+### c.
 
 We get an error message: `Error in quadratic(x = 2) : argument "a" is missing, with no default Calls`.
 
-d.  (2 points)  Create a new function, `quadratic2`, that has default values for ```a=1```, ```b=1```, and ```c=1```.  Type `quadratic2(x=2)` into your code block.  What happens when you only specify one argument?
+### d.
 
 ```{r}
 quadratic2 <- function(a=1, b=1, c=1, x) {
@@ -77,24 +76,116 @@ quadratic2(x=2)
 ```
 Since the other arguments were given default values, R uses the default values along with the one specified argument and runs successfully.
 
-e.  (2 points)  Type `1:10` at the command line in R.  What happens?  
+### e.   
 ```{r}
 1:10
 ```
 We get a vector with all of the integers between 1 and 10, inclusive.
 
-f.  (2 points)  What happens when you call the function with the following input:  `quadratic2(x = 1:10)`.  Why does this happen?
+### f. 
 ```{r}
 quadratic2(x = 1:10)
 ```
 We get a vector with the output of `quadratic2` for each of the values in `1:10` (and the given default values for the coefficients). This happens because R does element-wise arithmetic on vectors.
 
-g.  (5 points)  Type `plot(1:10, quadratic2(x=1:10))` into your code block.  Describe the graph that shows up.
+### g.  
 ```{r fig.width=5, fig.height=5, fig.align='center'}
 plot(1:10, quadratic2(x = 1:10))
 ```
 The graph is a scatterplot, with x values from the vector `1:10` and the output of `quadratic2` as the corresponding y values.  The graph does not have appropriate axis labeling or a descriptive title.
 
+
+***
+***
+
+#  Problem 4
+
+**Introduction to ggplot2**:  
+
+### a.  
+```{r}
+#install.packages("ggplot2")
+#library(ggplot2)
+
+library(tidyverse)
+```
+
+NB: Do not include uncommented `install.packages` commands in your code.
+
+### b.
+
+"gg" stands for "Grammar of Graphics."
+
+### c.  
+
+The authors of `ggplot2` are Hadley Wickham and Winston Chang. Hadley wickham maintains `ggplot2`. Other `R` packages he has written include `dplyr`, `testthat`, `reshape2`, and 'devtools`. 
+
+
+### d. 
+
+```{r}
+library(MASS)
+data(Cars93)
+
+head(Cars93)
+ncol(Cars93)
+colnames(Cars93)
+```
+
+### e. 
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(MASS)
+data(Cars93)
+
+#  First graph
+ggplot(data = Cars93) + 
+  geom_bar(aes(x = Type), fill = "darkblue", color = "black") +
+  labs(title = "Distribution of Car Types", 
+       x = "Type of Car",
+       y = "Number of Models",
+       caption = "Source: R MASS Package",
+       subtitle = "Cars93 Data Set") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+#  Second graph
+ggplot(data = Cars93) + 
+  geom_histogram(aes(x = MPG.city), fill = "orange", color = "black") +
+  labs(title = "City MPG vs. Fuel Tank Capacity",
+       caption = "Cars93 Data Set",
+       x = "Fuel Tank Capacity (gal.)",
+       y = "City Miles per Gallon") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+#  Third graph
+ggplot(data = Cars93) + 
+  geom_point(aes(x = Fuel.tank.capacity, y = MPG.highway, color = Type)) +
+  labs(title = "Highway MPG vs. Fuel Tank Capacity",
+       caption = "Cars93 Data Set",
+       subtitle = "By Car Type",
+       x = "Fuel Tank Capacity (gal.)",
+       y = "Highway Miles per Gallon") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+#  Fourth graph
+ggplot(data = Cars93) + 
+  geom_text(aes(x = Fuel.tank.capacity, y = MPG.city, 
+                label = Type, color = Origin)) +
+  labs(title = "City MPG vs. Fuel Tank Capacity",
+       subtitle = "By Country of Origin and Car Type", 
+       caption = "Cars93 Data Set",
+       x = "Fuel Tank Capacity (gal.)",
+       y = "City Miles per Gallon",
+       color = "Country of Origin") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+Overall, the graph indicates a negative association between fuel tank capacity and city miles per gallon in the Cars93 data set; models with larger fuel tank capacities tend to have lower city miles per gallon and vice versa. This makes sense in theory, as one could imagine that larger fuel tank capacities are associated with larger cars, which get fewer miles per gallon. It also seems that American car models tend to have fewer city miles per gallon, as there seem to be more points correpsonding to U.S. cars in the lower part of the graph and more points corresponding to foreign cars in the upper part of the graph. With respect to car type, small cars tend to have smaller fuel tank capacities and larger city miles per gallon, as most of the small cars are on the top left of the graph. On the other hand, large cars and vans tend to have larger fuel tank capacities and lower city miles per gallon, as they are mainly on the bottom right of the graph.
 
 ***
 ***
