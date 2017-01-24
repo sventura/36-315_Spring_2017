@@ -23,7 +23,7 @@ Personally, Sam prefers to have:
 
 +  Source in its own pane on the top-right-hand side
 +  Console in it's own pane on the top-left-hand side of the window
-+  Help and Git ('VSC' for version control system) on the bottom-right
++  Help and Git ('VCS' for version control system) on the bottom-right
 +  Everything else on the bottom-left
 
 Sam personally prefers a fixed-width font like Courier.  Finally, when coding, Sam prefers to minimize the bottom-left and bottom-right panes so that he has more vertical space to see the code he's writing and the output it's generating.  Sam's also okay with swapping the Source and Console windows above, though this obviously is up to you.
