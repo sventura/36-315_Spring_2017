@@ -17,6 +17,8 @@ Note that we include a floating table of contents in the homework solutions, to 
 
 ##  Problem 1
 
+**Customizing the RStudio User Interface:**
+
 Personally, Sam prefers to have:
 
 +  Source in its own pane on the top-right-hand side
