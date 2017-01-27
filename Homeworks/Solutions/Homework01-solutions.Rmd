@@ -1,0 +1,243 @@
+---
+title: "36-315 Homework 01, Fall 2016"
+author: "Solutions"
+date: "Due Wednesday, January 25, 2016 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+**Style Guide**:  We are using Hadley Wickham's style guide.
+
+
+Note that we include a floating table of contents in the homework solutions, to allow the viewer easier navigation between problems.  See the code in the header of the document for how to do this, and please feel free to include this in your future assignments!
+
+#  Problem 1
+
+**Customizing the RStudio User Interface:**
+
+Personally, Sam prefers to have:
+
++  Source in its own pane on the top-right-hand side
++  Console in it's own pane on the top-left-hand side of the window
++  Help and Git ('VCS' for version control system) on the bottom-right
++  Everything else on the bottom-left
+
+Sam personally prefers a fixed-width font like Courier.  Finally, when coding, Sam prefers to minimize the bottom-left and bottom-right panes so that he has more vertical space to see the code he's writing and the output it's generating.  Sam's also okay with swapping the Source and Console windows above, though this obviously is up to you.
+
+Essentially any configuration is acceptable with justification. 
+
+
+***
+***
+
+#  Problem 2
+
+**Critiquing Graphs**:
+
+### a. Graph  
+
+CNN published an article online, titled "44 ways to judge the Obama era" updated January 19, 2017 ([link](http://www.cnn.com/2017/01/18/politics/obama-presidency-statistics/index.html?3e71y)). In this article the fourteenth point was on the "Wage gap", which stated:
+
+>Debate abounds over how and why incomes vary by gender and whether the wage gap can fairly be said to exist. However, men and women, as well as people of different races, all have much different pay.
+>Here are the median weekly earnings for employed, full-time wage and salary workers in 2015, with an overall average of $809, per the Bureau of Labor Statistics.
+
+along with the figure below:
+
+<div style="height:300px">
+![](http://i.cdn.turner.com/cnn/.e/interactive/html5-video-media/2017/01/18/44in44_Graphics8a_min.png?3e71y)
+</div>
+
+### b. Description  
+
+It should be first mentioned that the article was probably proposed as a "neural" piece, and therefore one might assume no conclusion about the Wage gap was actually desired. In that case, they did a pretty good job of not saying anything :). 
+
+The plot shows median weekly earnings of employed, full-time wage and salary workers in 2015 overall, and broken across gender and 4 racial groups. This was done with a bar plot with group on the "X" axis and median weekly earnings in dollars on the "Y" axis. From this figure one might say that you should be able to tell that between different categories there is a difference in wages (i.e. a wage gap).
+
+### c. Critique 
+
+In respect to the goal of expressing trivial that a wage gap exists they did a wonderful job. If they wanted to compare progress, question actions, look at other potential reasons for such gap and changes in the gap, they didn't do good job at all.
+
+First, the data is all mixed together, with gender differences in wage and racial differences in wage being compared on the same plot. By including all the groups and the average in the same plot, it reduces the eye's ability to analysis the size of the differences. 
+
+If I was to redo the graphic I would:
+
++ split gender and racial wage gaps into seperate figures
++ use time series data to create line plots on these figures and probably evaluate a percentage different between groups with a base line of one race for the racial wage gap. This would be more optimal to look for correlations and visualize differences on a standard scale even as time changed.
++ additionally I'd mark the "X" axes of these line plots with different presidual terms, and maybe even significant milestones outside the political sphere that might push changes in the wage gaps.
++ and lastly, if I wanted to get you questioning things, I might include subset by industry, or put additional historical trends that correlate with the fluctuations of the % differences, or compare other countries wage gaps of similar nations.
+
+### d. Critique of text 
+
+The text itself does a pretty good job describing what you have without being excessive. I might experiment with putting the actual value of the median weekly earnings above each groups' bar to let you think about the difference more, but it would be messier as well.
+
+
+***
+***
+
+#  Problem 3
+
+**Writing R Functions and Working with Vectors**:  
+
+### a.
+
+```{r}
+quadratic <- function(a, b, c, x) {
+  return(a * x^2 + b * x + c)
+}
+```
+
+### b.
+
+```{r}
+# example tests
+all(
+  quadratic(1, 5, 2, 0) == 2,
+  quadratic(0, 5, 2, 1) == 7,
+  quadratic(1, 0, 1, 10) == 101,
+  quadratic(2, 3, 0, 5) == 65,
+  quadratic(-1, 5, 5, 5) == 5
+)
+# note:  the all() function returns TRUE if all input expressions are true, and FALSE otherwise
+```
+
+Our function works correctly on a variety of examples, as demonstrated above.
+
+### c.
+
+We get an error message: `Error in quadratic(x = 2) : argument "a" is missing, with no default Calls`.
+
+### d.
+
+```{r}
+quadratic2 <- function(a=1, b=1, c=1, x) {
+  return(a * x^2 + b * x + c)
+}
+quadratic2(x=2)
+```
+Since the other arguments were given default values, R uses the default values along with the one specified argument and runs successfully.
+
+### e.   
+```{r}
+1:10
+```
+We get a vector with all of the integers between 1 and 10, inclusive.
+
+### f. 
+```{r}
+quadratic2(x = 1:10)
+```
+We get a vector with the output of `quadratic2` for each of the values in `1:10` (and the given default values for the coefficients). This happens because R does element-wise arithmetic on vectors.
+
+### g.  
+```{r fig.width=5, fig.height=5, fig.align='center'}
+plot(1:10, quadratic2(x = 1:10))
+```
+The graph is a scatterplot, with x values from the vector `1:10` and the output of `quadratic2` as the corresponding y values.  The graph does not have appropriate axis labeling or a descriptive title.
+
+
+***
+***
+
+#  Problem 4
+
+**Introduction to ggplot2**:  
+
+### a.  
+```{r}
+#install.packages("ggplot2")
+#library(ggplot2)
+
+library(tidyverse)
+```
+
+NB: Do not include uncommented `install.packages` commands in your code.
+
+### b.
+
+"gg" stands for "Grammar of Graphics."
+
+### c.  
+
+The authors of `ggplot2` are Hadley Wickham and Winston Chang. Hadley wickham maintains `ggplot2`. Other `R` packages he has written include `dplyr`, `testthat`, `reshape2`, and 'devtools`. 
+
+
+### d. 
+
+```{r}
+library(MASS)
+data(Cars93)
+
+head(Cars93)
+ncol(Cars93)
+colnames(Cars93)
+```
+
+### e. 
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(MASS)
+data(Cars93)
+
+#  First graph
+ggplot(data = Cars93) + 
+  geom_bar(aes(x = Type), fill = "darkblue", color = "black") +
+  labs(title = "Distribution of Car Types", 
+       x = "Type of Car",
+       y = "Number of Models",
+       caption = "Source: R MASS Package",
+       subtitle = "Cars93 Data Set") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+#  Second graph
+ggplot(data = Cars93) + 
+  geom_histogram(aes(x = MPG.city), fill = "orange", color = "black") +
+  labs(title = "City MPG vs. Fuel Tank Capacity",
+       caption = "Cars93 Data Set",
+       x = "Fuel Tank Capacity (gal.)",
+       y = "City Miles per Gallon") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+#  Third graph
+ggplot(data = Cars93) + 
+  geom_point(aes(x = Fuel.tank.capacity, y = MPG.highway, color = Type)) +
+  labs(title = "Highway MPG vs. Fuel Tank Capacity",
+       caption = "Cars93 Data Set",
+       subtitle = "By Car Type",
+       x = "Fuel Tank Capacity (gal.)",
+       y = "Highway Miles per Gallon") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+#  Fourth graph
+ggplot(data = Cars93) + 
+  geom_text(aes(x = Fuel.tank.capacity, y = MPG.city, 
+                label = Type, color = Origin)) +
+  labs(title = "City MPG vs. Fuel Tank Capacity",
+       subtitle = "By Country of Origin and Car Type", 
+       caption = "Cars93 Data Set",
+       x = "Fuel Tank Capacity (gal.)",
+       y = "City Miles per Gallon",
+       color = "Country of Origin") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+Overall, the graph indicates a negative association between fuel tank capacity and city miles per gallon in the Cars93 data set; models with larger fuel tank capacities tend to have lower city miles per gallon and vice versa. This makes sense in theory, as one could imagine that larger fuel tank capacities are associated with larger cars, which get fewer miles per gallon. It also seems that American car models tend to have fewer city miles per gallon, as there seem to be more points correpsonding to U.S. cars in the lower part of the graph and more points corresponding to foreign cars in the upper part of the graph. With respect to car type, small cars tend to have smaller fuel tank capacities and larger city miles per gallon, as most of the small cars are on the top left of the graph. On the other hand, large cars and vans tend to have larger fuel tank capacities and lower city miles per gallon, as they are mainly on the bottom right of the graph.
+
+***
+***
+
+# Problem 5
+Getting you to be involved with Piazza.
+
+***
+***
+
+# Problem 6
+Seeing if we can use your Labs solutions.

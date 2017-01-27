@@ -1,0 +1,161 @@
+---
+title: "36-315 Lab 01"
+author: "Sample Solution"
+date: "Due Saturday, January 21st, 2017 (6:30pm)"
+output: html_document
+---
+
+
+##  Lab 01:  Hello, world!  Introduction to R, RStudio, & RMarkdown
+
+
+***
+***
+
+
+#  Problem 1
+
+```{r}
+#  I am printing ‘Hello, World!’ in R Markdown.
+#  My major is *****
+print("Hello, World! My name is *****.")
+```
+
+
+***
+***
+
+
+#  Problem 2
+
+```{r}
+#  a.  $(6+3)*4 - 5$
+(6+3)*4 - 5
+
+#  b.  $4^2$
+4^2
+
+#  c.  $e^{-5}$
+exp(-5)
+
+#  d.  Let $y=8$.  Let $x = 5-6y$.  Print $x$.
+y = 8
+x = 5-6*y
+print(x)
+
+#  e.  Repeat (d) for $y=0$, $y=1$, and $y=5/6$.
+y = 0
+x = 5-6*y
+print(x)
+
+y = 1
+x = 5-6*y
+print(x)
+
+y=5/6
+x = 5-6*y
+print(x)
+```
+
+
+***
+***
+
+
+#  Problem 3
+
+a.  
+```{r}
+help.search("quantile")
+```
+
+numeric vector of probabilities with values in [0,1]. (Values up to 2e-14 outside that range are accepted and moved to the nearby endpoint.)
+
+b.  
+```{r}
+help.search("mean")
+x <- c(0:10, 50)
+xm <- mean(x)
+c(xm, mean(x, trim = 0.10))
+```
+
+c.  
+```{r}
+help.search("standard deviation")
+sd(x, na.rm = FALSE)
+```
+
+
+***
+***
+
+
+#  Problem 4
+
+a.  
+```{r}
+library(MASS)
+```
+
+official name is "Modern Applied Statistics with S"
+
+b.  
+```{r}
+library(datasets)
+```
+
+trees data set: Girth, Height and Volume for Black Cherry Trees
+
+c.  
+```{r}
+library(graphics)
+```
+
+The function is called stripchart, x represents the data from which the plots are to be produced. In the default method the data can be specified as a single numeric vector, or as list of numeric vectors, each corresponding to a component plot. In the formula method, a symbolic specification of the form y ~ g can be given, indicating the observations in the vector y are to be grouped according to the levels of the factor g. NAs are allowed in the data.
+
+
+***
+***
+
+
+#  Problem 5
+
+A lot of install messages were printed out in the console.
+
+At the end the console printed out the installed package location in my computer.
+
+
+***
+***
+
+
+#  Problem 6
+
+```{r}
+#  Load the tidyverse library
+library(tidyverse)
+
+#  Read in the data
+bridges <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv")
+
+#  Create the new variables
+bridges <- mutate(bridges, 
+                  over_allegheny = ifelse(river == "A", "yes", "no"),
+                  length_binary = ifelse(length >= 3000, "long", "short"))
+
+#  Create the bar plot
+ggplot(bridges, aes(x = river)) + 
+  geom_bar(fill = "darkblue") + 
+  labs(
+    title = "Number of Bridges in Pittsburgh by River",
+    subtitle = "A = Allegheny River, M = Monongahela River, O = Ohio River",
+    x = "River",
+    y = "Number of Bridges",
+    caption = "Source:  Pittsburgh Bridges Dataset"
+  )
+```
+
+
+***
+***
+
