@@ -1,0 +1,216 @@
+---
+title: "36-315 Lab 02"
+author: "Your Name Here"
+date: "Due Friday, January 27th, 2017 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 02:  Tweets on a Plane
+
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab02.Rmd -- e.g. "sventura-Lab02.Rmd") to the Lab 02 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+Today's lab will help familiarize you with the `R` package `ggplot2`.  We'll use a dataset on Twitter users' sentiment towards airlines in the United States.  This dataset was obtained from Kaggle.
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+Here is this week's oral evaluation graphic:
+
+<div style="width:500px">
+![](https://pbs.twimg.com/media/Cw1bPulWEAAXOsL.jpg)
+</div>
+
+
+**Sam Says**:  It's important to avoid inserting your own commentary (political or otherwise) when discussing graphics like this.  Your job, as a statistician / data scientist / quantitative analyst, is to interpret the graph for the viewer.  Discuss the facts presented via the data/graphic; avoid overstepping your boundaries by inserting your own opinions into what should be a presentation of facts.
+
+Reminder, the following strategy is ideal when presenting graphs orally:
+
++  First, explain what is being shown in the graph.  What is being plotted on each axis?  What do the colors correspond to?  What are the units (if applicable)?  What are the ranges of different variables (if applicable)?  Where does the data come from (if applicable)?
+
++  Next, explain the main takeaway of the graph.  What do you want the viewer to understand after having seen this graph?
+
++  If applicable, explain any secondary takeaways or other interesting findings.
+
++  Finally, for this class, but not necessarily in general:  Critique the graph.  What do you like/dislike?  What would you keep/change?  Etc.
+
+
+***
+***
+
+#  Problem 1
+
+(20 points)
+
+**First Steps in Data Analysis**:  
+
+The first steps in any statistical analysis of real-world data are simple:
+
++  Load the data into `R` / RStudio
++  Get some basic information about the dataset -- number of rows, number of columns
++  Look at the first few rows of the dataset and determine which variables are categorical and which are continuous
+
+Perform these steps for the Twitter Airline Sentiment dataset, which can be found here:  [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv].  When reading in the data, assign it to a variable called `airline_tweets`.
+
+**Reading Data from the Internet into `R` (really fast)**:
+
+In other courses, you were likely taught to use functions like `read.csv()` or `read.table()`.  These will work fine, but they are antiquated.  Modern functions like `read_csv()` and `read_table()` are much better faster, so we'll use those instead.
+
+`read_csv()` is particularly fast and works well when reading in data from the internet (e.g. our course GitHub repository).  It is in the `readr` package, which you'll need to install on your computer.  This is part of the `tidyverse` package, which you should already have installed from Lab01.  If you do not have the `tidyverse` package installed, follow the instructions in Lab01 to install it before proceeding.  
+
+
+```{r}
+#  Load the tidyverse package into R
+#  Be sure that this package is installed first!
+library(tidyverse)
+
+#  Load the data into R
+airline_tweets <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+```
+
+Notice that in your RMarkdown output HTML file, there is a lot of unnecessary output text resulting from your calls to `read_csv()` and `library()`.  This is ugly, and we don't want to see it in our final HTML report, which should ALWAYS look clean and professional.  To remove it, type `warning = FALSE, message = FALSE` at the start of the code block, i.e. so it says `{r, warning = FALSE, message = FALSE}` instead of just `{r}`.
+
+
+```{r}
+#  Put your code to answer the following questions here!
+```
+
+Now that you've loaded the data and cleaned up your HTML report, answer the following questions:
+
+a.  How many rows and columns does the data have?  (Hint:  `help(nrow)`, `help(ncol)`, `help(dim)`)
+b.  Which variables are categorical?  (Name at least two.)
+c.  Which are continuous?  (Name at least two.)
+d.  Which, if any, of the categorical variables are ordered?  (Name two.)
+
+(Hint:  If you print out the `data_frame` after using `read_csv()` to read it in, the data types of each variable are shown.  This will also show the number of rows and columns.)
+
+***
+***
+
+
+#  Problem 2
+
+**Exploratory Data Analysis -- Part 1 -- Examining Categorical Variables**
+
+The next step in most statistical analyses involves doing an exploratory analysis of the variables in your dataset.  We'll focus on the `airline_sentiment` and `airline` variables.  (Don't worry -- we'll analyze some of the other interesting variables later.)
+
+In `R`, the `$` operator extracts a variable from a `data_frame` (e.g. our `airline_tweets data_frame`).  Let's use this to see how many unique values of each variable there are.  We'll use the `unique()` function, e.g.:  `unique(airline_tweets$airline_sentiment)`.  
+
+a.  (5 points)  How many unique values of these two variables (`airline` and `airline_sentiment`) are there?  What are the unique values?
+
+```{r}
+unique(airline_tweets$airline)
+```
+
+(Code is provided for the `airline` variable, but not the `airline_sentiment` variable.  You should write this code.)
+
+
+b.  (10 points)  How many of each unique value are there?  To find this out, use the following approach, which counts the number of times each category appears in a vector:
+
+```{r}
+airline_tweets %>% 
+  group_by(airline) %>%
+  summarize(count = n())
+```
+
+(Code is provided for the `airline` variable, but not the `airline_sentiment` variable.  You should write this code.)
+
+In the above code, `%>%` is called the "pipe" operator.  `x %>% f(y)` means the same thing as `f(x, y)`.  The pipe operator is useful in making code easily readable and understandable.  That said, if you prefer, you can use the following code, which does the same thing:
+
+```{r}
+summarize(group_by(airline_tweets, airline), count = n())
+```
+
+Personally, Sam think's the first version is easier to read and understand.
+
+
+***
+***
+
+
+#  Problem 3
+
+(5 points each)
+
+**Exploratory Data Analysis -- Part 2 -- Visualizing Cateogical Variables**
+
+Tables are great, but graphs are prettier.  Let's use `ggplot()` to visualize the information we just obtained.
+
+When using `ggplot()`, always specify the dataset that you're visualizing as the first argument.  Your plot can be stored as an `R` object, though this is not necessary.  If you store your plot as an `R` object, then just type the object name at the command line (or at the end of your `R` Markdown code block).
+
+We'll start with the `airline` variable.  (Aside:  Notice that with `ggplot()`, we don't need to use the `$` operator -- `ggplot()` recognizes that the variables we refer to are in the dataset we specified with the `data` argument, so it does all of the work for us!)
+
+a.  Create a bar chart that shows the distribution of the number times was each airline mentioned in our `airline_tweets` dataset.  The x-axis should show the unique airlines.  The y-axis should show the frequency of that airline in the dataset.  To do this, create a base plot with:  `airline_dist_plot <- ggplot(data = airline_tweets, aes(x=airline))`.  Then type `airline_dist_plot + geom_bar() + coord_cartesian()`.  
+
+b.  That graph is okay, but let's add a little color.  Recall that in Lecture on Wednesday, the color used to "fill" the bars is one of the "aesthetics" of the graph that we can specify.  So, all we need to do is add the color aesthetic to our previous command:  `airline_dist_plot + geom_bar(aes(fill = airline)) + coord_cartesian()`.  (This will `fill` the bars in with different colors corresponding to each unique `airline`.)  Notice that `ggplot` adds a legend to our plot automatically.  We'll learn about how to specify different colors on a future assignment.  That said, feel free to look up how to do this and change the color scheme here!
+
+c.  Recall from Lecture on Wednesday, **aesthetics map pieces of the data to parts of the graph**.  In part (b) above, we mapped the `airline` variable to fill color (`fill`) of the bars in our bar chart using the `aes()` function.  We can also fill the bars with a single color, since the colors here aren't necessary.  Here, since the color "blue" is not part of the original data, we specify the `fill` argument outside of the `aes()` function, since we're not mapping a piece of the data to a part of the graph:  `airline_dist_plot + geom_bar(fill = "blue") + coord_cartesian()`
+
+d.  Okay, our graph is looking a bit better -- but we're still missing a title!  Add a title to our plot with the `labs()` function as we did in a previous assignment.  Be sure that your title uses proper capitalization, is succinct, and provides a brief description of what the graph shows.  Feel free to also add a subtitle and a caption if you'd like, but be sure that these are informative.
+
+e.  The graph already has some x- and y-axis labels, but they're kind of boring.  How does `ggplot` choose the default labels?  
+
+f.  Let's change the labels.  Update the `labs()` function to do this, adding it to the code for your graph as you did with the title.  I recommend using the help documentation for the `labs()` function to figure out how it works.  (Hint:  Specify the `x` and `y` arguments.)  Be sure that your labels describe what is being displayed on each axis.
+
+g.  Okay, now we have a pretty nice graph.  Let's describe it for someone who isn't as familiar with the data as we are.  Describe the distribution you see in your bar chart.  Which airline was the subject of the most tweets?  Which airline was the subject of the fewest tweets?  Which airlines were the subject of a similar number of tweets?  From the graph, roughly how many tweets were about Virgin America in our dataset?
+
+h.  In part (a) (and throughout our ever-growing line of code to create this graphic), `+ coord_cartesian()` tells `ggplot` to make this plot in the cartesian (x-y) plane.  What would happen if we used a different coordinate system?  Try changing `coord_cartesian()` to `coord_polar()`.  Be sure to adjust the title and axis labels as necessary.  What happens?  This is called a rose diagram, and we will learn more about these on Monday.
+
+i.  Which graph do you like better -- the graph in (h), or the graph in (g)?  There is not necessarily a right answer here (yet); just be sure to justify your choice.  Which graph is easier to read?  In which graph is it easier to discern the differences amongst the categories?  In which graph is it easier to estimate the exact number of tweets that mention each airline?
+
+
+***
+***
+
+
+#  Problem 4
+
+**Repeat Problem 3 with the `airline_sentiment` Variable**
+
+Note:  You don't have to repeat all parts of the problem individually.  Just follow the directions below in parts (a) and (b), and be sure to answer the questions asked.
+
+a.  (12 points)  Create a bar chart that shows the distribution of the `airline_sentiment` variable in our `airline_tweets` dataset.  The x-axis should show the unique values of `airline_sentiment`.  The y-axis should show the overall frequency of that sentiment in the dataset.  Use a single color for all sentiments.  Give the graph an appropriate title and appropriate x- and y-axis labels.  Drop the `+ coord_cartesian()` from your code -- this is the default, so it is not necessary to specify this in the future.
+
+b.  (5 points)  Which sentiment was the most common?  Which was the least common? 
+
+c.  (3 points)  Are the different sentiment categories plotted in an order that makes sense, logically?  If not, how would you reorder the categories?
+
+
+***
+***
+
+
+#  BONUS
+
+(5 points)  
+
+**2-Dimensional Categorical Data**
+
+Next week, we'll cover the visualization of 2-dimensional categorical data.  If you're feeling ambitious, however, you can try to do this with our `airline` and `airline_sentiment` variables here.
+
+Re-create the graph from problem 3, part (f), except instead of giving each bar a unique color corresponding to the airline, fill in each airline's bar with multiple colors -- proportional to the frequency of positive, neutral, and negative tweets about that particular airline.
+
+Hint:  This is easier to do than it sounds with `ggplot`.  You need to map a piece of the data (`airline_sentiment`) to a piece of the graph (the fill color of the bars).
+
+Note:  The instructor and TAs are not allowed to help you with bonus problems!  
+
+***
+***
