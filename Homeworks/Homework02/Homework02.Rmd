@@ -99,7 +99,7 @@ a.  (1 point)  Load the Twitter / Airline Sentiment data from Lab02.  How many r
 
 b.  (5 points)  Create a bar chart of the `airline` variable.  Be that your axes are properly labeled, and that the graph has a proper title.  Make sure that each bar in the graph has the same color.  To do this, use `+ geom_bar(fill = "red", color = "black")`.  Change the `fill` and `color` commands.  What do each of them do?
 
-c.  (4 points)  You can also specify HEX color values when choosing a color, e.g. `fill = "#4169E1"`.  Use a website like [this one](http://www.w3schools.com/html/html_colorvalues.asp) to pick a color of your choice, and fill the bars with that color.
+c.  (4 points)  You can also specify HEX color values when choosing a color, e.g. `fill = "#4169E1"`.  Use a website like [this one](http://www.w3schools.com/colors/colors_picker.asp) to pick a color of your choice, and fill the bars with that color.
 
 ***
 ***
