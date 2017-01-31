@@ -253,8 +253,16 @@ ggplot(data = airline_tweets) +
 **Rose Diagrams**:  
 
 a.  (4 points)  Re-create the graph from Problem 3, but use a rose diagram.  Be sure to correctly label the axes, if necessary.  Include an appropriate title.
+```{r}
+ggplot(data = airline_tweets, aes(x = airline, fill = airline)) + geom_bar() + coord_polar() + 
+  ggtitle("Tweet Counts by Airline") + labs(x = "", y = "Number of Tweets", fill = "Airline")
+```
 
-b.  (3 points)  In a rose diagram, what is the radius of each rose petal proportional to?  What does the angle associated with each rose petal correspond to (if anything)?  What is the area of each rose petal proportaional to?
+b.  (3 points)  In a rose diagram, what does the radius of each rose petal correspond to (if anything)?  What does the angle associated with each rose petal correspond to (if anything)?
+
+  The radius of the petal is proportional to the count - in this case the number of tweets. The angle is the same for all categories, so it does not have any meaning.
+  
+  **Unfortunately, this means that the area of the petals is proportional to the count-squared, meaning that rose diagrams provide a distorted depiction of the actual counts.**
 
 ***
 ***
@@ -316,6 +324,8 @@ Your friend says to you, "The airlines are all equally likely to be tweeted abou
 You obviously disagree.  You show your friend your graphs from the previous four problems, but your friend is still unconvinced, and wants to know if the differences across the airlines in your graph are statistically significant.  
 
 (5 points)  What kind of statistical test could you use to show that the airlines are not equally likely to be tweeted about?
+
+  **We could use a Chi-square test for independence.**
 
 ***
 ***
