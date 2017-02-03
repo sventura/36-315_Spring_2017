@@ -1,0 +1,188 @@
+---
+title: "36-315 Lab 03"
+author: "Your Name Here"
+date: "Due Friday, February 3, 2017 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 03:  Incorporating Statistical Information in 1-D, 2-D, and 3-D Categorical Graphics
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab02.Rmd -- e.g. "sventura-Lab02.Rmd") to the Lab 02 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+In this week's assignments, we'll implement 2-D bar charts and discuss the issues of using pie charts for anything beyond 1-D categorical data analysis.
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+Here is this week's oral evaluation graphic:
+
+<div style="width:750px">
+![](https://espnfivethirtyeight.files.wordpress.com/2014/10/hickey-datalab-party-2.png?w=610&h=849)
+</div>
+
+
+
+**Sam Says**:  It's important to avoid inserting your own commentary when discussing graphics  Your job, as a statistician / data scientist / quantitative analyst, is to interpret the graph for the viewer.  Discuss the facts presented via the data/graphic; avoid overstepping your boundaries by inserting your own opinions into what should be a presentation of facts.
+
+Reminder, the following strategy is ideal when presenting graphs orally:
+
++  First, explain what is being shown in the graph.  What is being plotted on each axis?  What do the colors correspond to?  What are the units (if applicable)?  What are the ranges of different variables (if applicable)?  Where does the data come from (if applicable)?
+
++  Next, explain the main takeaway of the graph.  What do you want the viewer to understand after having seen this graph?
+
++  If applicable, explain any secondary takeaways or other interesting findings.
+
++  Finally, for this class, but not necessarily in general:  Critique the graph.  What do you like/dislike?  What would you keep/change?  Etc.
+
+
+***
+***
+
+#  Problem 1
+
+(5 points each)
+
+**Chi-Square Tests in R**:  
+
+Bar charts are usually easier to read than spine charts, pie charts, and rose diagrams.  There are several ways we can add even more useful information to bar charts.
+
+In this assignment, we'll be using data from the NYC Citi Bike program.  The NYC Citi Bike data is a tremendous resource.  We highly encourage you to explore the data on your own.  The dataset is very large, so we focus on only a small subset from June 2016 for this assignment.  For the purposes of ensuring no one has issues accessing and/or loading in the very large raw data files, we subset the data for you and temporarily make this subset available on the course GitHub page at the following link:  [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv]
+
+Additional information about the NYC Citi Bike data can be found [here](https://www.citibikenyc.com/system-data).  
+
+Read the dataset in from GitHub (code provided) and then complete the following questions.
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(reshape2)
+
+#  Read in data
+bike_data <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv")
+date_time <- colsplit(bike_data$starttime, " ", c("date", "time"))
+
+#  Add start_date variable to big_bike, and a bunch of other variables
+bike_data <- mutate(bike_data,
+                    time_of_day = as.vector(date_time$time),
+                    start_date = as.Date(date_time$date, format = "%Y-%m-%d"),
+                    birth_decade = paste0(substr(`birth year`, 1, 3), "0s"),
+                    hour_of_day = as.integer(substr(time_of_day, 1, 2)),
+                    am_or_pm = ifelse(hour_of_day < 12, "AM", "PM"),
+                    day_of_week = weekdays(start_date),
+                    less_than_30_mins = ifelse(tripduration < 1800, 
+                                               "Short Trip", "Long Trip"),
+                    weekend = ifelse(day_of_week %in% c("Saturday", "Sunday"), 
+                                     "Weekend", "Weekday"))
+```
+
+
+a.  Look at the documentation for the NYC Citi Bike data.  How is gender coded in this dataset?  What is the difference between a customer and a subscriber in the `usertype` field?
+
+b.  Examine the marginal distributions of the `gender` and `usertype` variables.  Do this by calculating the counts, proportions, and percentages of each (code partially provided).
+
+```{r, warning = FALSE, message = FALSE}
+#  Get counts, proportions, and percentages for gender
+gender_marginal <- bike_data %>%
+  group_by(gender) %>%
+  summarize(count = n(), 
+            total = nrow(bike_data),
+            proportion = round(count / total, 4),
+            percentage = proportion * 100)
+```
+
+c.  Do the following:
+
++  Create two barplots -- one for gender, and one for user type -- at the **percentage** scale instead of the count scale.  
++  Display the two plots simultaneously with the `grid.arrange()` function in the `gridExtra` package.  (You may need to install the `gridExtra` package to do this.)  
++  Use the `gender_marginal` and `usertype_marginal` data frames you created in part (b) to do this (code partially provided).  
++  Adjust the `fig.height` and `fig.width` arguments at the beginning of the code block to make sure your graph displays properly.
++  Add appropriate titles, labels, etc
++  In your subtitle, specify what each gender code corresponds to (later, we'll learn how to change this in the data itself)
+
+
+```{r, fig.height = 5, fig.width = 10}
+library(gridExtra)  #  Be sure this is installed on your computer
+library(ggplot2)
+gender_plot <- ggplot(gender_marginal, aes(x = gender, y = percentage)) + 
+  geom_bar(stat = "identity")
+usertype_plot <- ggplot() #  Put your code for the bar chart of usertype here
+
+grid.arrange(gender_plot, usertype_plot, ncol = 2)
+```
+
+d.  Your friend thinks there are equal proportions of rides from subscribers and rides from non-subscribers ("customers").  Using your bar chart from part (c), do you think your friend is right?  How certain are you in your answer?
+
+e.  Let's test this statistically.  Run a chi-square test to check your friend's assertion:  `chisq.test(usertype_marginal$count)` will check to see if the proportions in each category are the same (null hypothesis that they are the same, alternative hypothesis that they are not the same).  
+
++  What information does the `chisq.test` function output?  
++  What is the p-value for this test?  
++  What does this mean -- is your friend right or wrong?
+
+f.  Your friend revises their assertion and says that there is actually a 55%-45% split of Subscribers-Customers.  Let's test this:  `chisq.test(usertype_marginal$count, p = c(0.45, 0.55))` will check to see if the proportions in each category of `usertype` match the proportions your friend suggests (null hypothesis that they are the same as the proposed proportions, alternative hypothesis that at least one is different).  
+
++  Is your friend's revised guess right or wrong?  
++  What evidence do you have to support this?
+
+g.  BONUS (2 points):  Why do we use the `count` variable in the chi-square test instead of the proportion or percentage?
+
+***
+***
+
+
+#  Problem 2
+
+(10 points each)
+
+**2-D Bar Charts and (Empirical) Conditional Distributions**
+
+a.  Recreate the graph of `gender` from Problem 1, but fill each bar with colors corresponding to the `usertype` variable.  As always, make sure your graph is properly labeled/titled/colored and has a legend.  This is a "stacked bar chart", as we will learn about in class next week.  (Code partially provided.)
+
+```{r}
+ggplot(bike_data, aes(x = gender, fill = usertype)) + geom_bar()
+```
+
+b.  Why are no "Customers" in the male and female subsets?
+
+c.  Create another stacked bar chart, but use the `day_of_week` (x-axis) and `am_or_pm` (fill) variables instead.
+
+d.  Intepret the graph in (c), commenting on anything interesting you see.
+
+
+***
+***
+
+
+#  Problem 3
+
+(10 points each)
+
+**3-D and 4-D Categorical Data**
+
+With 2-D bar charts, we can visualize two categorical variables at once.  With facetting, we can increase this to 3-dimensional or even 4-dimensional graphs
+
+a.  Recreate the graph in Problem 2, part (c), but this time, facet on `usertype`.
+
+b.  Recreate the graph in Problem 3, part (a), but this type, facet by both `usertype` and `weekend`
+
+c.  Interpret the two graphs, commenting on any interesting features you see.  Keep your interpretations **in the context of the problem/data**.
+
+
+***
+***
