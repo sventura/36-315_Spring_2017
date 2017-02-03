@@ -1,0 +1,415 @@
+---
+title: "36-315 Homework 02, Spring 2017"
+author: "Solutions"
+date: "Due Wednesday, February 1st, 2017 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Homework 02:  Introduction to `ggplot` and 1-D Categorical Data
+
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW02.Rmd -- e.g. "sventura-HW02.Rmd") to the Homework 02 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+```{r}
+library(tidyverse)
+```
+
+***
+***
+
+
+#  Problem 1
+
+**`R` Style Guides:  Google vs. Hadley**:  
+
+One important step in facilitating reproducible data analysis is writing easily readable, well-documented code.  To ensure that you do this, you are required (for the rest of the semester) to adhere to one of the following two `R` Style Guides:
+
+Google's `R` Style Guide:  [https://google.github.io/styleguide/Rguide.xml]
+
+Hadley Wickham's Advanced `R` Style Guide:  [http://adv-r.had.co.nz/Style.html]
+
+a.  (9 points)  What are the main differences between these two style guides?  Find at least 5 differences.
+
+**File names**: 
+
+how to name a file 
+
+*Google*: use `_` to seperate words, ex `file_name.R`
+
+*Hadley*: use `-` to seperate words, ex `file-name.R`
+
+
+**Variable names**:
+
+how to name variables
+
+*Google*: use `.` to seperate words, ex `variable.name`
+
+*Hadley*: use `-` to seperate words, ex `variable-name`
+
+**Spacing around `=`**:
+
+How to cleanly space your code to read better, specifically around `=` in parameters (all other situations require spacing around all binary operators `=`,`+`,`<-`, `,` ,...)
+
+*Google*: spacing around `=` when passing parameters is optional.
+```{r eval =F}
+a <- exampleFunct(x=1)
+```
+
+*Hadley*: spacing around `=` is never optional (must do it)
+```{r eval =F}
+a <- exampleFunct(x = 1)
+```
+
+**Curly Brackets around Single Statement Blocks**\
+
+If you have curly brackets you must let the opening bracket be with the line before and the ending bracket on it's own line unless followed by an `else` statement.
+
+*Google*: if consistent can decide if one wants a curly brackets around single statement blocks
+
+I.E.: Always:
+```{r eval =F}
+if (logical)
+  print("no brackets")
+```
+Or Always:
+```{r eval =F}
+if (logical){
+  print("brackets")
+}
+```
+
+*Hadley*: must have curly brackets around single statement blocks
+
+I.E.: Always:
+```{r eval =F}
+if (logical){
+  print("brackets")
+}
+```
+
+**Super Small Body of Block Locations**
+
+*Google*: Can't have a short single line with body of block on the same line as previous structure
+
+I.E.: **Bad**:
+```{r eval =F}
+if (logical) print("single line")
+```
+
+*Hadley*: Can have a short single line with body of block on the same line as previous structure
+
+I.E.: **Ok**:
+```{r eval =F}
+if (logical) print("single line")
+```
+
+
+
+b.  (1 point)  Specify which style guide you will be using in this assignment.
+
+Assignments not adhereing to the specified style guide will be docked up to 10 points.
+
+
+***
+***
+
+
+#  Problem 2
+
+**Critiquing Graphs**:
+
+*The following is an example of a critique.*
+
+a.  (5 points)  **Include the graph in your assignment**.  
+
+<div style="width:400px">
+![alt text](https://i.imgur.com/kVpg28Zl.jpg)
+</div>
+
+b.  (5 points)  **Describe the graph**.  
+
+The graph is supposed to show the change in inequality in Canada from 1969 to 2009. Time, presumably in years, is plotted on the x-axis, and inequality is plotted on the y-axis. The line in the graph shows the level of inequality across the relevant time period. The main result that the author are trying to show in the graph is that inequality in Canada has not shifted much between 1969 and 2009. 
+
+c.  (5 points)  **Critique the graph**.
+
+This graph has a number of serious weaknesses. It has no title, making it difficult for the reader to understand what the graph is supposed to show, especially if the accompanying text is not given. The label on the y-axis is almost completely useless. All we know is that a higher value on the y-axis means "more inequality" and a lower value means "less inequality." The y-axis does not tell us the units of measurement nor the scale of "inequality." With the lack of labeling on the y-axis, it is impossible to tell if the graph distorts the effect or the data. The x-axis shows the endpoints of the data, but does not give any labels in the middle, making it harder for the reader to find the level of inequality for a specific point in time. 
+
+d.  (5 points)  **Critique the caption and/or surrounding text**.  
+
+The accompanying text with the graphic tells us that "inequality in Canada has increased just 3.4% since 1969." This does shed some light on what exactly is being shown by the graph and the interpretation of what we're supposed to conclude from the graph. In fact, this is really the only way the user can understand the graphic at all. However, the text could help the reader even more. It could include a description of what exactly "inequality" means, how it was measured, and how the data was collected. It could describe how the conclusion of a 3.4% increase was reached. It also could include some description of trends throughout time, rather than just comparing the endpoints. 
+
+
+
+***
+***
+
+
+#  Problem 3
+
+**Bar Charts**:  
+
+a.  (1 point) 
+```{r, message=FALSE, warning=FALSE}
+# Do not include any package install commands in your .Rmd file.
+# Do load packages in your .Rmd file.
+
+airline_tweets <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+```
+
+```{r}
+nrow(airline_tweets)
+ncol(airline_tweets)
+```
+
+The data set has 14640 rows and 15 columns. 
+
+b.  (5 points)
+```{r}
+ggplot(data = airline_tweets)  + geom_bar(aes(x = airline), fill = "red", color = "black") +
+  labs(x = "Airline", y = "Number of Tweets") +
+  ggtitle("Tweet Counts per Airline")
+
+ggplot(data = airline_tweets) + geom_bar(aes(x = airline), fill = "purple", color = "green") +
+  labs(x = "Airline", y = "Number of Tweets") +
+  ggtitle("Tweet Counts per Airline")
+```
+
+The `fill` command changes the color of each bar, while the `color` command changes the color of the outline of each bar.
+
+c.  (4 points) 
+```{r}
+ggplot(data = airline_tweets)  + geom_bar(aes(x = airline), fill = "#008080", color = "#FF8C00") +
+  labs(x = "Airline", y = "Number of Tweets") +
+  ggtitle("Tweet Counts per Airline")
+```
+
+***
+***
+
+
+#  Problem 4
+
+**Spine Charts**:  
+
+a.  (4 points)  
+
+```{r}
+ggplot(data = airline_tweets) + 
+  geom_bar(aes(x=factor(1), fill = airline)) +
+  ggtitle("Tweet Counts per Airline") +
+  labs(y = "Number of Tweets", fill = "Airline",
+       caption = "Twitter Airline Sentiment dataset")
+```
+
+
+b.  (3 points)
+
+The widths of the bars are not proportional to anything, as they are all the same. The heights of the bars are proportional to the number of tweets that each airline was mentioned in. The spine chart is different from the bar chart because stacks the bars on top of each other. This makes it harder to discern the exact counts of each category, but easier to figure out the total number of tweets in the data set.
+
+
+c.  (3 points)
+
+```{r}
+ggplot(data = airline_tweets) + 
+  geom_bar(aes(x=factor(1), fill = airline)) +
+  ggtitle("Tweet Counts per Airline") +
+  labs(y = "Number of Tweets", fill = "Airline",
+       caption = "Twitter Airline Sentiment dataset") +
+  coord_flip()
+```
+
+In this plot, the counts are on the x-axis rather than the y-axis, and the bars are stacked horizontally. The widths of the bars are proportional to the number of tweets, while the heighst of the bars do not have any significance since they are all the same. This is the opposite of the previous graph. 
+
+d.  (BONUS:  1 point)  Remove the ugly `factor(1)` from the x-axis label, without changing the rest of the graphic.
+
+```{r}
+ggplot(data = airline_tweets) + 
+  geom_bar(aes(x=factor(""), fill = airline)) +
+  ggtitle("Tweet Counts per Airline") +
+  labs(x = "",y = "Number of Tweets", fill = "Airline",
+       caption = "Twitter Airline Sentiment dataset") +
+  scale_x_discrete(breaks = NULL)
+```
+
+***
+***
+
+
+#  Problem 5
+
+**Rose Diagrams**:  
+
+a.  (4 points)  Re-create the graph from Problem 3, but use a rose diagram.  Be sure to correctly label the axes, if necessary.  Include an appropriate title.
+```{r}
+ggplot(data = airline_tweets, aes(x = airline, fill = airline)) + geom_bar() + coord_polar() + 
+  ggtitle("Tweet Counts by Airline") + labs(x = "", y = "Number of Tweets", fill = "Airline")
+```
+
+b.  (3 points)  In a rose diagram, what does the radius of each rose petal correspond to (if anything)?  What does the angle associated with each rose petal correspond to (if anything)?
+
+  The radius of the petal is proportional to the count - in this case the number of tweets. The angle is the same for all categories, so it does not have any meaning.
+  
+  **Unfortunately, this means that the area of the petals is proportional to the count-squared, meaning that rose diagrams provide a distorted depiction of the actual counts.**
+
+***
+***
+
+
+#  Problem 6
+
+**Pie Charts**:  
+
+To create a pie chart, use a similar technique to what you used to create a spine chart in Problem 4.
+
+a.  (4 points)  Re-create the graph from Problem 3, but use a pie chart.  Be sure to correctly label the axes, if necessary.  Include an appropriate title.
+
+```{r}
+# assume the "split_plot" code was made in 4d
+split_plot <- ggplot(data = airline_tweets) + 
+  geom_bar(aes(x=factor(""), fill = airline)) +
+  ggtitle("Tweet Counts per Airline") +
+  labs(x = "",y = "Number of Tweets", fill = "Airline",
+       caption = "Twitter Airline Sentiment dataset") +
+  scale_x_discrete(breaks = NULL)
+
+pie_plot <-split_plot + 
+  coord_polar(theta= "y") +
+  labs(x = "", y = "") +
+  ggtitle("Counts of Tweets Per Airpline as 
+          \na Proportion of Total Tweets on Airlines") #\n makes a new line
+pie_plot
+```
+
+b.  (3 points)  In a pie chart, what does the radius of each pie slice correspond to (if anything)?  What does the angle associated with each pie slice correspond to (if anything)?
+
+In the pie chart each pie slice has same radius, ait it doesn't correspond to anything.
+In the pie chart, it is the size of the angle for each piece that represents the proportional size of the specific airline mentioning tweets of the total number of tweets about airlines.
+
+c.  (3 points)  Summarize the differences between a rose diagram and a pie chart in no more than two sentences.
+
+Radius and area of present the visualizing variable in the rose diagram but not in the pie chart; where the size of angle presents the visualizing variable in the pie chart but not the rose diagram.
+
+d.  (15 points)  Of the four graphs we used to visualize the `airline` variable, which do you prefer?  Why?  Discuss the strengths (if any) and weaknesses (if any) of each.
+
+A bar chart is usually the best option for comparing counts between categories. Its strengths are that you can easily see the counts for each variable and compare the heights of the bars for different categories.  It's somewhat difficult to eyeball a category's proportion of the total, though.
+
+The relative weaknesses for a spine chart are that the y-axis gives only a cumulative count, so it takes some work to get the count for an individual category, and it is more difficult to compare heights for two categories when they are stacked rather than next to each other. Spine charts can be good for displaying cumulative totals when relevant.
+
+The main weakness of a rose diagram is that a viewer may find it more intuitive to compare by area than by radius, so they may perceive an exaggerated difference between large and small counts. However, this does mean that it may better for immediately picking out which category is biggest than spine charts or pie charts.
+
+The main weakness of a pie chart is that comparing areas of pie slices is not as easy as comparing length in a bar chart. Pie charts also naturally represent proportions, so it may take the viewer an extra step to convert that to a count, if that's what they're interested in.  Never make 3-D pie charts.
+***
+***
+
+
+#  Problem 7
+
+**Statistical Tests**:
+
+Your friend says to you, "The airlines are all equally likely to be tweeted about."  
+
+You obviously disagree.  You show your friend your graphs from the previous four problems, but your friend is still unconvinced, and wants to know if the differences across the airlines in your graph are statistically significant.  
+
+(5 points)  What kind of statistical test could you use to show that the airlines are not equally likely to be tweeted about?
+
+  **We could use a Chi-square test for independence.**
+
+***
+***
+
+
+#  Problem 8
+
+(3 points each)
+
+**Facetting**:
+
+As discussed in class on Wednesday, "facetting" refers to the process of partitioning the original data according to some categorical variable, then creating the same graphic once for each subset.  The resulting graphs are typically displayed in a grid, where each graph is a single "facet" of the full graphic.  
+
+This is a popular way to show how the features of the variable(s) being displayed in a particular graphic can change depending on some other variable.  
+
+With base-`R` graphics, facetting requires you to write a lot of code -- code to do the subsetting, code to display the graphics, etc.  Wtih `ggplot()`, facetting is very easy, as we'll see below.
+
+a.  Recreate the plot from Problem 3, but this time, facet on the `negativereason` variable.  To do this, add `+ facet_wrap(~facetting_variable)` to the existing line of code.  
+```{r}
+# assume the "bar_plot" was written in problem 3c
+bar_plot <- ggplot(data = airline_tweets)  + 
+  geom_bar(aes(x = airline), fill = "#ffff00", color = "#3366ff") +
+  labs(x = "Airline", y = "Number of Tweets") +
+  ggtitle("Tweet Counts per Airline")
+
+bar_plot_facet_a <- bar_plot +
+  facet_wrap(~negativereason) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+bar_plot_facet_a
+```
+b.  Adjust the `ncol` or `nrow` arguments in `facet_wrap()`.  How do they affect the way `facet_wrap()` places each facet into a grid of graphs?
+
+The `ncol` and `nrow` dictate the number of rows/columns in the grid (respectively), only one really needs to be  used, as the other will be calculated. Additionally, if `ncol * nrow < nvalues` where `nvalues` is the number of levels for our facting variable then it will return an error.
+
+
+```{r}
+# example:
+bar_plot_facet_b <- bar_plot +
+  facet_wrap(~negativereason,nrow = 2) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        strip.text = element_text(size = 5))
+
+bar_plot_facet_b
+```
+
+
+c.  Sometimes, it improves our ability to compare across graphics if we have all the graphs in a single row or column, rather than having the plots displayed in multiple rows and columns.  Recreate the plot from Problem 3, but this time, facet on the `airline_sentiment` variable using the `facet_grid()` function.  To do this, add `+ facet_grid(~facetting_variable)` to the existing line of code.  
+
+```{r}
+bar_plot_facet_c <- bar_plot +
+  facet_wrap(~airline_sentiment) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+bar_plot_facet_c
+```
+
+
+d.  Recreate the graph from part (c), but this time, add `+ facet_grid(facetting_variable~.)` instead.  What changed?  Which version do you prefer for this particular problem?  Why?
+
+```{r}
+bar_plot_facet_d <- bar_plot +  facet_grid(airline_sentiment~.)
+
+bar_plot_facet_d
+```
+
+Changing `facet_grid(~airline_sentiment)` to `facet_grid(airline_sentiment~.)` switches from displaying all graphs in a single row to displaying all graphs in a single column.  For this data `facet_grid(airline_sentiment~.)` makes it easier to compare the relative volumes of tweets so it appears more informative.
+
+e.  We can actually facet on multiple categorical variables at once.  Let's try it.  Recreate the graph from part (d), but this time, facet on both `negativereason` and `airline_sentiment`.  To do this, add `+ facet_grid(negativereason~airline_sentiment)`.
+
+```{r}
+bar_plot_facet_e <- bar_plot_facet_d +  
+  facet_grid(negativereason~airline_sentiment) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), 
+        strip.text = element_text(size = 6))
+  
+bar_plot_facet_e
+```
+
+f.  Why are some of the facets in your graph from part (e) empty?  (Hint:  Look at a contingency table of these two variables with `table(airline_tweets$negativereason, airline_tweets$airline_sentiment)`.)
+
+Some of the graphs are empty because there is no data corresponding to the pair (e.g. there is no observation that has a "positive" sentiment and "Bad Flight" negativereason).
+
+***
+***
+
+
+
