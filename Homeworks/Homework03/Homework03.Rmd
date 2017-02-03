@@ -1,0 +1,251 @@
+---
+title: "36-315 Homework 03, Spring 2017"
+author: "Your Name Here"
+date: "Due Wednesday, February 8, 2017 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Homework 03:  Data Manipulation for 2+ Dimensional Categorical Graphics
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW03.Rmd -- e.g. "sventura-HW03.Rmd") to the Homework 03 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+#  Problem 0
+
+**Style Guide and Tabbed HTML Output**
+
+a.  What style guide are you using on this assignment?  (Up to 10 points will be deducted if you do not adhere to a specific style guide.)
+
+b.  Look at the header of the .Rmd file you're editing (everything between the two `---` lines at the top of the file).  Notice that it says `toc:  true` and `toc_float:  true`.  This enables a "floating table of contents" in your HTML output.  The file should have a nicely formatted table of contents on the left-hand side that will allow easy navigation to parts of the document.  **Include this table of contents on this assignment and all future assignments (unless otherwise specified)!**
+
+
+***
+***
+
+#  Problem 1
+
+**Reading about `ggplot2`**:  
+
+a.  (3 points)  Read [this article](https://codewords.recurse.com/issues/six/telling-stories-with-data-using-the-grammar-of-graphics) on `ggplot()` from Liz Sander.  
+
++  What are the components of a graph in `ggplot()` discussed in this article?
++  Give an example of how you can adjust the x- or y-axis scaling in `ggplot()`.
++  Which plotting system is better for creating facetted graphs -- graphs that partition the data and recreate the same graph for each subset -- base R graphs (with `plot()`) or `ggplot()` graphs?  Why?
+
+b.  (2 points)  Read [this tutorial](https://ramnathv.github.io/pycon2014-r/visualize/ggplot2.html) on `ggplot()`.  
+
++  You are not required to do any of the exercises; just read through the tutorial.
++  What kind of geometry is used to create a scatterplot (a plot of two continuous variables, one on the x-axis and one on the y-axis)?
++  Note:  If you're having trouble with `R`, feel free to go through the other lessons on this page.
+
+c.  (2 points)  Read [this article](https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/) on `ggplot()`.
+
++  What does the author describe as being "advanced parts" of the `ggplot2` grammar?
++  What is a theme?
+
+d.  (3 points)  Read [this article](https://www.r-bloggers.com/the-best-r-package-for-learning-to-think-about-visualization/) on data visualization in `R`.
+
++  What reasons does the author give for recommending `ggplot()` for data visualization in `R`?
++  What are the three critical principles of visualization, according to the author?  Describe each in 1-2 sentences.
+
+
+***
+***
+
+
+#  Problem 2
+
+**Critiquing Graphs**:
+
+Find a graph from the internet (last 7 days -- e.g. a news article, blog post, etc) or from an academic journal (last 60 days).  Describe and critique your graph using the suggestions below.  In parts (b)-(d), you do not have to address each bullet below -- these are just suggestions of things you can discuss when describing/critiquing your graph.
+
+a.  (5 points)  **Include the graph in your assignment**.  Two choices here:  
+
++  embed the graph/image in the .html file (see below for instructions) and submit it along with your other files on Blackboard, or 
++  include a link to the graph in your answer to this question.
+
+b.  (5 points)  **Describe the graph**.  
+
++  What does the graph show?  
++  What variables are plotted on the axes, via color, or via other features of the graph?
++  **What is the main result of the graph?**
+
+c.  (5 points)  **Critique the graph**.
+
++  Does the graph do a good job of achieving its goals?  
++  Does the graph use an unnecessary amount of data ink?  
++  Does the graph distort the actual effect/data/relationship?  
++  What are the strengths and weaknesses (if any) of the graphic?  
++  What would you change (if anything) about this graphic?
+
+d.  (5 points)  **Critique the caption and/or surrounding text**.  
+
++  Does the text enhance the user's understanding of the graphic?  
++  What else would you include in the caption/surrounding text to help the viewer understand the graphic?
+
+To include an image from the internet in your `R` Markdown output, use the following code (adjust the width and height as necessary):
+
+(Note:  If you're viewing the .html file, you'll see CMU's logo below; the code to render this image is in the .Rmd file.)
+
+<div style="width:300px">
+![](https://upload.wikimedia.org/wikipedia/en/thumb/b/bb/Carnegie_Mellon_University_seal.svg/1024px-Carnegie_Mellon_University_seal.svg.png)
+</div>
+
+
+***
+***
+
+
+#  Problem 3
+
+(3 points each)
+
+**More on Pie Charts and Rose Diagrams**
+
+(You may need to wait until Monday's lecture to answer some of these questions.)  
+
+Pie charts and rose diagrams are rarely the most effective way of displaying categorical data.
+
+a.  The default pie chart in `ggplot()` has a small hole in the middle.  This can be easily fixed.  Search the internet for how to do this (something like "get rid of hold in pie charts in ggplot" should do the trick).  Create a pie chart of the `airline` variable in the Twitter Airline data with no hole in the middle.  
+
+(Aside:  Learning how to use online documentation and help forums is an extremely important skill when using any programming language, including `R`.  Although it's painful to think about, there will come a time where you can't ask Sam how to do something on Piazza or send him an email at 4am the night before an assignment is due.  Learning how to effectively use the internet to find the information you're looking for is a skill you will continue to use throughout your career.)
+
+b.  In Lab 03, we learned how to make a stacked bar chart.  In Lab 02 and Homework 02, we learned that rose diagrams were really just bar charts in polar coordinates.  That must mean that we can make a "stacked rose diagram".  Make a stacked rose diagram that shows the marginal distribution of the `airline` variable and the conditional distributions of `airline_sentiment` given `airline`.  Create the corresponding stacked bar chart.  Arrange these two graphs into a 1x2 grid using `grid.arrange()`.
+
+c.  Describe and critique the stacked rose diagram.  
+
++  Where is the marginal distribution of `airline` on this chart?
++  Where is the conditional distribution of `airline_sentiment` given that the tweet was about Delta Airlines on this chart?  
++  Why, to put it bluntly, is this just an absolutely terrible graph?  (Give at least two reasons.)  It may help to compare this to the stacked bar chart of the same variables in your answer.
+
+
+
+***
+***
+
+
+#  Problem 4
+
+**Data Manipulation and The Many Ways To Create 1-D and 2-D Bar Charts**
+
+a.  Load the NYC Citi Bike Data from Lab 03, and keep the code used in Lab 03 to manipulate the data to create additional variables.  
+
++  What additional columns are created?  
++  What function is used to add the additional columns to the existing data frame?  
++  What package is this function in?  
++  Who is the author of this package?
++  Create a new column called `less_than_15_mins` ("Less Than 15 Minutes" if the trip was less than 15 minutes in duration, "15 Minutes Or Longer" otherwise) and another new column called `humpday` ("Yes" if the ride occurred on a Wednesday, "No" otherwise)
+
+b.  Create a bar chart using the standard approach:  `ggplot(data, aes(x = categorical_variable)) + geom_bar()`.  Add appropriate titles and labels to your graph.
+
+c.  Often, with large datasets, it can take a small amount of time to do the calculations necessary to create the bar chart.  This is because when you call `geom_bar()`, it tabulates the counts in each category when the line of code is run.  For large datasets, it's better to store the counts ahead of time and then reference these when creating the bar chart, as we did in Lab 03 with `gender_marginal`.  Here, create a bar plot showing the distribution of `day_of_week`, but calculate the marginal distribution ahead of time (i.e., use an approach similar to Lab 03 Problem 1).
+
+d.  The same applies to 2-D bar charts.  First, build a stacked bar chart of `day_of_week` (x-axis) and `less_than_15_mins` (fill).
+
+e.  Next, use the following approach to build the same graph:
+
+```{r}
+#day_15 <- bike_data %>%
+#  group_by(day_of_week, less_than_15_mins) %>%
+#  summarize(count = n())
+
+#ggplot(day_15, aes(x = day_of_week, y = count, fill = less_than_15_mins)) + 
+#  geom_bar(stat = "identity")
+```
+
+(Uncomment the code above and add your titles/labels.
+
+Compare the code in (e) to that of (d).  Why do we use `stat = "identity"` in (e)?  What is the default `stat` in `geom_bar()` (i.e., what is used by default in (d))?
+
+f.  Another way to visualize two categorical variables is with a "side-by-side" bar chart.  To do this, use the following code:
+
+```{r}
+#day_15 <- bike_data %>%
+#  group_by(day_of_week, less_than_15_mins) %>%
+#  summarize(count = n())
+
+#  Using full bike_data
+#ggplot(bike_data, aes(day_of_week, fill = less_than_15_mins)) + 
+#  geom_bar(position = "dodge")
+
+#  Using pre-calculated counts in each combination of categories
+#ggplot(day_15, aes(x = day_of_week, y = count, fill = less_than_15_mins)) + 
+#  geom_bar(stat = "identity", position = "dodge")
+```
+
+(Uncomment one of the approaches for creating the side-by-side bar chart above -- your choice -- but try both out to make sure that they give the same result.)
+
+g.  Another way to visualize two categorical variables is with a "proportional" bar chart.  To do this, use the same code as above, except change `position = "dodge"` (which will place the bars side-by-side) to `position = "fill"` which will fix the heights of the bars to all be 1, and fill them in proportionally according to the second variable.  Be sure to change your y-axis label to something appropriate.
+
+h.  It can be difficult to read the category names on the x-axis sometimes, as longer category names will often overlap.  Search the internet for an approach for rotating the x-axis labels in `ggplot()`.  Pick one of the graphs in (d), (e), (f), and (g), and rotate the labels in this graph by 45 degrees.  You do not need to recreate the graph here -- just rotate the labels in the version you created above.
+
+i.  Some people prefer for the bars in bar charts to be displayed horizontally instead of vertically.  To do this, just add `+ coord_flip()` to your graph.  Pick another one of the graphs in (d), (e), (f), and (g) (not the same one you picked for part (h)), and change it so that the bars are displayed horizontally.  You do not need to recreate the graph here -- just change in the version you created above.
+
+j.  Compare the graphs you created in (e), (f), and (g) -- that is, compare the stacked, side-by-side, and proportional bar charts.  
+
++  What information is easier to see in some graphs, but not others?  
++  What are the advantages of the stacked bar chart?  
++  What are the advantages of the side-by-side bar chart?  
++  What are the advantages of the proportional bar chart?
++  Do you think that one of these is **always** better than the other?  Or does it depend on the purpose for which you're creating the graph?
+
+k.  There are even more ways to show bar charts at the proportion or percentage scales.  In the background, the `geom_bar()` function calculates the counts in each category, which are stored in an object called `..count..`.  Using the default settings (i.e. just `geom_bar()`), the y-axis aesthetic is automatically assigned to the `..count..` object (i.e., `geom_bar(aes(y = ..count..))` will give you the same result as `geom_bar()`).  We can use this to create bar charts at the proportion scale in another way:
+
++  Start by creating the bar chart in the standard way, using `bike_data` and not the pre-calculated marginal distribution.
++  To do this, scale the y-axis aesthetic by the sum of the counts, i.e.:  `... + geom_bar(aes(y = (..count..)/sum(..count..)))`.  
++  Be sure to use properly labeled axes, titles, etc.
+
+l.  Convert this to the percentage scale by multiplying the y-axis aesthetic from (k) by 100.  Be sure to use properly labeled axes, titles, etc.
+
+
+This was a long problem, but the goal was to show you that `ggplot()` is extremely flexible, and that there are many ways of visualizing the same variables!  We'll spend a lot of time over the next few weeks talking about which ways are best in which cases.
+
+***
+***
+
+
+#  Problem 5
+
+**Reordering Categories and Bars**
+
+This problem will be posted later today.
+
+***
+***
+
+
+#  Problem 6
+
+**Incorporating Statistical Information Into Graphs**
+
+This problem will be posted later today.
+
+
+***
+***
+
+
+#  Problem 7
+
+**Adjusting Legends**
+
+This problem will be posted later today.
+
+
+
