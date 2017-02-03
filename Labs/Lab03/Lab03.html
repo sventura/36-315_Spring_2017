@@ -292,7 +292,7 @@ date_time &lt;- colsplit(bike_data$starttime, &quot; &quot;, c(&quot;date&quot;,
 #  Add start_date variable to big_bike, and a bunch of other variables
 bike_data &lt;- mutate(bike_data,
                     time_of_day = as.vector(date_time$time),
-                    start_date = as.Date(date_time$date, format = &quot;%Y-%m-%d&quot;),
+                    start_date = as.Date(date_time$date, format = &quot;%Y/%m/%d&quot;),
                     birth_decade = paste0(substr(`birth year`, 1, 3), &quot;0s&quot;),
                     hour_of_day = as.integer(substr(time_of_day, 1, 2)),
                     am_or_pm = ifelse(hour_of_day &lt; 12, &quot;AM&quot;, &quot;PM&quot;),
