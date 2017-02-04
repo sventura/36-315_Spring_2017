@@ -80,13 +80,13 @@ a.  (1 point)  **Include the graph in your assignment**.  Two choices here:
 +  embed the graph/image in the .html file (see below for instructions) and submit it along with your other files on Blackboard, or 
 +  include a link to the graph in your answer to this question.
 
-b.  (3 points)  **Describe the graph**.  
+b.  (5 points)  **Describe the graph**.  
 
 +  What does the graph show?  
 +  What variables are plotted on the axes, via color, or via other features of the graph?
 +  **What is the main result of the graph?**
 
-c.  (3 points)  **Critique the graph**.
+c.  (4 points)  **Critique the graph**.
 
 +  Does the graph do a good job of achieving its goals?  
 +  Does the graph use an unnecessary amount of data ink?  
@@ -94,7 +94,7 @@ c.  (3 points)  **Critique the graph**.
 +  What are the strengths and weaknesses (if any) of the graphic?  
 +  What would you change (if anything) about this graphic?
 
-d.  (1 points)  **Critique the caption and/or surrounding text**.  
+d.  (3 points)  **Critique the caption and/or surrounding text**.  
 
 +  Does the text enhance the user's understanding of the graphic?  
 +  What else would you include in the caption/surrounding text to help the viewer understand the graphic?
