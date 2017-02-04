@@ -75,18 +75,18 @@ d.  (3 points)  Read [this article](https://www.r-bloggers.com/the-best-r-packag
 
 Find a graph from the internet (last 7 days -- e.g. a news article, blog post, etc) or from an academic journal (last 60 days).  Describe and critique your graph using the suggestions below.  In parts (b)-(d), you do not have to address each bullet below -- these are just suggestions of things you can discuss when describing/critiquing your graph.
 
-a.  (5 points)  **Include the graph in your assignment**.  Two choices here:  
+a.  (1 point)  **Include the graph in your assignment**.  Two choices here:  
 
 +  embed the graph/image in the .html file (see below for instructions) and submit it along with your other files on Blackboard, or 
 +  include a link to the graph in your answer to this question.
 
-b.  (5 points)  **Describe the graph**.  
+b.  (3 points)  **Describe the graph**.  
 
 +  What does the graph show?  
 +  What variables are plotted on the axes, via color, or via other features of the graph?
 +  **What is the main result of the graph?**
 
-c.  (5 points)  **Critique the graph**.
+c.  (3 points)  **Critique the graph**.
 
 +  Does the graph do a good job of achieving its goals?  
 +  Does the graph use an unnecessary amount of data ink?  
@@ -94,7 +94,7 @@ c.  (5 points)  **Critique the graph**.
 +  What are the strengths and weaknesses (if any) of the graphic?  
 +  What would you change (if anything) about this graphic?
 
-d.  (5 points)  **Critique the caption and/or surrounding text**.  
+d.  (1 points)  **Critique the caption and/or surrounding text**.  
 
 +  Does the text enhance the user's understanding of the graphic?  
 +  What else would you include in the caption/surrounding text to help the viewer understand the graphic?
@@ -142,6 +142,8 @@ c.  Describe and critique the stacked rose diagram.
 
 #  Problem 4
 
+(3 points each)
+
 **Data Manipulation and The Many Ways To Create 1-D and 2-D Bar Charts**
 
 a.  Load the NYC Citi Bike Data from Lab 03, and keep the code used in Lab 03 to manipulate the data to create additional variables.  
@@ -160,7 +162,8 @@ d.  The same applies to 2-D bar charts.  First, build a stacked bar chart of `da
 
 e.  Next, use the following approach to build the same graph:
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
 #day_15 <- bike_data %>%
 #  group_by(day_of_week, less_than_15_mins) %>%
 #  summarize(count = n())
@@ -175,7 +178,7 @@ Compare the code in (e) to that of (d).  Why do we use `stat = "identity"` in (e
 
 f.  Another way to visualize two categorical variables is with a "side-by-side" bar chart.  To do this, use the following code:
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 #day_15 <- bike_data %>%
 #  group_by(day_of_week, less_than_15_mins) %>%
 #  summarize(count = n())
@@ -222,9 +225,31 @@ This was a long problem, but the goal was to show you that `ggplot()` is extreme
 
 #  Problem 5
 
+(3 points each)
+
 **Reordering Categories and Bars**
 
-This problem will be posted later today.
+In Problem 4, the days of week are plotted in an illogical order.  This is because they are stored as Let's fix this.
+
+a.  What is the default plotting order for categorical ("character" or "factor") variables in `R`?  (You should be able to determine this from glancing at the order of the categories in your graphs involving the `day_of_week` variable.)
+
+b.  Read [this introduction](https://blog.rstudio.org/2016/08/31/forcats-0-1-0/) to the `forcats` package, which was designed to work with categorical data in `R`.  Install and load the `forcats` package to your computer.  Answer the following:
+
++  What function in the `forcats` package can be used to rename categories?
++  What function in the `forcats` package can be used to reorder the categories in the order of first appearance in the dataset?
++  What function in the `forcats` package can be used to reorder the categories according to their frequency?
++  What combination of functions in the `forcats` package can be used to reorder the categories according to the reverse order of their frequency?
+
+c.  Recreate the plot in Problem 4, part (e), but this time, order the categories from most frequent to least frequent.
+
+d. Recreate the plot in Problem 4, part (f), but this time, order the categories from least frequent to most frequent.
+
+e. Recreate the plot in Problem 4, part (g), but this time, order the categories in a logical order (e.g. Monday, Tuesday, ..., Sunday; or Sunday, Monday, ..., Saturday).
+
+f.  Recreate the plot from the previous part (Problem 5, part (e)), but this time, rename the categories so that they use the following day abbreviations:  M, Tu, W, Th, F, Sa, Su
+
+g.  Now that you have a graph that visualizes the categories **in their correct order**, interpret the plot in (e) or (f).  Describe any interesting features of the relationship between `day_of_week` and `less_than_15_mins`.  
+
 
 ***
 ***
@@ -232,9 +257,42 @@ This problem will be posted later today.
 
 #  Problem 6
 
+(3 points each)
+
 **Incorporating Statistical Information Into Graphs**
 
-This problem will be posted later today.
+Load the Airline Tweets data from a previous assignment, and create a data frame called  `airline_counts`:
+
+```{r, warning = FALSE, message = FALSE}
+airline_tweets <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+
+#  Add the following information to the airline_counts dataset:
+#    Proportions and percentages corresponding to each category
+#    The standard error on the proportios or percentages corresponding to each category
+#    Lower bound of an (approximate) 95% confidence interval around the true proportion in each category
+#    Upper bound of an (approximate) 95% confidence interval around the true proportion in each category
+
+#  Manipulate the airline 
+airline_counts <- airline_tweets %>%  #  Start with the airline_tweets data.frame
+  group_by(airline) %>%  #  group by the airline variable
+  summarise(count = n()) %>%  #  summarize the dataset by calculating the count of each airline
+  mutate(total = sum(count),  #  add total number of observations
+         proportion = count / total,  #  add proportions
+         percentage = proportion * 100,  #  add percentages
+         std_error = 87,  #  add standard error of each proportion
+         lower = proportion - 1.96 * std_error,  #  compute lower bound
+         upper = proportion + 1.96 * std_error)  #  compute upper bound
+
+airline_counts
+```
+
+a.  There is an obvious mistake in the code above:  the standard error is set to be 87.  Update this line of code so that the appropriate standard error is calculated.  See your notes from last week to do this.
+
+b.  Make a bar chart of the percentages and a bar chart of the proportions using `stat = "identity"` in `geom_bar()`.  Arrange these into a 1x2 grid (1 row, 2 columns).  Make sure the graphs are properly labeled/titled.  What is the difference between these two graphs?
+
+c.  Add error bars to the proportions graph.  To do this, use the `geom_errorbar()` function, and be sure to specify the `ymin` and `ymax` parameters so that they correspond to the already-calculated lower and upper bounds.  E.g., `ggplot(...) + ... + geom_errorbar(aes(ymin = ..., ymax = ...))`.  
+
+d.  Are the proportions of tweets about American and US Airways significantly different?  How do you know?
 
 
 ***
@@ -243,9 +301,22 @@ This problem will be posted later today.
 
 #  Problem 7
 
+(3 points each)
+
 **Adjusting Legends**
 
-This problem will be posted later today.
+The following code will produce a graph of the marginal distribution of airline frequencies and the conditional distributions of `airline_sentiment` given `airline`.
+
+```{r, warning = FALSE, message = FALSE}
+ggplot(airline_tweets, aes(x = airline, fill = airline_sentiment)) + 
+  geom_bar()
+```
+
+a.  Add ` + labs(fill = "Airline Name")` to the graph above.  What happens?
+
+b.  Recreate the graph from Problem 5, part (f), but this time, adjust the legend title to be something more appropriate.
+
+c.  Search the internet and identify an approach for repositioning legends in `ggplot()` graphics.  Recreate the graph from part (b), but this time, move the legend below the graph.
 
 
 
