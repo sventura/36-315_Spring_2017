@@ -126,7 +126,7 @@ a.  The default pie chart in `ggplot()` has a small hole in the middle.  This ca
 
 (Aside:  Learning how to use online documentation and help forums is an extremely important skill when using any programming language, including `R`.  Although it's painful to think about, there will come a time where you can't ask Sam how to do something on Piazza or send him an email at 4am the night before an assignment is due.  Learning how to effectively use the internet to find the information you're looking for is a skill you will continue to use throughout your career.)
 
-b.  In Lab 03, we learned how to make a stacked bar chart.  In Lab 02 and Homework 02, we learned that rose diagrams were really just bar charts in polar coordinates.  That must mean that we can make a "stacked rose diagram".  Make a stacked rose diagram that shows the marginal distribution of the `airline` variable and the conditional distributions of `airline_sentiment` given `airline`.  Create the corresponding stacked bar chart.  Arrange these two graphs into a 1x2 grid using `grid.arrange()`.
+b.  In Lab 03, we learned how to make a stacked bar chart.  In Lab 02 and Homework 02, we learned that rose diagrams were really just bar charts in polar coordinates.  That must mean that we can make a "stacked rose diagram".  Make a stacked rose diagram that shows the marginal distribution of the `airline` variable and the conditional distributions of `airline_sentiment` given each `airline`.  Create the corresponding stacked bar chart.  Arrange these two graphs into a 1x2 grid using `grid.arrange()`.
 
 c.  Describe and critique the stacked rose diagram.  
 
@@ -210,7 +210,7 @@ j.  Compare the graphs you created in (e), (f), and (g) -- that is, compare the 
 
 k.  There are even more ways to show bar charts at the proportion or percentage scales.  In the background, the `geom_bar()` function calculates the counts in each category, which are stored in an object called `..count..`.  Using the default settings (i.e. just `geom_bar()`), the y-axis aesthetic is automatically assigned to the `..count..` object (i.e., `geom_bar(aes(y = ..count..))` will give you the same result as `geom_bar()`).  We can use this to create bar charts at the proportion scale in another way:
 
-+  Start by creating the bar chart in the standard way, using `bike_data` and not the pre-calculated marginal distribution.
++  Start by creating the bar chart (for the `day_of_week` variable) in the standard way, using `bike_data` and not the pre-calculated marginal distribution.
 +  To do this, scale the y-axis aesthetic by the sum of the counts, i.e.:  `... + geom_bar(aes(y = (..count..)/sum(..count..)))`.  
 +  Be sure to use properly labeled axes, titles, etc.
 

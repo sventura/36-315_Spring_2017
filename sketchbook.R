@@ -30,3 +30,10 @@ bike_data <- bike_data %>%
 
 ggplot(bike_data, aes(x = day_of_week)) + geom_bar()
 ggplot(bike_data, aes(x = day_of_week2)) + geom_bar()
+
+
+f <- factor(c("a", "b", "c", "d"))
+fct_relevel(f)
+fct_relevel(f, "c")
+fct_relevel(f, "b", "a")
+

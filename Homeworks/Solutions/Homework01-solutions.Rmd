@@ -1,7 +1,7 @@
 ---
-title: "36-315 Homework 01, Fall 2016"
+title: "36-315 Homework 01, Spring 2017"
 author: "Solutions"
-date: "Due Wednesday, January 25, 2016 (12pm ET) on Blackboard"
+date: "Due Wednesday, January 25, 2017 (12pm ET) on Blackboard"
 output: 
   html_document:
     toc:  true
@@ -52,22 +52,22 @@ along with the figure below:
 
 ### b. Description  
 
-It should be first mentioned that the article was probably proposed as a "neural" piece, and therefore one might assume no conclusion about the Wage gap was actually desired. In that case, they did a pretty good job of not saying anything :). 
+It should be first mentioned that the article was probably proposed as a "neutral" piece, and therefore one might assume no conclusion about the Wage gap was actually desired. In that case, they did a pretty good job of not saying anything :-)
 
 The plot shows median weekly earnings of employed, full-time wage and salary workers in 2015 overall, and broken across gender and 4 racial groups. This was done with a bar plot with group on the "X" axis and median weekly earnings in dollars on the "Y" axis. From this figure one might say that you should be able to tell that between different categories there is a difference in wages (i.e. a wage gap).
 
 ### c. Critique 
 
-In respect to the goal of expressing trivial that a wage gap exists they did a wonderful job. If they wanted to compare progress, question actions, look at other potential reasons for such gap and changes in the gap, they didn't do good job at all.
+With respect to the goal of expressing trivial that a wage gap exists, they did a wonderful job. If they wanted to compare progress, question actions, look at other potential reasons for such gap and changes in the gap, then they didn't do good job at all.
 
-First, the data is all mixed together, with gender differences in wage and racial differences in wage being compared on the same plot. By including all the groups and the average in the same plot, it reduces the eye's ability to analysis the size of the differences. 
+First, the data is all mixed together, with gender differences in wage and racial differences in wage being compared on the same plot. By including all the groups and the average in the same plot, it reduces the eye's ability to analyze the size of the differences. 
 
-If I was to redo the graphic I would:
+If I were to recreate the graphic, I would:
 
 + split gender and racial wage gaps into seperate figures
 + use time series data to create line plots on these figures and probably evaluate a percentage different between groups with a base line of one race for the racial wage gap. This would be more optimal to look for correlations and visualize differences on a standard scale even as time changed.
-+ additionally I'd mark the "X" axes of these line plots with different presidual terms, and maybe even significant milestones outside the political sphere that might push changes in the wage gaps.
-+ and lastly, if I wanted to get you questioning things, I might include subset by industry, or put additional historical trends that correlate with the fluctuations of the % differences, or compare other countries wage gaps of similar nations.
++ I'd mark the "X" axes of these line plots with different presidual terms, and maybe even important milestones outside the political sphere that might push changes in the wage gaps.
++ if I wanted to encourage the viewer to think about important questions, I might include subset by industry, or put additional historical trends that correlate with the fluctuations of the % differences, or compare other countries wage gaps of similar nations.
 
 ### d. Critique of text 
 
@@ -147,6 +147,7 @@ The graph is a scatterplot, with x values from the vector `1:10` and the output 
 
 ### a.  
 ```{r}
+#install.packages("tidyverse")
 #install.packages("ggplot2")
 #library(ggplot2)
 
