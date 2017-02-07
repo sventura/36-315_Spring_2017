@@ -141,7 +141,7 @@ a.  (5 points)  **Include the graph in your assignment**.
 
 b.  (5 points)  **Describe the graph**.  
 
-The graph is supposed to show the change in inequality in Canada from 1969 to 2009. Time, presumably in years, is plotted on the x-axis, and inequality is plotted on the y-axis. The line in the graph shows the level of inequality across the relevant time period. The main result that the author are trying to show in the graph is that inequality in Canada has not shifted much between 1969 and 2009. 
+The graph is supposed to show the change in inequality in Canada from 1969 to 2009. Time, presumably in years, is plotted on the x-axis, and inequality is plotted on the y-axis. The line in the graph shows the level of inequality across the relevant time period. The main result that the authors are trying to show in the graph is that inequality in Canada has not shifted much between 1969 and 2009. 
 
 c.  (5 points)  **Critique the graph**.
 
@@ -179,12 +179,10 @@ The data set has 14640 rows and 15 columns.
 b.  (5 points)
 ```{r}
 ggplot(data = airline_tweets)  + geom_bar(aes(x = airline), fill = "red", color = "black") +
-  labs(x = "Airline", y = "Number of Tweets") +
-  ggtitle("Tweet Counts per Airline")
+  labs(x = "Airline", y = "Number of Tweets", title = "Tweet Counts per Airline")
 
 ggplot(data = airline_tweets) + geom_bar(aes(x = airline), fill = "purple", color = "green") +
-  labs(x = "Airline", y = "Number of Tweets") +
-  ggtitle("Tweet Counts per Airline")
+  labs(x = "Airline", y = "Number of Tweets", title = "Tweet Counts per Airline")
 ```
 
 The `fill` command changes the color of each bar, while the `color` command changes the color of the outline of each bar.
@@ -192,8 +190,7 @@ The `fill` command changes the color of each bar, while the `color` command chan
 c.  (4 points) 
 ```{r}
 ggplot(data = airline_tweets)  + geom_bar(aes(x = airline), fill = "#008080", color = "#FF8C00") +
-  labs(x = "Airline", y = "Number of Tweets") +
-  ggtitle("Tweet Counts per Airline")
+  labs(x = "Airline", y = "Number of Tweets", title = "Tweet Counts per Airline")
 ```
 
 ***
@@ -209,9 +206,9 @@ a.  (4 points)
 ```{r}
 ggplot(data = airline_tweets) + 
   geom_bar(aes(x=factor(1), fill = airline)) +
-  ggtitle("Tweet Counts per Airline") +
   labs(y = "Number of Tweets", fill = "Airline",
-       caption = "Twitter Airline Sentiment dataset")
+       caption = "Twitter Airline Sentiment dataset",
+       title = "Tweet Counts per Airline")
 ```
 
 
@@ -225,22 +222,22 @@ c.  (3 points)
 ```{r}
 ggplot(data = airline_tweets) + 
   geom_bar(aes(x=factor(1), fill = airline)) +
-  ggtitle("Tweet Counts per Airline") +
   labs(y = "Number of Tweets", fill = "Airline",
-       caption = "Twitter Airline Sentiment dataset") +
+       caption = "Twitter Airline Sentiment dataset",
+       title = "Tweet Counts per Airline") +
   coord_flip()
 ```
 
-In this plot, the counts are on the x-axis rather than the y-axis, and the bars are stacked horizontally. The widths of the bars are proportional to the number of tweets, while the heighst of the bars do not have any significance since they are all the same. This is the opposite of the previous graph. 
+In this plot, the counts are on the x-axis rather than the y-axis, and the bars are stacked horizontally. The widths of the bars are proportional to the number of tweets, while the heights of the bars do not have any significance since they are all the same. This is the opposite of the previous graph. 
 
 d.  (BONUS:  1 point)  Remove the ugly `factor(1)` from the x-axis label, without changing the rest of the graphic.
 
 ```{r}
 ggplot(data = airline_tweets) + 
   geom_bar(aes(x=factor(""), fill = airline)) +
-  ggtitle("Tweet Counts per Airline") +
   labs(x = "",y = "Number of Tweets", fill = "Airline",
-       caption = "Twitter Airline Sentiment dataset") +
+       caption = "Twitter Airline Sentiment dataset", 
+       title = "Tweet Counts per Airline") +
   scale_x_discrete(breaks = NULL)
 ```
 
@@ -254,8 +251,10 @@ ggplot(data = airline_tweets) +
 
 a.  (4 points)  Re-create the graph from Problem 3, but use a rose diagram.  Be sure to correctly label the axes, if necessary.  Include an appropriate title.
 ```{r}
-ggplot(data = airline_tweets, aes(x = airline, fill = airline)) + geom_bar() + coord_polar() + 
-  ggtitle("Tweet Counts by Airline") + labs(x = "", y = "Number of Tweets", fill = "Airline")
+ggplot(data = airline_tweets, aes(x = airline, fill = airline)) + 
+  geom_bar() + coord_polar() + 
+  labs(x = "", y = "Number of Tweets", fill = "Airline", 
+       title = "Tweet Counts by Airline")
 ```
 
 b.  (3 points)  In a rose diagram, what does the radius of each rose petal correspond to (if anything)?  What does the angle associated with each rose petal correspond to (if anything)?
@@ -280,27 +279,28 @@ a.  (4 points)  Re-create the graph from Problem 3, but use a pie chart.  Be sur
 # assume the "split_plot" code was made in 4d
 split_plot <- ggplot(data = airline_tweets) + 
   geom_bar(aes(x=factor(""), fill = airline)) +
-  ggtitle("Tweet Counts per Airline") +
   labs(x = "",y = "Number of Tweets", fill = "Airline",
-       caption = "Twitter Airline Sentiment dataset") +
+       caption = "Twitter Airline Sentiment dataset",
+       title = "Tweet Counts per Airline") +
   scale_x_discrete(breaks = NULL)
 
 pie_plot <-split_plot + 
   coord_polar(theta= "y") +
-  labs(x = "", y = "") +
-  ggtitle("Counts of Tweets Per Airpline as 
+  labs(x = "", y = "", title = "Counts of Tweets Per Airpline as 
           \na Proportion of Total Tweets on Airlines") #\n makes a new line
 pie_plot
 ```
 
 b.  (3 points)  In a pie chart, what does the radius of each pie slice correspond to (if anything)?  What does the angle associated with each pie slice correspond to (if anything)?
 
-In the pie chart each pie slice has same radius, ait it doesn't correspond to anything.
-In the pie chart, it is the size of the angle for each piece that represents the proportional size of the specific airline mentioning tweets of the total number of tweets about airlines.
++  In the pie chart each pie slice has same radius, and it doesn't correspond to anything.
++  In the pie chart, it is the size of the angle for each piece that represents the proportional size of the specific airline mentioning tweets of the total number of tweets about airlines.
 
 c.  (3 points)  Summarize the differences between a rose diagram and a pie chart in no more than two sentences.
 
-Radius and area of present the visualizing variable in the rose diagram but not in the pie chart; where the size of angle presents the visualizing variable in the pie chart but not the rose diagram.
+In a pie chart, the radii are equal, and the angles (and as a result, the areas) are proportional to the counts/proportions in each category.  In a rose diagram, the angles are equal, and the radii are proportional to the counts/proportions in each category, causing the areas to be proportional to the square of the counts/proportions.
+
+(Note:  In some implementations of rose diagrams, the areas are proportional to the counts/proportions, and the radii are proportional to the square root of the counts/proportions.)
 
 d.  (15 points)  Of the four graphs we used to visualize the `airline` variable, which do you prefer?  Why?  Discuss the strengths (if any) and weaknesses (if any) of each.
 
@@ -325,7 +325,7 @@ You obviously disagree.  You show your friend your graphs from the previous four
 
 (5 points)  What kind of statistical test could you use to show that the airlines are not equally likely to be tweeted about?
 
-  **We could use a Chi-square test for independence.**
+  **We could use a Chi-square test.**
 
 ***
 ***
@@ -348,11 +348,11 @@ a.  Recreate the plot from Problem 3, but this time, facet on the `negativereaso
 # assume the "bar_plot" was written in problem 3c
 bar_plot <- ggplot(data = airline_tweets)  + 
   geom_bar(aes(x = airline), fill = "#ffff00", color = "#3366ff") +
-  labs(x = "Airline", y = "Number of Tweets") +
-  ggtitle("Tweet Counts per Airline")
+  labs(x = "Airline", y = "Number of Tweets", title = "Tweet Counts per Airline")
 
 bar_plot_facet_a <- bar_plot +
   facet_wrap(~negativereason) +
+  labs(subtitle = "By Reason for Negative Tweet") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 bar_plot_facet_a
@@ -366,6 +366,7 @@ The `ncol` and `nrow` dictate the number of rows/columns in the grid (respective
 # example:
 bar_plot_facet_b <- bar_plot +
   facet_wrap(~negativereason,nrow = 2) +
+  labs(subtitle = "By Reason for Negative Tweet") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         strip.text = element_text(size = 5))
 
@@ -378,6 +379,7 @@ c.  Sometimes, it improves our ability to compare across graphics if we have all
 ```{r}
 bar_plot_facet_c <- bar_plot +
   facet_wrap(~airline_sentiment) +
+  labs(subtitle = "By Airline Sentiment") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 bar_plot_facet_c
 ```
@@ -386,7 +388,8 @@ bar_plot_facet_c
 d.  Recreate the graph from part (c), but this time, add `+ facet_grid(facetting_variable~.)` instead.  What changed?  Which version do you prefer for this particular problem?  Why?
 
 ```{r}
-bar_plot_facet_d <- bar_plot +  facet_grid(airline_sentiment~.)
+bar_plot_facet_d <- bar_plot +  facet_grid(airline_sentiment~.) + 
+  labs(subtitle = "By Airline Sentiment")
 
 bar_plot_facet_d
 ```
@@ -398,6 +401,7 @@ e.  We can actually facet on multiple categorical variables at once.  Let's try 
 ```{r}
 bar_plot_facet_e <- bar_plot_facet_d +  
   facet_grid(negativereason~airline_sentiment) +
+  labs(subtitle = "By Airline Sentiment and Reason for Negative Tweet") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1), 
         strip.text = element_text(size = 6))
   
