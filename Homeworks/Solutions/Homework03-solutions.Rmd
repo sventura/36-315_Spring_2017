@@ -586,7 +586,7 @@ ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), "M" = 
        fill = "Duration of Ride")
 ```
 
-Add `fill = "appropriate legend title"` in the labs() function. In our case, we named the legend it "Duration of Ride"
+Add `fill = "appropriate legend title"` in the labs() function. In our case, we named the legend "Duration of Ride".
 
 ## c. 
 
