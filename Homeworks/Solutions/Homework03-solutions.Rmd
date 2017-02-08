@@ -420,7 +420,8 @@ The `fct_recode` function can rename the categories. The function `fct_inorder` 
 ## c.
 
 ```{r}
-ggplot(day_15, aes(x = fct_rev(fct_reorder(day_of_week, count)), y = count, fill = less_than_15_mins)) + 
+ggplot(day_15, aes(x = fct_rev(fct_reorder(day_of_week, count)), 
+                   y = count, fill = less_than_15_mins)) + 
   geom_bar(stat = "identity") + 
   labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
        subtitle = "Conditional on Day of Week",
@@ -432,8 +433,9 @@ ggplot(day_15, aes(x = fct_rev(fct_reorder(day_of_week, count)), y = count, fill
 ## d.
 
 ```{r}
-ggplot(day_15, aes(x = fct_reorder(day_of_week, count), y = count, fill = less_than_15_mins)) + 
-  geom_bar(stat = "identity") + 
+ggplot(day_15, aes(x = fct_reorder(day_of_week, count), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
   labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
@@ -445,10 +447,12 @@ ggplot(day_15, aes(x = fct_reorder(day_of_week, count), y = count, fill = less_t
 ## e.
 
 ```{r}
-ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", 
+                  "Thursday", "Friday", "Saturday")
 
-ggplot(day_15, aes(x = fct_relevel(day_of_week, ordered_days), y = count, fill = less_than_15_mins)) + 
-  geom_bar(stat = "identity") + 
+ggplot(day_15, aes(x = fct_relevel(day_of_week, ordered_days), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity", position = "fill") + 
   labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
@@ -458,14 +462,18 @@ ggplot(day_15, aes(x = fct_relevel(day_of_week, ordered_days), y = count, fill =
 
 ## f.  
 ```{r}
-ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", 
+                  "Thursday", "Friday", "Saturday")
 
-ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), "M" = "Monday", 
-                                  "Tu" = "Tuesday", "W" = "Wednesday", "Th" = "Thursday", 
-                                  "F" = "Friday", "Sa" = "Saturday", "Su" = "Sunday"), 
+ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), 
+                                  "M" = "Monday", 
+                                  "Tu" = "Tuesday", "W" = "Wednesday", 
+                                  "Th" = "Thursday", 
+                                  "F" = "Friday", "Sa" = "Saturday", 
+                                  "Su" = "Sunday"), 
                    y = count, fill = less_than_15_mins)) + 
-  geom_bar(stat = "identity") + 
-  labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
+  geom_bar(stat = "identity", position = "fill") + 
+  labs(title = "Distribution of Bike Rides by \n Whether They Were More or Less Than 15 Minutes",
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
        x = "Day of Week", 
@@ -474,7 +482,7 @@ ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), "M" = 
 
 ## g.
 
-The bar graph shows the distribution of the duration of bike rides, categorized by whether they were longer or shorter than 15 minutes, conditional on the day of week of the bike ride. The day of week is shown on the x-axis, and the number of bike rides on each day of the week is shown on the y-axis. The fill of each bar is separated by the number of rides on each day of the week that were longer or shorter than 15 minutes. The plot seems to show that the proportion of the number of bike rides that were less than 15 minutes compared to the total number of bike rides is largest for Wednesday and Thursday. In general, the proportion of rides that were less than 15 minutes was smallest during the weekend days, as can be seen from the larger proportion of red, representing the bike rides 15 minutes or longer, in the bars for the weekends compared to the bars of the other days. Overall, based on the heights of the bars, weekends seem to have more overall rides per day compared to the weekdays. 
+The bar graph shows the distribution of the duration of bike rides by whether they were longer or shorter than 15 minutes, conditional on the day of week of the bike ride. The day of week is shown on the x-axis, and the proportion of bike rides on each day of the week that are longer and shorter than 15 minutes is shown on the y-axis. The plot seems to show that the proportion of the number of bike rides that were less than 15 minutes compared to the total number of bike rides is largest for Wednesday and Thursday. In general, the proportion of rides that were less than 15 minutes was smallest during the weekend days, as can be seen from the larger proportion of red, representing the bike rides 15 minutes or longer, in the bars for the weekends compared to the bars of the other days. 
 
 
 ***
