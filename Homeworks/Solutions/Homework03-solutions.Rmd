@@ -87,6 +87,37 @@ Layering of elements can transform data and can also give us the ability to comb
 + **building plots iteratively:**
 Layering rewards iteration which is good for work flow.
 
+
+***
+***
+
+#  Problem 2
+
+**Critiquing Graphs**:
+
+a.  (1 point)  **Include the graph in your assignment**.  Two choices here:  
+
+This graph appeared in the January edition of the Journal of the American Statistical Association: http://www.tandfonline.com/doi/pdf/10.1080/01621459.2015.1106790
+
+<div style="width:400px">
+![Example Graph](http://i.imgur.com/UBsGS1x.png)
+</div>
+
+b.  (5 points)  **Describe the graph**.  
+
+The graph shows changes in the number of statistics degrees granted annually over time. The x-axis indicates year, the y-axis indicates count, and four lines are plotted in different colors to indicate the type of degree granted.The graph's main goal is to show there's been an increase in completion of Statistics programs, and to that end it does a decent job. There is a clear upward slope in most of the lines.
+
+c.  (4 points)  **Critique the graph**.
+
+Unfortunately, the graph has many serious problems. Probably the worst aspect of the graph is that the x-axis is not evenly spaced in time. This means that the slopes distort the actual rate of change and it's unclear when data was actually collected. It would probably be clearer to use a faceted scatterplot. This would preserve time increments, make it clear when data was collected, and visually separate the four categories.
+
+The graph also uses many unnecessary visual effects. Using a color gradient for the background is distracting and serves no purpose. The lines in the chart also have a gradient for no discernable reason. The axes use a gradient too. All of these gradients should be removed.
+
+d.  (3 points)  **Critique the caption and/or surrounding text**.  
+
+The graphic's text only adds to the confusion. Neither of the axes are labeled. The title does not help indicate the purpose of the plot. Two of the categories are given the same name, and the differences are clarified in small print elsewhere on the graph. This problem comes from the fact that one of the categories is actually a subset of the other. It could be clarified by splitting them into two distinct sets.
+
+
 ***
 ***
 
@@ -395,8 +426,7 @@ ggplot(day_15, aes(x = fct_rev(fct_reorder(day_of_week, count)), y = count, fill
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
        x = "Day of Week", 
-       y = "Number of Rides", 
-       fill = "Duration of Ride")
+       y = "Number of Rides")
 ```
 
 ## d.
@@ -408,8 +438,7 @@ ggplot(day_15, aes(x = fct_reorder(day_of_week, count), y = count, fill = less_t
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
        x = "Day of Week", 
-       y = "Number of Rides", 
-       fill = "Duration of Ride")
+       y = "Number of Rides")
 ```
 
 
@@ -424,8 +453,7 @@ ggplot(day_15, aes(x = fct_relevel(day_of_week, ordered_days), y = count, fill =
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
        x = "Day of Week", 
-       y = "Number of Rides", 
-       fill = "Duration of Ride")
+       y = "Number of Rides")
 ```
 
 ## f.  
@@ -441,8 +469,7 @@ ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), "M" = 
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
        x = "Day of Week", 
-       y = "Number of Rides", 
-       fill = "Duration of Ride")
+       y = "Number of Rides")
 ```
 
 ## g.
@@ -524,4 +551,62 @@ The proportions of tweets mentioning American Airlines and US Airways are not st
 
 ***
 ***
+
+
+#  Problem 7
+
+(3 points each)
+
+**Adjusting Legends**
+
+## a.  
+
+```{r}
+ggplot(airline_tweets, aes(x = airline, fill = airline_sentiment)) + 
+  geom_bar()+ labs(fill = "Airline Name")
+```
+
+Adding ` + labs(fill = "Airline Name")` to the graph above allows us to change the legend name to "Airline Name" from "airline_sentiment" as denoted in the `aes()` function. This is because lab() allows us to rename aesthetics such as titles, axis label, captions and more. 
+
+## b.
+
+```{r}
+ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+
+ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), "M" = "Monday", 
+                                  "Tu" = "Tuesday", "W" = "Wednesday", "Th" = "Thursday", 
+                                  "F" = "Friday", "Sa" = "Saturday", "Su" = "Sunday"), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity") + 
+  labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
+       subtitle = "Conditional on Day of Week",
+       caption = "NYC Citi Bike data, June 2016",
+       x = "Day of Week", 
+       y = "Number of Rides", 
+       fill = "Duration of Ride")
+```
+
+Add `fill = "appropriate legend title"` in the labs() function. In our case, we named the legend it "Duration of Ride"
+
+## c. 
+
+```{r}
+ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+
+ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), "M" = "Monday", 
+                                  "Tu" = "Tuesday", "W" = "Wednesday", "Th" = "Thursday", 
+                                  "F" = "Friday", "Sa" = "Saturday", "Su" = "Sunday"), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity") + 
+  labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
+       subtitle = "Conditional on Day of Week",
+       caption = "NYC Citi Bike data, June 2016",
+       x = "Day of Week", 
+       y = "Number of Rides", 
+       fill = "Duration of Ride") +
+  theme(legend.position="bottom")
+```
+
+
+
 
