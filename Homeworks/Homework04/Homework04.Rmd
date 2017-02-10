@@ -1,0 +1,258 @@
+---
+title: "36-315 Homework 04, Spring 2017"
+author: "Your Name Here"
+date: "Due Wednesday, February 15th (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Homework 04:  Mosaic Plots and Continuous Data
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW03.Rmd -- e.g. "sventura-HW03.Rmd") to the Homework 03 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+#  Problem 0
+
+**Style Guide and Tabbed HTML Output**
+
+a.  What style guide are you using on this assignment?  (Up to 10 points will be deducted if you do not adhere to a specific style guide.)
+
+b.  Remember to include a floating table of contents in your submission.
+
+c.  (BONUS:  2 points)  Please fill out the [early course feedback form](https://docs.google.com/forms/d/e/1FAIpQLSe47cXrrUB7CtiD3x1SUs5QR3p1QDczKBQ-uH3ZYrYX8euA7w/viewform?usp=send_form).  We are always looking to improve, so we appreciate your feedback.
+
+***
+***
+
+
+#  Problem 1
+
+**Critiquing Graphs**:
+
+Find a graph from the internet (last 7 days -- e.g. a news article, blog post, etc) or from an academic journal (last 60 days).  Describe and critique your graph using the suggestions below.  In parts (b)-(d), you do not have to address each bullet below -- these are just suggestions of things you can discuss when describing/critiquing your graph.
+
+a.  (1 point)  **Include the graph in your assignment**.  Two choices here:  
+
++  embed the graph/image in the .html file (see below for instructions) and submit it along with your other files on Blackboard, or 
++  include a link to the graph in your answer to this question.
+
+b.  (5 points)  **Describe the graph**.  
+
++  What does the graph show?  
++  What variables are plotted on the axes, via color, or via other features of the graph?
++  **What is the main result of the graph?**
+
+c.  (4 points)  **Critique the graph**.
+
++  Does the graph do a good job of achieving its goals?  
++  Does the graph use an unnecessary amount of data ink?  
++  Does the graph distort the actual effect/data/relationship?  
++  What are the strengths and weaknesses (if any) of the graphic?  
++  What would you change (if anything) about this graphic?
+
+d.  (3 points)  **Critique the caption and/or surrounding text**.  
+
++  Does the text enhance the user's understanding of the graphic?  
++  What else would you include in the caption/surrounding text to help the viewer understand the graphic?
+
+To include an image from the internet in your `R` Markdown output, use the following code (adjust the width and height as necessary):
+
+(Note:  If you're viewing the .html file, you'll see CMU's logo below; the code to render this image is in the .Rmd file.)
+
+<div style="width:300px">
+![](https://upload.wikimedia.org/wikipedia/en/thumb/b/bb/Carnegie_Mellon_University_seal.svg/1024px-Carnegie_Mellon_University_seal.svg.png)
+</div>
+
+
+***
+***
+
+
+#  Problem 2
+
+(5 points)
+
+**Mosaic Plots vs. Stacked Bar Charts**:  
+
+Mosaic plots are similar to stacked bar charts.  Explain how they are similar, and explain the key differences between the two types of graphs.  Be sure to comment on what types of distributions are displayed, and which pieces of the graph show this information.  Also be sure to comment on the coloring systems.
+
+
+***
+***
+
+
+#  Problem 3
+
+(15 points)
+
+**All of the 2-D Categorical Plots**
+
+There are many ways to display 2-D categorical data.  
+
+a.  (1 point each)  Create a plot displaying the marginal distribution of the `day_of_week` variable and the conditional distributions of `usertype` given each `day_of_week`.  Do so in each of the following ways:
+
++  A side-by-side bar chart
++  A stacked bar chart
++  A mosaic plot
++  A proportional bar chart
++  A facetted bar chart
+
+b.  (2 points)  The side-by-side bar chart and the facetted bar chart are almost identical.  Which do you prefer, and why?  (There is not necessarily a correct answer -- just justify your choice.)
+
+c.  (2 points each) Answer the following questions about the (relative) strengths and weaknesses of each graph in (a):
+
++  In which graph is it easiest to see the marginal distribution of the first variable?  
++  In which graph is it easiest to see the conditional distributions of the second variable given each category of the first variable?  
++  Which graph(s) provide the best balance of showing the marginal distribution of the first variable and the conditional distributions of the second variable?
++  In which graph is it easy to see the outcome of a statistical test?  
+
+
+***
+***
+
+
+
+#  Problem 4
+
+**Exploring Pittsburgh's Bridges**
+
+Read the Pittsburgh Bridges dataset into `R` from the following link on the course GitHub page:  https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv
+
+a.  (3 points)  Which variables in the dataset are categorical?  For each categorical variable, describe the unique categories in context.  For example, for the `river` variable, what does each letter mean?  Hint:  It may help to look at a map of Pittsburgh.
+
+b.  (3 points)  Which variables are continuous?  What are the ranges of the continuous variables in the dataset?  Do you consider the `when.erected` variable to be continuous?  Why or why not?
+
+c.  (3 points)  Are the `span` of the bridge and the `river` over which the bridge crosses independent?  Provide both statistical evidence and visual evidence.
+
+c.  (3 points)  Plot the conditional distributions of the `material` used to build the bridge given the `purpose` of the bridge.  Describe any interesting features you see.
+
+d.  (BONUS:  2 points)  Which Pittsburgh Bridge recently caught on fire and has been closed ever since?  What is the row number of this bridge in the Pittsburgh Bridges dataset?
+
+
+***
+***
+
+
+#  Problem 5
+
+(5 points each)
+
+**Introduction to Continuous Data -- Box Plots**
+
+Boxplots show several statistics in one simple plot:
+
++  the minimum
++  the maximum
++  the median
++  the 25th percentile (or 1st quartile)
++  the 75th percentile (or 3rd quartile)
++  the inter-quartile range (the space between the 25th and 75th percentiles, or the middle 50% of the data)
++  "outliers", which are defined to be any observations falling outside of the median +/- 1.5 times the inter-quartile range
+
+Now, let's go back to the `cars` dataset from Lab 04 and use boxplots to explore it's other variable -- the `dist` variable.
+
+a.  Using the `cars` dataset, use a boxplot to visualize the marginal distribution of the `dist` variable.  To do this, type `ggplot(data = cars, aes(x = factor(1), y = dist)) + geom_boxplot()`.  Add a title and proper labels.  Get rid of the ugly "factor(1)" on the x-axis (see the solutions for HW02, Problem 4c for how to do this).  Color the boxplot in a dark red color.
+
+b.  Describe the distribution in context.  Demonstrate that you know what the `dist` variable is, and what your graph is showing.  What are some of the strengths of boxplots?  What are some of the weaknesses of boxplots? 
+
+***
+***
+
+
+
+#  Problem 6
+
+(3 points each)
+
+**Critiquing Boxplots**
+
+a.  What do you think about the definition of outliers in boxplots?  (See the previous problem for details.)  Which choices in this definition are arbitrary?  Are there any types of distributions for which this definition may not be fair?  (Hint:  What happens when we make a boxplot of an [exponential distribution](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Exponential_pdf.svg/325px-Exponential_pdf.svg.png)?)
+
+b.  Describe how you could change boxplots in a way that preserves their strengths but improves upon their weaknesses.  Be creative!  (Note:  You do not have to actually create this graphic -- yet.)
+
+c.  Create a boxplot of the `length` variable from the Pittsburgh Bridges dataset.  Describe any interesting features that you see.  Be sure the graph is properly labeled, titled, and colored.
+
+d.  Now, visualize the conditional distributions of `length` given the `material` variable with side-by-side boxplots.  To do this, use a line of code similar to:  `ggplot(data = pgh_bridges, aes(x = material, y = length)) + geom_boxplot()` (obviously, adding appropriate titles/labels/colors/legends when appropriate).  Describe any interesting features of the conditional distribution of `length` given `material`.
+
+e.  Repeat part (d), but use the `type` variable instead of `material` on the x-axis.  
+
+***
+***
+
+
+#  Problem 7
+
+(3 points each)
+
+**Histograms**
+
+a.  Create a histogram of the `length` variable in the Bridges dataset.  Use 20 equally sized bins -- you can specify this with `bins = 20` in your call to `geom_histogram()`.  Be sure that your graph is properly labeled and titled.  
+
+b.  Repeat part (a), but this time, in your call to `geom_histogram()`, include `aes(fill=..count..)`.  What does this do to the graph?  
+
+c.  Repeat part (b), but this time, add `+ scale_fill_gradient("Legend Label", low = "green", high = "red")` to the line of code.  Use an appropriate legend label.  It's usually a bad idea to use red and green in the same plot, so change at least one of the colors.  What does `scale_fill_gradient()` do?
+
+d.  Create a bar chart of the `when.erected` variable.  Use proper labels/titles/colors.
+
+e.  Create a histogram of the `when.erected` variable.  Use proper labels/titles/colors.  Using the same approach as we did in Lab 04, specify `binwidth = 1`.  Compare this graph to the graph in (d).
+
+f.  Change the `binwidth` to something more appropriate (e.g. 5), in order to smooth out the distribution.  Describe the marginal distribution of `when.erected`.  In what decades were the most Pittsburgh bridges built?  
+
+g.  Use the `facet_wrap()` or `facet_grid()` functions to visualize the conditional distribution of the `when.erected` variable given `material`.  Describe and compare the different conditional distributions of `when.erected` given `material`.  Describe any relationship between these two variables that you observe.
+
+h.  (BONUS:  2 points)  What local, national, and world events might have contributed to Pittsburgh's increases and decreases in bridge construction since 1800?
+
+
+***
+***
+
+
+#  Problem 8
+
+(5 points)
+
+**Themes in `ggplot`**
+
+Read the documentation on `ggplot` themes [here](http://docs.ggplot2.org/dev/vignettes/themes.html).
+
+Pick one of your graphs from Problem 7, and recreate it with a new theme.  In your new theme, use a white background, a different font style, a different font size, a different font color, and any additional changes that you choose.
+
+Use the example code in the above documentation if you have trouble.
+
+Note:  Starting with Lab05 and continuing for every Lab and Homework assignment for the remainder of the course, you are required to use your own personal graph theme for all `ggplot()` graphics that you create.  We'll discuss this more next week!
+
+***
+***
+
+
+##  Problem 9
+
+(2 points each)
+
+**Read Your Feedback**
+
+Read your feedback from Lab01, Lab02, Lab03 (if graded), HW01, HW02, and HW03 (if graded) on Blackboard
+
+a.  Write 1-3 sentences about what you did well on in these assignments.
+
+b.  Write 1-3 sentences about what you did wrong on these assignments.
+
+
+***
+***
+
+
