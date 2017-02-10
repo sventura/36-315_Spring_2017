@@ -363,7 +363,7 @@ div.tocify {
 </ol>
 <p>(Aside: Learning how to use online documentation and help forums is an extremely important skill when using any programming language, including <code>R</code>. Although it’s painful to think about, there will come a time where you can’t ask Sam how to do something on Piazza or send him an email at 4am the night before an assignment is due. Learning how to effectively use the internet to find the information you’re looking for is a skill you will continue to use throughout your career.)</p>
 <ol start="2" style="list-style-type: lower-alpha">
-<li><p>In Lab 03, we learned how to make a stacked bar chart. In Lab 02 and Homework 02, we learned that rose diagrams were really just bar charts in polar coordinates. That must mean that we can make a “stacked rose diagram”. Make a stacked rose diagram that shows the marginal distribution of the <code>airline</code> variable and the conditional distributions of <code>airline_sentiment</code> given <code>airline</code>. Create the corresponding stacked bar chart. Arrange these two graphs into a 1x2 grid using <code>grid.arrange()</code>.</p></li>
+<li><p>In Lab 03, we learned how to make a stacked bar chart. In Lab 02 and Homework 02, we learned that rose diagrams were really just bar charts in polar coordinates. That must mean that we can make a “stacked rose diagram”. Make a stacked rose diagram that shows the marginal distribution of the <code>airline</code> variable and the conditional distributions of <code>airline_sentiment</code> given each <code>airline</code>. Create the corresponding stacked bar chart. Arrange these two graphs into a 1x2 grid using <code>grid.arrange()</code>.</p></li>
 <li><p>Describe and critique the stacked rose diagram.</p></li>
 </ol>
 <ul>
@@ -442,7 +442,7 @@ div.tocify {
 <li>There are even more ways to show bar charts at the proportion or percentage scales. In the background, the <code>geom_bar()</code> function calculates the counts in each category, which are stored in an object called <code>..count..</code>. Using the default settings (i.e. just <code>geom_bar()</code>), the y-axis aesthetic is automatically assigned to the <code>..count..</code> object (i.e., <code>geom_bar(aes(y = ..count..))</code> will give you the same result as <code>geom_bar()</code>). We can use this to create bar charts at the proportion scale in another way:</li>
 </ol>
 <ul>
-<li>Start by creating the bar chart in the standard way, using <code>bike_data</code> and not the pre-calculated marginal distribution.</li>
+<li>Start by creating the bar chart (for the <code>day_of_week</code> variable) in the standard way, using <code>bike_data</code> and not the pre-calculated marginal distribution.</li>
 <li>To do this, scale the y-axis aesthetic by the sum of the counts, i.e.: <code>... + geom_bar(aes(y = (..count..)/sum(..count..)))</code>.<br />
 </li>
 <li>Be sure to use properly labeled axes, titles, etc.</li>
