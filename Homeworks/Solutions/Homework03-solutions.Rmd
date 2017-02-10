@@ -1,0 +1,620 @@
+---
+title: "36-315 Homework 03, Spring 2017"
+author: "Solutions"
+date: "Due Wednesday, February 8, 2017 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+```{r echo=F,include =F}
+library(tidyverse)
+```
+##  Homework 03:  Data Manipulation for 2+ Dimensional Categorical Graphics
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW03.Rmd -- e.g. "sventura-HW03.Rmd") to the Homework 03 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+#  Problem 1
+
+**Reading about `ggplot2`**:  
+
+a.  (3 points)  Read [this article](https://codewords.recurse.com/issues/six/telling-stories-with-data-using-the-grammar-of-graphics) on `ggplot()` from Liz Sander.  
+
++  What are the components of a graph in `ggplot()` discussed in this article?
+
+**Solution:**
+The comments of `ggplot` discussed in Sander's article are `geom`, `coords`, and `groups/facets`.
+
++  Give an example of how you can adjust the x- or y-axis scaling in `ggplot()`.
+
+**Solution:**
+An example to adjust the scaling of the x-axis would be to use:
+`+ scale_x_log10()`
+
++  Which plotting system is better for creating facetted graphs -- graphs that partition the data and recreate the same graph for each subset -- base R graphs (with `plot()`) or `ggplot()` graphs?  Why?
+
+**Solution:**
+`ggplot` since facets can be done it more cleanly and quickly.
+
+b.  (2 points)  Read [this tutorial](https://ramnathv.github.io/pycon2014-r/visualize/ggplot2.html) on `ggplot()`.  
+
++  What kind of geometry is used to create a scatterplot (a plot of two continuous variables, one on the x-axis and one on the y-axis)?
+
+`geom_point`
+
+c.  (2 points)  Read [this article](https://www.r-bloggers.com/a-simple-introduction-to-the-graphing-philosophy-of-ggplot2/) on `ggplot()`.
+
++  What does the author describe as being "advanced parts" of the `ggplot2` grammar?
+
+**Solution:**
+The author describes `stat_`,`coord_`, `facet_`, `theme` as being advanced parts of `ggplot`.
+
++  What is a theme?
+
+**Solution:**
+A theme is the "overall visual defaults of a plot"; size of font, etc.
+
+d.  (3 points)  Read [this article](https://www.r-bloggers.com/the-best-r-package-for-learning-to-think-about-visualization/) on data visualization in `R`.
+
++  What reasons does the author give for recommending `ggplot()` for data visualization in `R`?
+
+**Solution:**
+It teaches you to think about visualizing data and data scientists in industry use it.
+
++  What are the three critical principles of visualization, according to the author?  Describe each in 1-2 sentences.
+
+
+**Solution:**
+
++ **mapping data to aesthetics:**
+When you're in `aes()` you can map different variables to structure, defining the geometric structure's characteristics.
++ **layering:**
+Layering of elements can transform data and can also give us the ability to combine multiple data sets.
++ **building plots iteratively:**
+Layering rewards iteration which is good for work flow.
+
+
+***
+***
+
+#  Problem 2
+
+**Critiquing Graphs**:
+
+## a.  
+
+This graph appeared in the January edition of the Journal of the American Statistical Association: http://www.tandfonline.com/doi/pdf/10.1080/01621459.2015.1106790
+
+<div style="width:400px">
+![Example Graph](http://i.imgur.com/UBsGS1x.png)
+</div>
+
+## b.
+
+The graph shows changes in the number of statistics degrees granted annually over time. The x-axis indicates year, the y-axis indicates count, and four lines are plotted in different colors to indicate the type of degree granted.The graph's main goal is to show there's been an increase in completion of Statistics programs, and to that end it does a decent job. There is a clear upward slope in most of the lines.
+
+## c.
+
+Unfortunately, the graph has many serious problems. Probably the worst aspect of the graph is that the x-axis is not evenly spaced in time. This means that the slopes distort the actual rate of change and it's unclear when data was actually collected. It would probably be clearer to use a faceted scatterplot. This would preserve time increments, make it clear when data was collected, and visually separate the four categories.
+
+The graph also uses many unnecessary visual effects. Using a color gradient for the background is distracting and serves no purpose. The lines in the chart also have a gradient for no discernable reason. The axes use a gradient too. All of these gradients should be removed.
+
+## d.
+
+The graphic's text only adds to the confusion. Neither of the axes are labeled. The title does not help indicate the purpose of the plot. Two of the categories are given the same name, and the differences are clarified in small print elsewhere on the graph. This problem comes from the fact that one of the categories is actually a subset of the other. It could be clarified by splitting them into two distinct sets.
+
+
+***
+***
+
+
+#  Problem 3
+
+(3 points each)
+
+```{r}
+library(tidyverse)
+```
+
+**More on Pie Charts and Rose Diagrams**
+
+## a.
+
+```{r}
+airline_tweets <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+
+ggplot(data = airline_tweets) + 
+  geom_bar(aes(x = factor(1), fill = airline), width = 1) +
+  coord_polar(theta = "y") + 
+  labs(title = "Distribution of Tweets by Airline",
+       caption = "Twitter Airline Sentiment dataset",
+       x = "", y = "", 
+       fill = "Airline Mentioned") +
+  scale_y_continuous(breaks = NULL) +
+  scale_x_discrete(breaks = NULL)
+```
+
+## b.
+
+```{r fig.width = 10, fig.height = 8}
+library(gridExtra)
+
+bar_dia <- ggplot(data = airline_tweets) + 
+  geom_bar(aes(x = airline, fill = airline_sentiment)) +
+  labs(title = "Distribution of Tweets  \n by Airline and Sentiment",
+       caption = "Twitter Airline Sentiment dataset",
+       x = "Airline", y = "Number of Tweets", 
+       fill = "Tweet Sentiment") + 
+  theme(axis.text.x = element_text(angle = 90))
+
+rose_dia <- ggplot(data = airline_tweets) + 
+  geom_bar(aes(x = airline, fill = airline_sentiment)) +
+  coord_polar() + 
+  labs(title = "Distribution of Tweets  \n by Airline and Sentiment",
+       caption = "Twitter Airline Sentiment dataset",
+       x = "Airline", y = "Number of Tweets", 
+       fill = "Tweet Sentiment") + 
+  theme(axis.text.x = element_text(angle = 90, size = 6))
+
+grid.arrange(bar_dia, rose_dia, nrow = 1)
+```
+
+## c. 
+
+The stacked rose diagram is fairly hard to interpret, as it is difficult to see the distributions of airline and airline sentiment in the plot. The marginal distribution of airline is mapped on to the radius of each of the circle sectors. The conditional distribution of tweet sentiment given that the tweet was about Delta Airlines is mapped to the radii of the sections of the circle sector labeled "Delta" as separated by color. It seems that United had the most tweets, while Virigin America had by far the least. US Airways and American Airlines had similar counts, as well as Delta and Southwest. With respect to Delta Airlines, about half of the tweets have negative sentiments, while only a small percentage of tweets are positive. 
+
+This is an absolutely terrible graph for mutiple reasons. It is difficult to compare the counts of categories that are not next to each other, since it is harder to compare radii than heights. It is hard to decipher the absolute counts of each category, since the labels on the y-axis don't correspond to the axis lines on the graph. Also, the graph distorts the data, since the area is proportional to the counts squared. 
+
+
+***
+***
+
+
+
+#  Problem 4
+
+(3 points each)
+
+
+
+**Data Manipulation and The Many Ways To Create 1-D and 2-D Bar Charts**
+
+a.  Load the NYC Citi Bike Data from Lab 03, and keep the code used in Lab 03 to manipulate the data to create additional variables.  
+```{r, include=F}
+library(tidyverse)
+library(reshape2)
+```
+```{r}
+#  Read in data
+bike_data <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv")
+date_time <- colsplit(bike_data$starttime, " ", c("date", "time"))
+
+#  Add start_date variable to big_bike, and a bunch of other variables
+bike_data <- mutate(bike_data,
+                    time_of_day = as.vector(date_time$time),
+                    start_date = as.Date(date_time$date, format = "%m/%d/%Y"),
+                    birth_decade = paste0(substr(`birth year`, 1, 3), "0s"),
+                    hour_of_day = as.integer(substr(time_of_day, 1, 2)),
+                    am_or_pm = ifelse(hour_of_day < 12, "AM", "PM"),
+                    day_of_week = weekdays(start_date),
+                    less_than_30_mins = ifelse(tripduration < 1800, 
+                                               "Short Trip", "Long Trip"),
+                    weekend = ifelse(day_of_week %in% c("Saturday", "Sunday"), 
+                                     "Weekend", "Weekday"),
+                    # new variables:
+                    less_than_15_mins = ifelse(tripduration < 900,
+                              "Less Than 15 Minutes", "15 Minutes Or Longer"),
+                    humpday = ifelse(day_of_week == "Wednesday", "Yes","No"))
+
+```
+
++  What additional columns are created? 
+
+**Solution:**
+  `time_of_day`,`start_date`, `birth_decade`, `hour_of_day`, `am_or_pm`, `day_of_week`, `less_than_30_mins`, `weekend`
+
++  What function is used to add the additional columns to the existing data frame?  
+
+**Solution:**
+`mutate`
+
++  What package is this function in? 
+
+**Solution:**
+`dlyr` - to add new variables into a data frame.
+
++  Who is the author of this package?
+
+**Solution:**
+Hadley Wickham, Romain Francois made `dlyr`
+
++  Create a new column called `less_than_15_mins` ("Less Than 15 Minutes" if the trip was less than 15 minutes in duration, "15 Minutes Or Longer" otherwise) and another new column called `humpday` ("Yes" if the ride occurred on a Wednesday, "No" otherwise)
+
+**Solution:**
+See above code block.
+
+b.  Create a bar chart of `day_of_week` using the standard approach:  `ggplot(data, aes(x = categorical_variable)) + geom_bar()`.  Add appropriate titles and labels to your graph.
+
+
+```{r}
+day_of_week <- ggplot(bike_data,aes(x=day_of_week,fill=day_of_week)) +
+            geom_bar() +
+            labs(x = "Day of Week",title ="Day of Week Counts") +
+            scale_fill_discrete(guide = 
+                guide_legend(title = "Day of Week"))
+day_of_week
+```
+
+c.  Often, with large datasets, it can take a small amount of time to do the calculations necessary to create the bar chart.  This is because when you call `geom_bar()`, it tabulates the counts in each category when the line of code is run.  For large datasets, it's better to store the counts ahead of time and then reference these when creating the bar chart, as we did in Lab 03 with `gender_marginal`.  Here, create a bar plot showing the distribution of `day_of_week` (at the count scale), but calculate the marginal distribution ahead of time (i.e., use an approach similar to Lab 03 Problem 1).
+
+```{r}
+day_of_week_counts <- bike_data %>%
+  group_by(day_of_week) %>%
+    summarize(count = n())
+
+day_of_week_bar_2 <- ggplot(day_of_week_counts,aes(x=day_of_week,y = count,
+                                                  fill = day_of_week)) +
+                    geom_bar(stat="identity") +
+                    labs(x = "Day of Week",title ="Day of Week Counts") +
+                    scale_fill_discrete(guide = 
+                    guide_legend(title = "Day of Week"))
+day_of_week_bar_2
+```
+
+
+d.  The same applies to 2-D bar charts.  First, build a stacked bar chart of `day_of_week` (x-axis) and `less_than_15_mins` (fill).
+
+```{r}
+stacked_day_15 <- ggplot(bike_data,aes(x = day_of_week,
+                                      fill = less_than_15_mins)) +
+                geom_bar(stat = "count") +
+                labs(x = "Day of Week", 
+                title = "Day of Week Counts Short and Longer Rides") +
+                scale_fill_discrete(
+                  guide = guide_legend(title = "Less than 15 Mins")) +
+                theme(axis.text.x = element_text(angle = 45,hjust=1))
+stacked_day_15          
+```
+
+
+e.  Next, use the following approach to build the same graph:
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+day_15 <- bike_data %>%
+ group_by(day_of_week, less_than_15_mins) %>%
+ summarize(count = n()) 
+
+ggplot(day_15, aes(x = day_of_week, y = count, fill = less_than_15_mins)) +
+ geom_bar(stat = "identity") +
+ labs(x = "Day of Week",
+      title = "Day of Week Counts Short and Longer Rides") +
+ scale_fill_discrete(guide = guide_legend(title = "Less than 15 Mins")) +
+  coord_flip()
+```
+
+Compare the code in (e) to that of (d).  Why do we use `stat = "identity"` in (e)?  What is the default `stat` in `geom_bar()` (i.e., what is used by default in (d))?
+
+**Solution:**
+`count` is the default. We use identity to just take the value in the location.
+
+f.  Another way to visualize two categorical variables is with a "side-by-side" bar chart.  To do this, use the following code:
+
+```{r, warning = FALSE, message = FALSE}
+day_15 <- bike_data %>%
+ group_by(day_of_week, less_than_15_mins) %>%
+ summarize(count = n())
+
+# Using full bike_data
+#side_by_side=ggplot(bike_data, aes(day_of_week, fill = less_than_15_mins)) +
+# geom_bar(position = "dodge")
+
+#  Using pre-calculated counts in each combination of categories
+side_by_side <- ggplot(day_15, aes(x = day_of_week, y = count, fill = less_than_15_mins)) + 
+ geom_bar(stat = "identity", position = "dodge") +
+ labs(x = "Day of Week",
+      title = "Day of Week Counts Short and Longer Rides") +
+ scale_fill_discrete(guide = guide_legend(title = "Less than 15 Mins"))
+
+side_by_side
+```
+
+
+g.  Another way to visualize two categorical variables is with a "proportional" bar chart.  To do this, use the same code as above, except change `position = "dodge"` (which will place the bars side-by-side) to `position = "fill"` which will fix the heights of the bars to all be 1, and fill them in proportionally according to the second variable.  Be sure to change your y-axis label to something appropriate.
+
+```{r}
+proportion <- ggplot(day_15, aes(x = day_of_week, y = count, fill = less_than_15_mins)) + 
+ geom_bar(stat = "identity", position = "fill") +
+ labs(x = "Day of Week",
+      title = "Day of Week Counts Short and Longer Rides") +
+ scale_fill_discrete(guide = guide_legend(title = "Less than 15 Mins"))
+
+proportion
+```
+
+h.  It can be difficult to read the category names on the x-axis sometimes, as longer category names will often overlap.  Search the internet for an approach for rotating the x-axis labels in `ggplot()`.  Pick one of the graphs in (d), (e), (f), and (g), and rotate the labels in this graph by 45 degrees.  You do not need to recreate the graph here -- just rotate the labels in the version you created above.
+
+**Solution:**
+See part (d)
+
+i.  Some people prefer for the bars in bar charts to be displayed horizontally instead of vertically.  To do this, just add `+ coord_flip()` to your graph.  Pick another one of the graphs in (d), (e), (f), and (g) (not the same one you picked for part (h)), and change it so that the bars are displayed horizontally.  You do not need to recreate the graph here -- just change in the version you created above.
+
+**Solution:**
+See part (e)
+
+j.  Compare the graphs you created in (e), (f), and (g) -- that is, compare the stacked, side-by-side, and proportional bar charts.  
+
+**Solution:**
+The 3 graphs in (e),(f),(g) visualize the same data in different ways. 
+
+The stacked bar chart (e) provides us with information of the total number of riders per day which is easily to compare, additionally the first category (in this case "Less that 15 minutes") can also be compared across the days. It is harder to look at the proportional splits of the length of rides per day and the variations of rides over 15 minutes in length.
+
+The side-by-side bar chart (f) gives use the ability to look at all the subgroups (length of ride > 15 minutes and < 15 minutes) and look at the changes in these subpopulations over the days. Using this plot it is harder to compare total number of riders across days and the proportion of types of riders for a given day.
+
+The proportional bar chart (g) gives us the ability to examine the proportions/mixtures of the subgroups (length of ride > 15 minutes and < 15 minutes), it doesn't present counts per day of subgroups or total number of riders per day.
+
+Depending upon what you'd like to show, any of these 3 plots could be optimal, just need to select the one that gives you the best visual of the information you are looking for.
+
+
+k.  There are even more ways to show bar charts at the proportion or percentage scales.  In the background, the `geom_bar()` function calculates the counts in each category, which are stored in an object called `..count..`.  Using the default settings (i.e. just `geom_bar()`), the y-axis aesthetic is automatically assigned to the `..count..` object (i.e., `geom_bar(aes(y = ..count..))` will give you the same result as `geom_bar()`).  We can use this to create bar charts at the proportion scale in another way:
+
++  Start by creating the bar chart in the standard way, using `bike_data` and not the pre-calculated marginal distribution.
++  To do this, scale the y-axis aesthetic by the sum of the counts, i.e.:  `... + geom_bar(aes(y = (..count..)/sum(..count..)))`.  
++  Be sure to use properly labeled axes, titles, etc.
+
+```{r}
+ggplot(bike_data,aes(x= day_of_week,fill = day_of_week)) + 
+  geom_bar(aes(y=(..count..)/sum(..count..))) +
+  labs(x = "Day of Week", y = "Proportion of total",
+      title = "Day of Week Counts Short and Longer Rides") +
+ scale_fill_discrete(guide = guide_legend(title = "Less than 15 Mins"))
+```
+
+
+l.  Convert this to the percentage scale by multiplying the y-axis aesthetic from (k) by 100.  Be sure to use properly labeled axes, titles, etc.
+```{r}
+ggplot(bike_data,aes(x= day_of_week,fill = day_of_week)) + 
+  geom_bar(aes(y=100*((..count..)/sum(..count..)))) +
+  labs(x = "Day of Week", y = "Percentage of total (%)",
+      title = "Day of Week Counts Short and Longer Rides") +
+ scale_fill_discrete(guide = guide_legend(title = "Less than 15 Mins"))
+```
+
+
+***
+***
+
+#  Problem 5
+
+(3 points each)
+
+**Reordering Categories and Bars**
+
+## a.
+
+The default for factors in R is to order them alphabetically. 
+
+## b.  
+
+```{r}
+# install.packages('forcats')
+library(forcats)
+```
+
+The `fct_recode` function can rename the categories. The function `fct_inorder` reorders the categories in order of first appearance. The function `fct_infreq` reorders the categories by frequency. A combination of the functions `fct_rev` and `fct_infreq` can reorder the categories by reverse order of frequency.
+
+## c.
+
+```{r}
+ggplot(day_15, aes(x = fct_rev(fct_reorder(day_of_week, count)), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity") + 
+  labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
+       subtitle = "Conditional on Day of Week",
+       caption = "NYC Citi Bike data, June 2016",
+       x = "Day of Week", 
+       y = "Number of Rides")
+```
+
+## d.
+
+```{r}
+ggplot(day_15, aes(x = fct_reorder(day_of_week, count), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity", position = "dodge") + 
+  labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
+       subtitle = "Conditional on Day of Week",
+       caption = "NYC Citi Bike data, June 2016",
+       x = "Day of Week", 
+       y = "Number of Rides")
+```
+
+
+## e.
+
+```{r}
+ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", 
+                  "Thursday", "Friday", "Saturday")
+
+ggplot(day_15, aes(x = fct_relevel(day_of_week, ordered_days), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity", position = "fill") + 
+  labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
+       subtitle = "Conditional on Day of Week",
+       caption = "NYC Citi Bike data, June 2016",
+       x = "Day of Week", 
+       y = "Number of Rides")
+```
+
+## f.  
+```{r}
+ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", 
+                  "Thursday", "Friday", "Saturday")
+
+ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), 
+                                  "M" = "Monday", 
+                                  "Tu" = "Tuesday", "W" = "Wednesday", 
+                                  "Th" = "Thursday", 
+                                  "F" = "Friday", "Sa" = "Saturday", 
+                                  "Su" = "Sunday"), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity", position = "fill") + 
+  labs(title = "Distribution of Bike Rides by \n Whether They Were More or Less Than 15 Minutes",
+       subtitle = "Conditional on Day of Week",
+       caption = "NYC Citi Bike data, June 2016",
+       x = "Day of Week", 
+       y = "Number of Rides")
+```
+
+## g.
+
+The bar graph shows the distribution of the duration of bike rides by whether they were longer or shorter than 15 minutes, conditional on the day of week of the bike ride. The day of week is shown on the x-axis, and the proportion of bike rides on each day of the week that are longer and shorter than 15 minutes is shown on the y-axis. The plot seems to show that the proportion of the number of bike rides that were less than 15 minutes compared to the total number of bike rides is largest for Wednesday and Tuesday. In general, the proportion of rides that were less than 15 minutes was smallest during the weekend days, as can be seen from the larger proportion of red, representing the bike rides 15 minutes or longer, in the bars for the weekends compared to the bars of the other days. 
+
+
+***
+***
+
+
+#  Problem 6
+
+(3 points each)
+
+**Incorporating Statistical Information Into Graphs**
+
+## a. 
+
+```{r, warning = FALSE, message = FALSE}
+# airline_tweets <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+
+#  Add the following information to the airline_counts dataset:
+#    Proportions and percentages corresponding to each category
+#    The standard error on the proportios or percentages corresponding to each category
+#    Lower bound of an (approximate) 95% confidence interval around the true proportion in each category
+#    Upper bound of an (approximate) 95% confidence interval around the true proportion in each category
+
+#  Manipulate the airline 
+airline_counts <- airline_tweets %>%  #  Start with the airline_tweets data.frame
+  group_by(airline) %>%  #  group by the airline variable
+  summarise(count = n()) %>%  #  summarize the dataset by calculating the count of each airline
+  mutate(total = sum(count),  #  add total number of observations
+         proportion = count / total,  #  add proportions
+         percentage = proportion * 100,  #  add percentages
+         std_error = sqrt(proportion * (1-proportion) / total),  #  add standard error of each proportion
+         lower = proportion - 1.96 * std_error,  #  compute lower bound
+         upper = proportion + 1.96 * std_error)  #  compute upper bound
+
+airline_counts
+```
+
+## b.
+
+```{r}
+prop_graph <- ggplot(data = airline_counts) + 
+  geom_bar(aes(x = airline, y = proportion), stat = "identity") + 
+  labs(x = "Airline", y = "Proportion of Tweets", 
+       title = "Distribution of Tweets by Airline Mentioned", 
+       caption = "Twitter Airline Sentiment dataset")
+
+pct_graph <- ggplot(data = airline_counts) + 
+  geom_bar(aes(x = airline, y = percentage), stat = "identity") + 
+  labs(x = "Airline", y = "Percentage of Tweets", 
+       title = "Distribution of Tweets by Airline Mentioned", 
+       caption = "Twitter Airline Sentiment dataset")
+
+grid.arrange(pct_graph, prop_graph, nrow = 1)
+```
+
+The difference between these two graphs is the scale of the y-axis distribution: one is a proportion out of 1, and the other is a percentage out of 100.
+
+## c. 
+
+```{r}
+ggplot(data = airline_counts) + 
+  geom_bar(aes(x = airline, y = proportion), stat = "identity") + 
+  labs(x = "Airline", y = "Proportion of Tweets", 
+       title = "Distribution of Tweets by Airline Mentioned", 
+       caption = "Twitter Airline Sentiment dataset",
+       subtitle = "With Added Standard Error Bars") + 
+  geom_errorbar(aes(x = airline, ymin = lower, ymax = upper))
+```
+
+## d.
+
+The proportions of tweets mentioning American Airlines and US Airways are not statistically significantly different. The error bars on the graph intercept, meaning that the 95% confidence intervals intersect. Thus, we do not have any evidence that the two proportions are different. 
+
+
+***
+***
+
+
+#  Problem 7
+
+(3 points each)
+
+**Adjusting Legends**
+
+## a.  
+
+```{r}
+ggplot(airline_tweets, aes(x = airline, fill = airline_sentiment)) + 
+  geom_bar()+ labs(fill = "Airline Name")
+```
+
+Adding ` + labs(fill = "Airline Name")` to the graph above allows us to change the legend name to "Airline Name" from "airline_sentiment" as denoted in the `aes()` function. This is because lab() allows us to rename aesthetics such as titles, axis label, captions and more. 
+
+## b.
+
+```{r}
+ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+
+ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), "M" = "Monday", 
+                                  "Tu" = "Tuesday", "W" = "Wednesday", "Th" = "Thursday", 
+                                  "F" = "Friday", "Sa" = "Saturday", "Su" = "Sunday"), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity") + 
+  labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
+       subtitle = "Conditional on Day of Week",
+       caption = "NYC Citi Bike data, June 2016",
+       x = "Day of Week", 
+       y = "Number of Rides", 
+       fill = "Duration of Ride")
+```
+
+Add `fill = "appropriate legend title"` in the `labs()` function. In our case, we named the legend "Duration of Ride".
+
+## c. 
+
+```{r}
+ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+
+ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days), "M" = "Monday", 
+                                  "Tu" = "Tuesday", "W" = "Wednesday", "Th" = "Thursday", 
+                                  "F" = "Friday", "Sa" = "Saturday", "Su" = "Sunday"), 
+                   y = count, fill = less_than_15_mins)) + 
+  geom_bar(stat = "identity") + 
+  labs(title = "Distribution of Bike Rides by  \n Whether They Were More or Less Than 15 Minutes",
+       subtitle = "Conditional on Day of Week",
+       caption = "NYC Citi Bike data, June 2016",
+       x = "Day of Week", 
+       y = "Number of Rides", 
+       fill = "Duration of Ride") +
+  theme(legend.position="bottom")
+```
+
+
+
+
