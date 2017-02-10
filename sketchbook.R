@@ -1,6 +1,7 @@
 
 library(tidyverse)
 library(reshape2)
+library(forcats)
 
 #  Read in data
 bike_data <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv")
@@ -36,4 +37,31 @@ f <- factor(c("a", "b", "c", "d"))
 fct_relevel(f)
 fct_relevel(f, "c")
 fct_relevel(f, "b", "a")
+
+
+f <- (c("M", "Tu", "W", "Th", "F",
+        "Sa", "Su"))
+day_15 <- bike_data %>%
+  mutate(
+    day_of_week = factor(day_of_week, f)
+  ) 
+
+ggplot(day_15, aes(x=fct_relevel(day_of_week, f), fill = less_than_15_mins)) + 
+  geom_bar(position = "fill") + 
+  labs(title = "Proportions of Rides Greater than and Less than 15 Minutes")
+
+day_15 <- bike_data %>%
+  group_by(day_of_week, less_than_15_mins) %>%
+  summarize(count = n())
+
+#Using full bike_data
+ggplot(bike_data, aes(x = fct_rev(fct_infreq(day_of_week)), fill = less_than_15_mins)) + 
+  geom_bar(position = "dodge")+
+  labs(
+    title = "Day of the Week and Length of Bike Ride",
+    x = "Day of Week",
+    y = "Count"
+  )
+
+
 
