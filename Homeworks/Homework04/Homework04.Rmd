@@ -138,9 +138,9 @@ b.  (3 points)  Which variables are continuous?  What are the ranges of the cont
 
 c.  (3 points)  Are the `span` of the bridge and the `river` over which the bridge crosses independent?  Provide both statistical evidence and visual evidence.
 
-c.  (3 points)  Plot the conditional distributions of the `material` used to build the bridge given the `purpose` of the bridge.  Describe any interesting features you see.
+d.  (3 points)  Plot the conditional distributions of the `material` used to build the bridge given the `purpose` of the bridge.  Describe any interesting features you see.
 
-d.  (BONUS:  2 points)  Which Pittsburgh Bridge recently caught on fire and has been closed ever since?  What is the row number of this bridge in the Pittsburgh Bridges dataset?
+e.  (BONUS:  2 points)  Which Pittsburgh Bridge caught on fire and closed in 2016?  What is the row number of this bridge in the Pittsburgh Bridges dataset?
 
 
 ***
@@ -239,7 +239,7 @@ Note:  Starting with Lab05 and continuing for every Lab and Homework assignment 
 ***
 
 
-##  Problem 9
+#  Problem 9
 
 (2 points each)
 
