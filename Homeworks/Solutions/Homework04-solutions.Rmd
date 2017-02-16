@@ -277,6 +277,10 @@ e.  Repeat part (d), but use the `type` variable instead of `material` on the x-
 
 **Histograms**
 
+```{r}
+bridge_data = read.csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv")
+```
+
 a.  Create a histogram of the `length` variable.  Use 20 equally sized bins -- you can specify this with `bins = 20` in your call to `geom_histogram()`.  Be sure that your graph is properly labeled and titled.  
 ```{r}
 ggplot(data = bridge_data, aes(x = length)) +
