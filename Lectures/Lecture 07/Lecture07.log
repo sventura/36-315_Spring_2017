@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  8 FEB 2017 12:14
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  13 FEB 2017 11:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1038,7 +1038,7 @@ Here is how much of TeX's memory you used:
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb
 ></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb>
-Output written on Lecture07.pdf (7 pages, 311984 bytes).
+Output written on Lecture07.pdf (7 pages, 311968 bytes).
 PDF statistics:
  76 PDF objects out of 1000 (max. 8388607)
  52 compressed objects within 1 object stream
