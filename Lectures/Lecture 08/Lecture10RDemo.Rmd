@@ -1,0 +1,188 @@
+---
+title: "36-315 Lecture 10, Spring 2016"
+author: "Sam Ventura"
+date: "February 15th, 2015"
+output: html_document
+---
+
+#  Interpretting Histograms and Boxplots
+
+#  Histograms
+
+Histograms divide the range of the variable we're interested in into bins, then count how many observations fall into those bins.
+
+By changing the width of the bins or the number of bins, we are changing the resulting histogram.
+
+Histograms are useful for visualizing the marginal distribution of a single variable.  As we will see later, they are also useful for visualizing the conditional distributions of one variable given another.
+
+Let's work with the Cars93 data again.  
+
+
+```{r}
+library(MASS)
+library(ggplot2)
+library(gridExtra)
+data(Cars93)
+#head(Cars93)
+```
+
+We'll start by specifying the number of bins in our histogram.
+
+```{r}
+base_plot <- ggplot(Cars93)
+base_plot + geom_histogram(bins = 15, fill = "red", color = "black") + 
+  aes(x = Fuel.tank.capacity) + 
+  labs(x = "Capacity of Fuel Tank (Gallons)", y = "Frequency") + 
+  theme(legend.position = "none") +
+  ggtitle("Distribution of Fuel Tank Capacity in Gallons")
+```
+
+Try changing the number of bins to 5, 10, 15, 30, etc.  What happens?  
+
+Our interpretation of the distribution changes depending on the number of bins we include:
+
++  With 5 bins, it appears we have a unimodal distribution (one mode) that is asymetric and has a range of about 6 to 28.
++  With 10 bins, it appears that we have a bimodal distribution (two large modes).  The modes themselves appear to be asymetric.  There also appears to be one **potential** outlier around 27-28.
++  With 15 bins, we see a large spike in the distribution of fuel tank capacity around 16 gallons.  We also see a large mode centered at 16-17 gallons, and some small modes at lower and higher capacities.
++  With 30 bins, it's difficult to say much about the distribution.  We should choose a smaller number of bins to smooth out the distribution a bit more.  Otherwise, we just see a bunch of spikes that don't give us much useful information.
++  On the next lab:  How does `R` / `ggplot` choose the default number of bins / bin width?
+
+
+Note:  It's best to always say **potential** outlier.  Outliers don't have a universally agreed upon definition in statistics.  Outliers are problem/data-dependent.  
+
+Be careful about removing outliers. Often, they are informative!  We don't want to remove extreme values if the extreme values are the ones that are the most interesting.  
+
+Your data and your graphs tell a story -- outliers are a part of this story, so treat them appropriately.
+
+
+
+#  Histograms -- Changing the width of the bins
+
+Now, let's look at the number of passengers.  
+
+
+```{r}
+base_plot + geom_histogram(binwidth = 4, fill = "blue", color = "black") + 
+  aes(x = Price) + 
+  labs(x = "Car Price ($)", y = "Frequency") + 
+  theme(legend.position = "none") +
+  ggtitle("Distribution of Car Price in USD")
+```
+
+Try specifying different values of the width of the bins.  
+
++  What happens if we choose a `binwidth` of 1?
++  With a binwidth of 2, we start to see a smoother distribution.
++  With a binwidth of 4, we start to see that the distribution of the car price is skewed right.  There is one large mode in the distribution between $10K and $20K, and the distribution of price tails off as the price increases.  It is rare to see a price below about $8K -- it appears that only one car has a price that low in our dataset.  It is also rare to see a price above $40K -- it appears that only three cars have prices that high.  There is one car with a substantially larger price than the others, costing $60k.
+
+Sometimes, it's nice to find out more information about the extreme-valued cars.
+
+```{r}
+Cars93[which(Cars93$Price > 40 | Cars93$Price < 8), ]
+```
+
+The Ford Festiva is the cheapest car.  It has a very small engine, is very light, has very low horsepower, and gets great gas mileage!  It does not have airbags though.  Please wear your seatbelt.
+
+The Mercedes-Benz 300E is the most expensive car, at $61.9K.  The other expensive cars are the Cadillac Seville and the Infiniti Q45.
+
+
+#  Conditional Distributions with Histograms
+
+Let's look at some conditional distributions with histograms.  We can do this with `facet_wrap` and `facet_grid`.
+
+```{r}
+base_plot + geom_histogram(binwidth = 4, fill = "blue", color = "black") + 
+  aes(x = Price) + facet_wrap(~Type) +
+  labs(x = "Car Price ($)", y = "Frequency") + 
+  theme(legend.position = "none") +
+  ggtitle("Conditional Distribution of Car Price (USD) given Car Type")
+```
+
+Each one of the mini-graphs shows the conditional distribution of car price given each particular car type.
+
+Small cars are hte least expensive.  Compact cars are also fairly inexpensive.  Vans have a very tight distribution, with almost all vans priced right around $20K.  Midsize cars have the most variance in their price distribution, ranging from about $12K to $60K.
+
+Is it easier to compare these conditional distributions when the graphs are displayed horizontally or when they are displayed vertically?
+
+Horizontal:
+```{r, fig.width = 15, fig.height = 3}
+base_plot + geom_histogram(binwidth = 4, fill = "blue", color = "black") + 
+  aes(x = Price) + facet_grid(.~Type) +
+  labs(x = "Car Price ($)", y = "Frequency") + 
+  theme(legend.position = "none") +
+  ggtitle("Conditional Distribution of Car Price (USD) given Car Type")
+```
+
+
+Vertical:
+```{r, fig.width = 3, fig.height = 10}
+base_plot + geom_histogram(binwidth = 4, fill = "blue", color = "black") + 
+  aes(x = Price) + facet_grid(Type~.) +
+  labs(x = "Car Price ($)", y = "Frequency") + 
+  theme(legend.position = "none") +
+  ggtitle("Conditional Distribution \nof Car Price (USD) \ngiven Car Type")
+```
+
+
+It is much easier to compare the conditional distributions visually when the histograms are stacked, since the x-axis ranges are the same, allowing us to make easy visual comparisons by scanning the graphs vertically.
+
+
+#  Histograms vs. Boxplots
+
+Let's compare histograms and boxplots.  Which gives you more information?
+
+```{r}
+my_hist <- base_plot +
+  geom_histogram(bins = 10, fill = "red", color = "black") + 
+  aes(x = Fuel.tank.capacity) + 
+  labs(x = "Capacity of Fuel Tank (Gallons)", y = "Frequency") + 
+  theme(legend.position = "none") +
+  ggtitle("Distribution of Fuel Tank Capacity in Gallons")
+
+my_box <- base_plot + geom_boxplot(fill = "red") + 
+  aes(y = Fuel.tank.capacity, x = factor(1)) + coord_flip() +
+  labs(y = "Capacity of Fuel Tank (Gallons)", x = "") + 
+  ggtitle("Distribution of Fuel Tank Capacity in Gallons")
+  theme(legend.position = "none")
+
+grid.arrange(my_hist, my_box)
+```
+
+
+With histograms, you can change some parameters (bin-width, number of bins, colors) to get more information.
+
+With boxplots, you just get what you get.
+
+Some of the information you miss in the boxplot above:  The bimodality!  We have no idea what happens inside the middle 50% of the distribution.  With the histogram, we can visualize this information much more easily.
+
+That said, with the histogram, we do not know exactly where the median, 25% percentile, or 75% percentiles are located.  With the boxplot, we get this information directly.  Note that we could add this information to the histogram (but we do not get it by default).
+
+Boxplots aren't bad at giving a quick visual summary of the conditional distirbutions, though, as we see below:
+
+```{r}
+base_plot + geom_boxplot() + 
+  aes(x = Type, y = Price, fill = Type) + 
+  labs(y = "Car Price ($)") + 
+  ggtitle("Distribution of Car Price ($) by Car Type")
+```
+
+In this graph, you get a very quick measure of the centers and spreads of each of the conditional distributions.
+
+**On the next lab:  How would you sort these boxes by their medians?**
+
+Finally, you can flip the x and y axes if you prefer:
+
+```{r}
+base_plot + geom_boxplot() + 
+  aes(x = Type, y = Price, fill = Type) + 
+  labs(y = "Car Price ($)") + 
+  ggtitle("Distribution of Car Price ($) by Car Type") + 
+  coord_flip()
+```
+
+When interpreting boxplots, you just want to compare the centers, spreads, ranges, skews, etc of each of the conditional distributions.  For example, in the above two graphs, we see that midsize cars have the largest spread in price, while small cars and vans have the lowest variance in price.  Midsize cars also have the most extreme values of price and the highest median price, while small cars have the lowest median price.  Large cars have the second highest medain price, and the distribution prices for large cars appears to be skewed right.  The distribution of sporty cars also appear to be skewed right.  The highest price is for a midsize car -- the Mercedes-Benz -- and the lowest price is for a small car -- the Ford Festiva.
+
+
+
+
+

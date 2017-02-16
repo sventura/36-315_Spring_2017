@@ -1,0 +1,81 @@
+---
+title: "36-315 Lecture 08, Spring 2016"
+author: "Sam Ventura"
+date: "February 8th, 2015"
+output: html_document
+---
+
+#  Interpretting Mosaic Plots and other 2-D Graphics
+
+#  Cars93 Dataset:  93 Cars with Many Variables
+
+
+```{r}
+library(MASS)
+data(Cars93)
+head(Cars93)
+```
+
+
+#  Mosaic Plot -- No Association
+
+Now let's go beyond 2x2 contingency tables.  Let's look at the origin of the car vs. the drive-train of the car (e.g. four wheel drive).
+
+```{r}
+tab <- table(Cars93$Origin, Cars93$DriveTrain)
+mosaicplot(tab, xlab = "Origin", ylab = "Drive Train", main = "Mosaic Plot of Car Origin vs. Drive Train")
+```
+
+The marginal distribution of the first variable (Origin) is shown with the column widths.  The conditional distribution of the second variable (Drive Train) is shown with the heights of the boxes.  The area of the boxes shows the joint distribution of the two variables (Origin and Drive Train).
+
+Let's add some color to see if there's an association.
+
+```{r}
+tab <- table(Cars93$Origin, Cars93$DriveTrain)
+mosaicplot(tab, xlab = "Origin", ylab = "Drive Train", main = "Mosaic Plot of Car Origin vs. Drive Train", shade = T, las = 1)
+```
+
+**Note that I included `las = 1` in the above plot to rotate the y-axis labels 90 degrees for better readability.
+
+Okay, here's how to read mosaic plots, in general:  
+
++  The colors correspond to the standardized Pearson residuals (see notes from a few lectures ago).
++  Red boxes indicate a large negative deviation from expected in the corresponding cell of the contingency table.
++  Blue boxes indicate a large positive deviation from expected in the corresponding cell of the contingency table.
++  White boxes indicate no deviation from expecte in the corresponding cell of the contingency table.
++  The darker the boxes, the larger the deviation from expected.  Specifically, the light-colored boxes correspond to residuals between 2 and 4 (or -2 and -4).  This means that we can reject the null hypothesis of independence at the alpha = 0.05 level (at least).  The darker boxes correspond to residuals greater than 4 (or less than -4).  This means that we can reject the null hypothesis of independence at the alpha = 0.0001 level (at least).
++  **The cell outlines mean...?**  The cell outlines indicate whether or not the residuals are positive or negative.  This is especially helpfful for the colorblind, who can use this information to determine whether or not a shaded deviation from expected is positive or negative.
+
+
+#  Mosaic Plot -- Associations!
+
+```{r}
+tab <- table(Cars93$Cylinders, Cars93$DriveTrain)
+mosaicplot(tab, xlab = "Number of Cylinders", ylab = "Drive Train", main = "Mosaic Plot of Number of Cylinders vs. Drive Train", shade = T, las = 1)
+```
+
+What's happening here?
+
++  Rear-wheel drive & 8 cylinders has a residual greater than expected (observed count in this cell was higher than expected).
++  Are there any cells with large negative residuals?
++  **When we see a horizontal line in place of a cell, what does this mean?**
+
+
+#  Mosaic Plot -- More Associations!
+
+```{r}
+tab <- table(Cars93$Cylinders, Cars93$Type)
+mosaicplot(tab, xlab = "Number of Cylinders", ylab = "Car Type", main = "Mosaic Plot of Number of Cylinders vs. Car Type", shade = T, las = 1)
+```
+
+**What's happening here?**
+
+
+#  Mosaic Plot -- When Can We Reject The Null Hypothesis?
+
+```{r}
+tab <- table(Cars93$Type, Cars93$DriveTrain)
+mosaicplot(tab, xlab = "Car Type", ylab = "Drive Train", main = "Mosaic Plot of Car Type vs. Drive Train", shade = T, las = 1)
+```
+
+Even if only one cell has a significantly larger or smaller than expected standardized Pearson residual, we can reject the null hypothesis of indepdendence!
