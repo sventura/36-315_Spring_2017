@@ -135,7 +135,8 @@ ggplot(data = bike_data) +
   labs(title = "Bike Rides by Rider Usertype\nand Day of Week",
        x = "Day of Week",
        y = "Number of Rides",
-       fill = "Rider Type") +
+       fill = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
   my_theme +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
 
@@ -145,7 +146,8 @@ ggplot(data = bike_data) +
   labs(title = "Bike Rides by Rider Usertype\nand Day of Week",
        x = "Day of Week",
        y = "Number of Rides",
-       fill = "Rider Type") +
+       fill = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
   my_theme +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
 
@@ -156,7 +158,8 @@ ggplot(data = bike_data, aes(x = day_of_week, y = usertype)) +
   mosaic_legend() +
   labs(title = "Proportion of Bike Rides by Usertype\nand Day of Week",
        x = "Day of Week",
-       y = "Rider Type") +
+       y = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
   my_theme +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
 
@@ -167,7 +170,8 @@ ggplot(data = bike_data) +
   labs(title = "Proportion of Bike Rides by Usertype\nand Day of Week",
        x = "Day of Week",
        y = "Proportion of Rides",
-       fill = "Rider Type") +
+       fill = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
   my_theme +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
 
@@ -177,7 +181,8 @@ ggplot(data = bike_data) +
   labs(title = "Proportion of Bike Rides by Usertype\nand Day of Week",
        x = "Day of Week",
        y = "Number of Rides",
-       fill = "Rider Type") +
+       fill = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
   facet_wrap(~day_of_week) +
   my_theme +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
