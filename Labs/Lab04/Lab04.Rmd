@@ -129,7 +129,7 @@ source("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/
 For each of parts (a)--(d) in Problem 1, create the corresponding mosaic plot for the two variables being tested (4 points each).  Example code is provided for the mosaic plot for part (a):
 
 ```{r, warning = F, message = F}
-ggplot(bike_data, aes(x = gender, y = am_or_pm)) + 
+ggplot(bike_data, aes(x = usertype, y = day_of_week)) + 
   geom_mosaic() + mosaic_legend()
 ```
 

@@ -1,0 +1,170 @@
+---
+title: "36-315 Lab 05"
+author: "Your Name Here"
+date: "Due Friday, February 17th, 2017 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 05:  Density Estimates and Conditional Distributions for Continuous Data
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab04.Rmd -- e.g. "sventura-Lab04.Rmd") to the Lab 02 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+In this week's assignments, we'll finish our discussion of strictly categorical data and move on to continuous data.
+
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+This week's oral evaluation graphic is from FiveThirtyEight, taken on Thursday around 6:30pm:
+
+<div style="width:1000px">
+![](http://static01.nyt.com/images/2015/01/05/upshot/how-the-nonemployed-spend-their-weekdays-1420042964261/how-the-nonemployed-spend-their-weekdays-1420042964261-videoSixteenByNine600.png)
+</div>
+
+***
+
+**Sam Says**:  It's important to avoid inserting your own commentary when discussing graphics  Your job, as a statistician / data scientist / quantitative analyst, is to interpret the graph for the viewer.  Discuss the facts presented via the data/graphic; avoid overstepping your boundaries by inserting your own opinions into what should be a presentation of facts.
+
+Reminder, the following strategy is ideal when presenting graphs orally:
+
++  First, explain what is being shown in the graph.  What is being plotted on each axis?  What do the colors correspond to?  What are the units (if applicable)?  What are the ranges of different variables (if applicable)?  Where does the data come from (if applicable)?
+
++  Next, explain the main takeaway of the graph.  What do you want the viewer to understand after having seen this graph?
+
++  If applicable, explain any secondary takeaways or other interesting findings.
+
++  Finally, for this class, but not necessarily in general:  Critique the graph.  What do you like/dislike?  What would you keep/change?  Etc.
+
+
+
+***
+***
+
+
+#  Problem 0
+
+**Survey on Assignment Due Dates**
+
+Homeworks are currently due on Wednesdays at noon.  There has been a proposal to move the homework due dates due to conflicts with other classes.  Here is the proposal:
+
++  Labs are released on Thursday evenings (no change)
++  Labs are due on Fridays at 6:30pm (no change)
++  Homeworks are released on Fridays at the start of lab (no change)
++  **Homeworks are due on Thursdays at 11:59pm (change:  36 hours later than the current due date)**
+
+If 75% or more of the class responds positively to this proposal, we will change the homework due dates.  We will also adjust office hours accordingly.
+
+**Please fill out the survey [here](https://piazza.com/class/iy0s2afmi655zc?cid=127) to cast your vote.**
+
+
+***
+***
+
+
+#  Problem 1
+
+(5 points each)
+
+**1-D Kernel Density Estimation for Continuous Data**
+
+Find the help documentation for the `density()` function in R.
+
+a.  What does the `density()` function do?  What are the `x` and `y` values that it returns?  (See the **Value** section of the help documentation.)
+
+b.  **Bandwidths:**  Read the documentation for the `bw` and `adjust` parameters.  (Note that we use `h` in class to denote the bandwidth, while `density()` uses `bw` to denote this.)  The bandwdith is a parameter that we can choose to dictate how smooth or rigid our density estimates are.  The larger the bandwidth, the smoother the density estimate (as we'll see below).  It is common to leave the `bw` unspecified, so that we just use the default bandwidth.  However, this is not always the optimal choice -- you should choose a bandwidth that best displays the features of underlying continuous distribution.  Along these lines, what is the purpose of the `adjust` parameter?
+
+c.  **Kernels:**  Read the documentation for the `kernel` parameter.  Kernels are functions used to smooth the data distribution so that we have a continuous curve, rather than some piecewise density estimate (as we have in a histogram, for example).  What are the possible kernels we can choose within the `density()` function?  (We'll go over these in class on Monday.)
+
+
+***
+***
+
+
+
+
+#  Problem 2
+
+(5 points each)
+
+**Estimating Continuous Densities**
+
+**Load the Food Facts dataset into R.**  This is a carefully chosen, modified subset of the data provided [here](https://www.kaggle.com/openfoodfacts/world-food-facts) by Kaggle.  Documentation for all of the variables is available at that link as well.
+
+The Food Facts data is available on the Course GitHub page [here](https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv).
+
+When you read it into `R`, store it in an object called `food`, then complete the following problems.
+
+(For parts (a) -- (f), arrange the graphs into a 2x3 grid.)
+
+a.  To date, we've only used "frequency scales" on the y-axes of our histograms.  That is, the heights of the vertical bars represent the frequency or count of observations in each bin of the histogram.  Create a histogram of the `energy_100g` variable, but use a "density scale" instead.  With a density scale, the heights of the bars are normalized, so that the area under all of the bars sums to 1.  To do this, use `+ geom_histogram(aes(y = ..density..))`.  Be sure to choose an appropriate `binwidth` parameter as well.  Use proper titles, labels, colors, etc.  Note that this approach is similar to what we did with bar charts at the proportion scale in an earlier assignment.
+
+b.  Create a density plot of the `energy_100g` variable.  To do this, use the `+ geom_density()` function with `ggplot()` instead of `+ geom_histogram()`.  Use proper titles, labels, colors, etc.
+
+c.  Overlay your density estimate on top of your histogram.  To do this, simply include both `+ geom_histogram(...)` and `+ geom_density()` in your `ggplot` object.  This time, add `color = "blue", size = 2` in your call to `geom_density()` (outside of the `aes()` function).  What does this do?
+
+Note:  This is called "layering".  With `ggplot()`, it's very easy to add multiple components to the same graph.
+
+d.  Add another layer to the graph in (c):  a red, dashed, vertical line that marks where the mean of the `length` variable is.  To do this, use `+ geom_vline(aes(xintercept = mean(energy_100g)), color = "red", linetype = "dashed", size = 2)`.  
+
+e.  Add another layer to the graph in (d), this time, adding a green, dashed line that indicates the location of the median.  You can pick the size of the line.
+
+f.  Add another layer to the graph in (e):  a "rug plot" that shows where individual values of the `energy_100g` variable occur just below the x-axis.  Rug plots are often helpful when we're working with small datasets, where histograms and density estimates often over- or under-smooth the data.  That is, it's often helpful to know exactly where the observed data points lie when working with small datasets.  To add the rug plot, simply add `+ geom_rug()`.  
+
+Note:  As long as you specifed `aes(x = energy_100g)` in your original call to `ggplot()` (and not within `geom_histogram()`, for example) then `ggplot()` will apply the `x` variable that you specified to any future geometries (unless you specify a new `aes()` within that extra geomtry).
+
+g.  Compare your graphs in Problem 2 parts (a)-(f).  Which gives you the most information about the distribution of `energy_100g`?  Which graph is the easiest to read?  Which graph do you think is the most effective, overall?  Do any of the graphs contain unnecessary information?
+
+h.  Recreate the graph in (c), but this time, change the `adjust` parameter.  Try a few different values, such as 1/10, 1/2, 1, 2, 10.  What happens as we reduce the `adjust` parameter?  What happens as we increase the `adjust` parameter?  Pick a value that you think best displays the distribution of `energy_100g`.  Only include that version of the graph in your output for part (g).
+
+i.  Recreate the graph in (c), but this time, change the `kernel` parameter.  Try a few different values, such as `kernel = "gaussian"`, `kernel = "rectangular"`,  `kernel = "epanechnikov"`, and others.  What does the rectangular kernel do?  Pick your favorite non-Gaussian kernel and only display that plot for part (h).
+
+
+***
+***
+
+
+#  Problem 3
+
+(8 points each)
+
+**Histograms and Density Plots for Conditional Distributions**
+
+For parts (a), (b), (c), and (d), arrange the graphs into a 2x2 grid.  For all parts, be sure to use proper titles, labels, colors, etc.
+
+a.  Create a histogram displaying the stacked conditional distributions of the `energy_100g` variable given the nutrition grade (`nutrition_grade_fr`).  To do this, use `ggplot(data = food, aes(x = energy_100g, fill = nutrition_grade_fr)) + geom_histogram()`.
+
+b.  Create a histogram displaying the conditional distributions of `energy_100g` given `nutrition_grade_fr`, but this time, ensure that the bars for each conditional distribution start at the x-axis.  To do this, use `... + geom_histogram(alpha = 0.5, position = "identity")`.  Vary the `alpha` parameter and choose one that displays the conditional distributions most effectively, in your opinion.  What does the `alpha` parameter do?
+
+c.  Repeat part (b), but use a density plot instead.  To do this, use `+ aes(x = energy_100g, fill = nutrition_grade_fr) + geom_density(alpha = 0.5)`.  Feel free to change the `adjust` or `alpha` parameters to your liking in order to better display the conditional distributions.
+
+d.  Repeat part (c), but this time, use `+ aes(x = energy_100g, color = nutrition_grade_fr) + geom_density(size = 1.5)`.  What changed?
+
+e.  Compare your graphs in Problem 3.  Which gives you the most information about the conditional distributions of `energy_100g` given `nutrition_grade_fr`?  Which graph is the easiest to read?  Which graph do you think is the most effective, overall?
+
+f.  (BONUS:  5 points)  Make a "proportional density plot" with the two variables from this problem.  Use an approach similar to that of the proportional bar chart.  The plot should look something like [this](http://quoctrungbui.com/img/work/jobs-history.png).
+
+***
+***
+
+
+
+
+
