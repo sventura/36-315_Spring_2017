@@ -1,0 +1,436 @@
+---
+title: "36-315 Homework 04, Spring 2017"
+author: "Solutions"
+date: "Due Wednesday, February 15th (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Homework 04:  Mosaic Plots and Continuous Data
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW03.Rmd -- e.g. "sventura-HW03.Rmd") to the Homework 03 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+#  Problem 0
+
+**Style Guide and Tabbed HTML Output**
+
+a.  What style guide are you using on this assignment?  (Up to 10 points will be deducted if you do not adhere to a specific style guide.)
+
+b.  Remember to include a floating table of contents in your submission.
+
+c.  (BONUS:  2 points)  Please fill out the [early course feedback form](https://docs.google.com/forms/d/e/1FAIpQLSe47cXrrUB7CtiD3x1SUs5QR3p1QDczKBQ-uH3ZYrYX8euA7w/viewform?usp=send_form).  We are always looking to improve, so we appreciate your feedback.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+my_theme <-  theme_bw() + # White background, black and white theme
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+```
+
+***
+***
+
+
+#  Problem 1
+
+**Critiquing Graphs**:
+
+a.  (1 point)   
+
+<div style="width:300px">
+![](http://66.media.tumblr.com/ef059c26861298ec50ce687220bdbe2f/tumblr_ms9qpsbZDI1sgh0voo1_540.png)
+</div>
+
+b.  (5 points)  **Describe the graph**.  
+
+The graph shows the "social media presence" of various large corporations at some date. The specific details on how "social media presence" is defined or measured is not clear, nor what point in time the data was collected. The vertical axis shows various large corporations for which social media presence was measured, and the horizontal axis shows the amount of social media presence. The graphical symbols on the bars represent which company each bar is associated with. The dashed lines from the base of each bar to the horizontal axis tells us which number on the latter is associated with each company. The main result of the graph is that YouTube had the largest social media presence out of the companies listed, while Nokia had the smallest.
+
+c.  (4 points)  **Critique the graph**.
+
+The graph does an okay job of achieving its goal, since we can tell from the relative sizes of the bars how these companies rank in terms of "social media presence". However, the graph is also very difficult for the reader to understand beyond that. The main strength of the graph is that, out of context, the bars of the graph are easy to understand, as larger bars should correspond to more social media presence. The main weakness of this graphic is that the horizontal axis makes no sense. The x-axis is reversed compared to the heights of the bars, as longer bars seem to be associated with larger social media presence, but the x-axis seems to decrease as it moves to the right. It is also designed such that the heights of the bars do not line up with the supposed corresponding counts on the x-axis. Another issue is that neither the x- or y-axes are properly labeled, nor does the x-axis provide us with any sense of scale. The graph does not technically have unnecessary data ink, though the dotted lines shouldn't need to exist if the x-axis were better designed. There does seem to be some data distortion, as the bars for Apple and Samsung  have different heights, yet the dotted lines point to the same number, which presumably means they have the same amount of social media presence. I would reverse the direction of the x-axis and rescale it such that it lines up with the heights of the bars. I would also then remove the dotted lines and add an x-axis line.
+
+
+d.  (3 points)  **Critique the caption and/or surrounding text**.  
+
+The only text associated with the graph is the title, which tells us we are lookng at social media presence by company. This is actually really helpful, because without this, the viewer would actually have zero understanding of what is happening in the graph as there are no axis labels or captions to help describe the graph. There is also nothing to help the viewer figure out which company each logo represents if they did not know beforehand. I would try to add the company names somewhere, either along the axes or in a legend, and mention how "social media presence" was measured somewhere in the surrounding text.
+
+
+***
+***
+
+
+#  Problem 2
+
+(5 points)
+
+**Mosaic Plots vs. Stacked Bar Charts**:  
+
+Mosaic plots plot and stacked bar charts both show the marginal distribution of one variable on the x-axis, along with the distribution of a second variable on the y-axis conditional on the first. Both graphs also use relative bar heights on the y-axis in order to display the conditional distributions. 
+
+The widths of the bars in a mosaic plots are proportional to the marginal distribution of the variable plotted on the x-axis, while they have no meaning in the stacked bar chart. In mosaic plots, the y-axis shows the proportions of the conditional distribution rather than the total counts. The overall heights of the bars are the same in a mosaic plot, while they differ in a stacked bar chart. Thus, cell counts are proportional to height in the stacked bar chart, but to the area of the boxes in the mosaic plot. Mosaic plots are also colored based on the standardized residuals of a Pearson chi-squared test for independence for each category, while stacked bar charts are colored based on the identification of each category within each stacked bar. 
+
+***
+***
+
+
+#  Problem 3
+
+(15 points)
+
+**All of the 2-D Categorical Plots**
+
+a.  (1 point each)
+
+```{r, warning = FALSE, message = FALSE}
+library(reshape2)
+library(forcats)
+
+#  Read in data
+bike_data <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/nyc-citi-bike-data-subset.csv")
+date_time <- colsplit(bike_data$starttime, " ", c("date", "time"))
+
+#  Add start_date variable to big_bike, and a bunch of other variables
+bike_data <- mutate(bike_data,
+                    time_of_day = as.vector(date_time$time),
+                    start_date = as.Date(date_time$date, format = "%m/%d/%Y"),
+                    birth_decade = paste0(substr(`birth year`, 1, 3), "0s"),
+                    hour_of_day = as.integer(substr(time_of_day, 1, 2)),
+                    am_or_pm = ifelse(hour_of_day < 12, "AM", "PM"),
+                    day_of_week = weekdays(start_date),
+                    less_than_30_mins = ifelse(tripduration < 1800, 
+                                               "Short Trip", "Long Trip"),
+                    weekend = ifelse(day_of_week %in% c("Saturday", "Sunday"), 
+                                     "Weekend", "Weekday"),
+                    # new variables:
+                    less_than_15_mins = ifelse(tripduration < 900,
+                              "Less Than 15 Minutes", "15 Minutes Or Longer"),
+                    humpday = ifelse(day_of_week == "Wednesday", "Yes","No"))
+
+# Reorder days
+ordered_days <- c("Sunday", "Monday", "Tuesday", "Wednesday", 
+                  "Thursday", "Friday", "Saturday")
+bike_data$day_of_week <- fct_relevel(bike_data$day_of_week, ordered_days)
+```
+
+```{r}
+# Side-by-side
+ggplot(data = bike_data) +
+  geom_bar(aes(x = day_of_week, fill = usertype), 
+           position = "dodge") + 
+  labs(title = "Bike Rides by Rider Usertype\nand Day of Week",
+       x = "Day of Week",
+       y = "Number of Rides",
+       fill = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
+
+# Stacked
+ggplot(data = bike_data) +
+  geom_bar(aes(x = day_of_week, fill = usertype)) + 
+  labs(title = "Bike Rides by Rider Usertype\nand Day of Week",
+       x = "Day of Week",
+       y = "Number of Rides",
+       fill = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
+
+source("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/code/geom_mosaic.R")
+# Mosaic
+ggplot(data = bike_data, aes(x = day_of_week, y = usertype)) +
+  geom_mosaic() +
+  mosaic_legend() +
+  labs(title = "Proportion of Bike Rides by Usertype\nand Day of Week",
+       x = "Day of Week",
+       y = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
+
+# Proportional
+ggplot(data = bike_data) +
+  geom_bar(aes(x = day_of_week, y = (..count..) / sum(..count..), 
+               fill = usertype), position = "fill") + 
+  labs(title = "Proportion of Bike Rides by Usertype\nand Day of Week",
+       x = "Day of Week",
+       y = "Proportion of Rides",
+       fill = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
+
+# Faceted
+ggplot(data = bike_data) +
+  geom_bar(aes(x = usertype)) + 
+  labs(title = "Proportion of Bike Rides by Usertype\nand Day of Week",
+       x = "Day of Week",
+       y = "Number of Rides",
+       fill = "Rider Type",
+       caption = "NYC Citi Bike Data, June 2016") +
+  facet_wrap(~day_of_week) +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
+```
+
+b.  (2 points)
+
+The side-by-side bar chart is useful because it allows us to look at all of the conditional distributions in a single graph. It also allows us to differentiate between the categories of the seconds variable by color. The facted bar chart can be more flexible, since the scales on the y-axis can be changed for each graph if necessary and the facet categories can be positioned differently if desired. One may be more familiar or visually appealing than the other as well.
+
+
+c.  (2 points each)
+
+The marginal distribution is most easily seen in the stacked bar chart, as the heights of each of the bars correspond to the marginal distribution of the first variable. 
+
+The proportional bar chart makes it easiest to see the conditional distribution of the second variable given the first by proportions, as the y-axis of the graph is scaled by proportion relative to the total number of things in each category in the first variable rather than by absolute counts. On the other hand, the faceted or side-by-side bar chart makes it easiest to see the conditional distribution of the second variable given the first if we are also interested in raw counts, as these graphs give us the total number in each category of the joint distribution through the bar heights as well as the conditional proportions via the relative sizes of bar heights in each category.
+
+Arguably, either the stacked bar chart, the side-by-side bar chart, or the faceted bar chart could strike the best balance between showing the marginal distrbution of the first variable and the conditional of the second on the first. The stacked is the easiest of the three for looking at the marginal distribution of the first variable, but makes it slightly harder to see the conditional distribution as not all of the bars start at 0, thus forcing the reader to do some mental math. The faceted and side-by-side bar charts make it easier to see the condtional distribution but harder to look at the marginal distribution of the first variable since the viewer has to manually add the heights of the individual conditional bars to find the marginal count.
+
+The mosaic plot best displays the outcome of a statistical test, as it literally shows the Pearson residuals that are used in the chi-squared test for independence. 
+
+***
+***
+
+
+
+#  Problem 4
+
+**Exploring Pittsburgh's Bridges**
+
+Read the Pittsburgh Bridges dataset into `R` from the following link on the course GitHub page:  https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv
+
+a.  (3 points)  Which variables in the dataset are categorical?  For each categorical variable, describe the unique categories in context.  For example, for the `river` variable, what does each letter mean?  Hint:  It may help to look at a map of Pittsburgh.
+
+b.  (3 points)  Which variables are continuous?  What are the ranges of the continuous variables in the dataset?  Do you consider the `when.erected` variable to be continuous?  Why or why not?
+
+c.  (3 points)  Are the `span` of the bridge and the `river` over which the bridge crosses independent?  Provide both statistical evidence and visual evidence.
+
+c.  (3 points)  Plot the conditional distributions of the `material` used to build the bridge given the `purpose` of the bridge.  Describe any interesting features you see.
+
+d.  (BONUS:  2 points)  Which Pittsburgh Bridge recently caught on fire and has been closed ever since?  What is the row number of this bridge in the Pittsburgh Bridges dataset?
+
+
+***
+***
+
+
+#  Problem 5
+
+(5 points each)
+
+**Introduction to Continuous Data -- Box Plots**
+
+Boxplots show several statistics in one simple plot:
+
++  the minimum
++  the maximum
++  the median
++  the 25th percentile (or 1st quartile)
++  the 75th percentile (or 3rd quartile)
++  the inter-quartile range (the space between the 25th and 75th percentiles, or the middle 50% of the data)
++  "outliers", which are defined to be any observations falling outside of the median +/- 1.5 times the inter-quartile range
+
+Now, let's go back to the `cars` dataset from Lab 04 and use boxplots to explore it's other variable -- the `dist` variable.
+
+a.  Using the `cars` dataset, use a boxplot to visualize the marginal distribution of the `dist` variable.  To do this, type `ggplot(data = cars, aes(x = factor(1), y = dist)) + geom_boxplot()`.  Add a title and proper labels.  Get rid of the ugly "factor(1)" on the x-axis (see the solutions for HW02, Problem 4c for how to do this).  Color the boxplot in a dark red color.
+
+b.  Describe the distribution in context.  Demonstrate that you know what the `dist` variable is, and what your graph is showing.  What are some of the strengths of boxplots?  What are some of the weaknesses of boxplots? 
+
+***
+***
+
+
+
+#  Problem 6
+
+(3 points each)
+
+**Critiquing Boxplots**
+
+a.  What do you think about the definition of outliers in boxplots?  (See the previous problem for details.)  Which choices in this definition are arbitrary?  Are there any types of distributions for which this definition may not be fair?  (Hint:  What happens when we make a boxplot of an [exponential distribution](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Exponential_pdf.svg/325px-Exponential_pdf.svg.png)?)
+
+b.  Describe how you could change boxplots in a way that preserves their strengths but improves upon their weaknesses.  Be creative!  (Note:  You do not have to actually create this graphic -- yet.)
+
+c.  Create a boxplot of the `length` variable from the Pittsburgh Bridges dataset.  Describe any interesting features that you see.  Be sure the graph is properly labeled, titled, and colored.
+
+d.  Now, visualize the conditional distributions of `length` given the `material` variable with side-by-side boxplots.  To do this, use a line of code similar to:  `ggplot(data = pgh_bridges, aes(x = material, y = length)) + geom_boxplot()` (obviously, adding appropriate titles/labels/colors/legends when appropriate).  Describe any interesting features of the conditional distribution of `length` given `material`.
+
+e.  Repeat part (d), but use the `type` variable instead of `material` on the x-axis.  
+
+***
+***
+
+
+#  Problem 7
+
+(3 points each)
+
+**Histograms**
+
+```{r}
+bridge_data = read.csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv")
+```
+
+a.  Create a histogram of the `length` variable.  Use 20 equally sized bins -- you can specify this with `bins = 20` in your call to `geom_histogram()`.  Be sure that your graph is properly labeled and titled.  
+```{r}
+ggplot(data = bridge_data, aes(x = length)) +
+  geom_histogram(bins = 20) + ylab("Number of Bridges") +
+  xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths")
+```
+
+b.  Repeat part (a), but this time, in your call to `geom_histogram()`, include `aes(fill=..count..)`.  What does this do to the graph?  
+
+```{r}
+ggplot(data = bridge_data, aes(x = length)) +
+  geom_histogram(aes(fill=..count..), bins = 20) + ylab("Number of Bridges") +
+  xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths") +
+  scale_fill_continuous(name = "Number of Bridges")
+```
+
+Adding `aes(fill=..count..)` to the `geom_histogram()` call colors the each bin of the histogram according to the number of bridges contained within it on a continuous color scale.  The `..count..` object is calculated during your call to `geom_histogram()`; it specifies the count in each bin of the histogram.
+
+c.  Repeat part (b), but this time, add `+ scale_fill_gradient("Legend Label", low = "green", high = "red")` to the line of code.  Use an appropriate legend label.  Try a few different combinations of colors.  What does `scale_fill_gradient()` do?
+
+```{r}
+ggplot(data = bridge_data, aes(x = length)) +
+  geom_histogram(aes(fill=..count..), bins = 20) + ylab("Number of Bridges") +
+  xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths") +
+  scale_fill_gradient("Number of Bridges", low = "green", high = "red")
+```
+
+`scale_fill_gradient()` sets the color scale used by fill argument.  Setting the `low` and `high` arguments sets the range of colors used
+
+d.  Create a bar chart of the `when.erected` variable.  Use proper labels/titles/colors.
+
+```{r}
+ggplot(data = bridge_data, aes(x = when.erected)) +
+  geom_bar() + ylab("Number of Bridges") +
+  xlab("Year Bridge Erected") + ggtitle("Bridges Erected in Pittsburgh by Year")
+```
+
+e.  Create a histogram of the `when.erected` variable.  Use proper labels/titles/colors.  Using the same approach as we did in Lab 04, specify `binwidth = 1`.  Compare this graph to the graph in (d).
+
+```{r}
+ggplot(data = bridge_data, aes(x = when.erected)) +
+  geom_histogram(binwidth = 1) + ylab("Number of Bridges") +
+  xlab("Year Bridge Erected") + ggtitle("Bridges Erected in Pittsburgh by Year")
+```
+
+This looks the same as the graph in (d) because a histogram with a different bin for each value is the same as a bar chart.  
+
+Notice that with the bar chart, there is one particular issue:  If the year variable is stored as a factor, then for any year has no bridges built, then there will not be a bar for this year, since the bar chart treats the years categorically.  In these cases, the scale on the x-axis is distorted, since it skips over (ranges of) years.  For example, see the graph below:  
+
+```{r}
+ggplot(data = bridge_data, aes(x = as.factor(when.erected))) +
+  geom_bar() + ylab("Number of Bridges") +
+  xlab("Year Bridge Erected") + ggtitle("Bridges Erected in Pittsburgh by Year") +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
+You might say, "But Sam, the year isn't stored as a factor here!"  While that's true, this is because Sam formatted the input dataset so that you wouldn't run into this issue.  In the real-world, depending on the format of the input dataset and the functions you use to read the data in, you will often encounter situations where variables with numeric values are stored as strings or factors, causing issues when plotting the data.
+
+
+f.  Change the `binwidth` to something more appropriate (e.g. 10), in order to smooth out the distribution.  Describe the marginal distribution of `when.erected`.  In what decades were the most Pittsburgh bridges built?  
+
+```{r}
+ggplot(data = bridge_data, aes(x = when.erected)) +
+  geom_histogram(binwidth = 10) + ylab("Number of Bridges") +
+  xlab("Year") +
+  ggtitle("Bridges Erected in Pittsburgh by 10-Year Period")
+```
+
+The historical pace of bridge construction in Pittsburgh appears bimodal with peaks in the period from 1895 - 1905 and from 1925 - 1935.  There is some variation in other periods but outside of those two 10-year periods the average pace appears to be around 2.5 bridges per decade although there has been a decline from 1950 until the present.
+
+Note that we can easily change the bin width to something like 5 years (as below) and still answer the question about decades (perhaps even more effectively).
+
+```{r}
+ggplot(data = bridge_data, aes(x = when.erected)) +
+  geom_histogram(binwidth = 5) + ylab("Number of Bridges") +
+  xlab("Year") +
+  ggtitle("Bridges Erected in Pittsburgh by 10-Year Period")
+```
+
+g.  Use the `facet_wrap()` or `facet_grid()` functions to visualize the conditional distribution of the `when.erected` variable given `material`.  Describe and compare the different conditional distributions of `when.erected` given `material`.  Describe any relationship between these two variables that you observe.
+
+```{r}
+ggplot(data = bridge_data, aes(x = when.erected)) +
+  geom_histogram(binwidth = 10) + ylab("Number of Bridges") +
+  xlab("Year") +
+  ggtitle("Bridges Erected in Pittsburgh by 10-Year Period") +
+  facet_grid(material~.)
+```
+
+First note that the majority of the bridges built in Pittsburgh were made of steel.  A few iron bridges were built around 1850 and into the 1860s. Similarly, several wooden bridges were built in the mid to late 1800s.  However, all bridges built since 1900 have been made of steel.
+
+Note that we strongly prefer using `facet_grid()`, and in particular, we strongly prefer organizing these graphs vertically.  The reason for this is that it's much easier to compare these conditional distributions when they're displayed vertically as opposed to horizontally -- it's very easy for our eyes to look up and down the graphs and compare the locations of the bars, since the graphs use the same x-axis scale.
+
+h.  (BONUS:  2 points)  What local, national, and world events might have contributed to Pittsburgh's increases and decreases in bridge construction since 1800?
+
+The boom in bridge construction  in the period from 1925 - 1935 and subsequent collapse afterwards was likely linked to the economic boom in the 1920s and economic collapse of the great depression. 
+
+There are additional factors that contributed to bridge construction in Pittsburgh:  The boom in the steel industry as a result of the different wars is a big reason.  Steel and iron mills were extremely common up and down Pittsburgh's rivers and on both shores, so bridges were needed to ease the transportation of people, materials, and other goods.
+
+
+***
+***
+
+
+#  Problem 8
+
+(5 points)
+
+**Themes in `ggplot`**
+
+```{r}
+#Create theme that can be added to plots
+my_theme <-  theme_bw() + # White background, black and white theme
+  theme(axis.text = element_text(size = 15, family = "Times", color="indianred4"),
+        text = element_text(size = 18, family = "Times", face="bold", color="darkslategrey"))
+
+ggplot(data = bridge_data, aes(x = when.erected)) +
+  geom_histogram(binwidth = 10) + ylab("Number of Bridges") +
+  xlab("Year") +
+  ggtitle("Bridges Erected in Pittsburgh \n by 10-Year Period") + my_theme
+```
+
+Recreate the histogram from part (f).
+
++  `theme_bw()` sets the background to black and white
++  `axis.text = element_text(size = 15, family = "Times", color="indianred4")` used to set size, font, and color for axis tick labels
++  `text = element_text(size = 18, family = "Times", face="bold", color="darkslategrey")` used to set size, font, and color for axis labels and title
+
+
+***
+***
+
+
+##  Problem 9
+
+(2 points each)
+
+**Read Your Feedback**
+
+Read your feedback from Lab01, Lab02, Lab03 (if graded), HW01, HW02, and HW03 (if graded) on Blackboard
+
+a.  Write 1-3 sentences about what you did well on in these assignments.
+
+b.  Write 1-3 sentences about what you did wrong on these assignments.
+
+
+***
+***
