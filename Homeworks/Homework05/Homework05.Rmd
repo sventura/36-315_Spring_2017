@@ -1,0 +1,268 @@
+---
+title: "36-315 Homework 05, Spring 2017"
+author: "Your Name Here"
+date: "Due Wednesday, February 22, 2017 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Homework 05:  Density Estimates, Histograms, and Parameter Selection
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW05.Rmd -- e.g. "sventura-HW05.Rmd") to the Homework 05 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+#  Problem 0
+
+**Style Guide and Tabbed HTML Output**
+
+a.  What style guide are you using on this assignment?  (Up to 10 points will be deducted if you do not adhere to a specific style guide.)
+
+b.  Remember to include a floating table of contents in your submission.
+
+
+***
+***
+
+
+#  Problem 1
+
+(5 points)
+
+**Build your #brand**
+
+As we will discuss in lecture on Monday, most data journalists use the same graphical theme, so that all graphs they create look the same way.  This is a good way to build your brand if you're doing any type of online data journalism.  Some examples:  The New York Times, FiveThirtyEight, Quartz, HuffingtonPost, The Washington Post, and many others.  It's also common practice to do this when writing academic papers, either for classes or journals.
+
+As you did on Homework04, create a new `ggplot()` theme.  Pick a font and color scheme of your choice.  Use a white or grey background in your theme, but feel free to use other colors elsewhere on the graph.  Feel free to adjust other thematic features as you see fit.  
+
+**Be somewhat conservative here.**  You don't want to distract the viewer with hot pink plot backgrounds and light green axes.  All text should be readable and easy on the eyes.
+
+**Use these theme for all parts of all problems for this homework!**  The same will go for all future assignments.
+
+**For this problem, just store your theme in a variable called `AndrewID_315_theme` (obviously, substitute your Andrew ID here).**  Many students wrote a function that allowed them to supplant certain features of their theme when they wanted.  This is not necessary, but you are welcome to do so.  See the Homework04 solutions for an example theme, but **DO NOT just copy the instructors' theme!**  Pick something that will be unique to YOU.
+
+
+***
+***
+
+##  Note
+
+Congratulations!  We won't be doing too many more "critique a graph from the internet" problems for the rest of the semester.  It's important that you gain an understanding of how to do this early on in the course, so that you can build and develop your skills at writing about graphs.  For the most part, everyone has made some major strides in this area over the past few weeks.  I hope you enjoyed these exercises, and that you recognize the value in providing objective criticisms of others' work.
+
+
+***
+***
+
+##  Load the Food Facts Data
+
+**Load the Food Facts dataset into R.**  This is a carefully chosen, modified subset of the data provided [here](https://www.kaggle.com/openfoodfacts/world-food-facts) by Kaggle.  Documentation for all of the variables is available at that link as well.
+
+The Food Facts data is available on the Course GitHub page [here](https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv).
+
+When you read it into `R`, store it in an object called `food`, then complete the following problems.
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+food <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv")
+```
+
+***
+***
+
+
+#  Problem 2
+
+**Density Estimates vs. Histograms**
+
+In this problem, we'll examine the distribution of `energy_100g` with density estimates, histograms, and rug plots.
+
+a.  (1 point)  Look at the help documentation for the `energy_100g` variable on Kaggle.  What is this variable?  What are the units?
+
+b.  (4 points)  Create two density plots of the `energy_100g` variable.  In the first, use a small bandwidth, so that many local features of the distribution are shown, and the density estimate is somewhat "jagged" / "rigid" / not smooth.  In the second, use a larger bandwidth, so that the local features of the distribution are smoothed out.  Use `grid.arrange()` to arrange these plots into a 2x1 grid.  Compare and contrast the two plots.  Discuss which features are easier or more difficult to see in each of the plots.
+
+c.  (4 points)  Create two histograms of the `energy_100g` variable.  In the first, use a small bin width (or a large number of bins), so that many local features of the distribution are shown, and the histogram is somewhat "jagged" / "rigid" / not smooth.  In the second, use a larger bin width (or a small number of bins), so that the local features of the distribution are smoothed out.  Use `grid.arrange()` to arrange these plots into a 2x1 grid.  Compare and contrast the two plots.  Discuss which features are easier or more difficult to see in each of the plots.
+
+d.  (6 points)  Does the distribution of `energy_100g` differ depending on the nutrition grade (`nutrition_grade_fr`) of the food?  Answer this graphically in three ways:  First, with a "stacked histogram" (fill the bars according to the nutrition grade).  Second, with a "conditional density plot" (have five density curves -- one for each category of nutrition grade -- on a single plot, with each curve colored according to the nutrition grade).  Third, by creating facetted histograms of `energy_100g`, facetting on `nutrition_grade_fr`.
+
+Note:  Part (d) is an example of the type of question you might see on a lab example.
+
+e.  (2 points)  In part (d), does it make more sense to display the facetted histograms in a 1x5 (one row, five columns) grid or a 5x1 (five rows, one column) grid?  What are the advantages and disadvantages of each approach?  Which features of the histograms are easier or more difficult to compare depending on what you chose?
+
+Aside:  Note that the nutrition grade is an ordered categorical variable.  As such, it would be nice if you used an appropriate color gradient.  
+
+To manually assign the colors to each category, use `my_colors <- c(a = "darkred", b = "pink", c = "lightgrey", d = "lightblue", e = "darkblue")`.  Then use `+ scale_fill_manual(values = my_colors)` or `+ scale_color_manual(values = my_colors)`.  
+
+A better way to automatically build the color gradient, so that it will work with any number of categories, is to use the following code.
+
+```{r, warning = F, message = F}
+color1 <- "green"
+color2 <- "red"
+palette <- c(color1, "grey", color2)
+n_values <- length(unique(food$nutrition_grade_fr))
+
+ggplot(food, aes(x = energy_100g, fill = nutrition_grade_fr)) + geom_histogram() + 
+  scale_fill_manual(name = "Nutrition Grades",
+                  values = colorRampPalette(palette)(n_values))
+```
+
+That said, you should always avoid using red and green in the same plot, since red-green colorblind viewers will not be able to distinguish the colors.
+
+f.  (3 points)  Recreate the first plot from part (d), but use your own color gradient.  You can use an adjusted version of the above code to do this.  (Please do not include the example graph in your final submission.)  You are also welcome to change the middle color (currently "grey") to something else (e.g. "white"), or remove the middle color entirely.
+
+
+***
+***
+
+
+
+#  Problem 3
+
+a.  (2 points)  What information is contained in the `salt_100g` variable?
+
+b.  (3 points)  Which countries typically have foods with higher salt content?  To answer this, visualize the distribution of `salt_100g` given the `countries_en` variable with a stacked histogram.  Describe the distribution.  Be sure to mention center, spread, skew, and modality.  What about the distribution makes it hard to answer this question?
+
+Note:  Part (b) is an example of the type of question you might see on a lab example.
+
+c.  (5 points)  Visualize the log-transformed `salt_100g` variable (in `R`, the `log()` function gives the natural log by default).  To do this, use `ggplot(food) + geom_histogram(aes(x = log(salt_100g)))`, and be sure to add appropriate titles and axis labels (in particular, what are the units on the x-axis?) and use a larger-than-default number of bins.  Is it easier to answer the question in (b) with this graph?  Are there particular countries with higher salt content in their foods?
+
+d.  (5 points)  Repeat part (c), but with a conditional density estimate plot instead of a stacked histogram.  Use the `adjust` parameter to reduce the bandwidth to 75% of the default value.
+
+e.  (10 points)  Examine the plots from the following lines of code.  Why does the rug plot show up in some plots, but not in others?  Why do the middle-column plots look different from the others?  Which line of code is most efficient and appropriate to use, given how `ggplot()` uses the `aes()` function?
+
+```{r, fig.width = 12, fig.height = 8, warning = F, message = F}
+library(gridExtra)
+plot1 <- ggplot(food) + geom_histogram(aes(x = log(salt_100g))) + geom_rug()
+plot2 <- ggplot(food) + geom_histogram(aes(x = log(salt_100g))) + geom_rug(aes(x = salt_100g))
+plot3 <- ggplot(food) + geom_histogram(aes(x = log(salt_100g))) + geom_rug(aes(x = log(salt_100g)))
+plot4 <- ggplot(food, aes(x = log(salt_100g))) + geom_histogram() + geom_rug()
+plot5 <- ggplot(food, aes(x = log(salt_100g))) + geom_histogram() + geom_rug(aes(x = salt_100g))
+plot6 <- ggplot(food, aes(x = log(salt_100g))) + geom_histogram() + geom_rug(aes(x = log(salt_100g)))
+
+grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, ncol = 3)
+```
+
+f.  (BONUS:  2 points)  `ggplot()` has many scaling functions built in.  What can you add to the following line of code (where it currently says `+ ???` to put the x-axis on the square-root scale?  What about the log-base-10 scale?
+
+`ggplot(food, aes(x = salt_100g)) + geom_histogram() + geom_rug() + ???`
+
+
+***
+***
+
+#  Problem 4
+
+(20 points)
+
+**Automatically Specify Bin Width**
+
+Write a function called `auto_binwidth()` that automates the choice of a bin width for a 1-D histogram.  Your function should work as follows:
+
+```{r}
+auto_binwidth <- function(x, adjust = 1) {
+  #  your code should calculate a desired bin width, called "binwidth"
+  #  given features of x, the input variable
+  #  your function should return the binwidth times an adjustment factor
+  #  that is specified by the user
+  return(adjust * binwidth)
+}
+
+#ggplot(data = food, aes(x = salt_100g)) + 
+#  geom_histogram(binwidth = auto_binwidth(food$salt_100g))
+```
+
+That is, it should select the bin width automatically given, as input, the variable you are plotting on the x-axis.
+
+Your function should take into account some combination of the following features:
+
++  The minimum and maximum (or the range/spread) of the variable
++  The variance (or standard deviation) of the variable
++  The skewness of the variable
++  The number of observations / sample size
++  Other important statistics (e.g. mean, median, quantiles, etc)
++  Anything else you think may help
+
+The function should output a single number, specifying the bin width to be used in the histogram (adjusted with an adjustment factor specified by the user).
+
+You may NOT use or look up existing functions/formulas for automatically specifying the bin width or number of bins in a histogram.  The purpose of this problem is to get you to think about what's important when choosing this parameter.  Blindly copying down a formula from the internet does not achieve this goal.
+
+Other than that, how you define your function is up to you.  Ideally, your bin width will adapt to different types of distributions and be dependent on the sample size.  For example, if you only have 20 observations, you probably don't want a histogram with 30 bins!
+
+Demonstrate that your function works on:
+
++  One continuous variable from the `food` dataset
++  One continuous variable from the `pgh_bridges` dataset
++  A random sample of size 100 from a Normal(mean = 0, sd = 1) distribution (use `rnorm()`)
++  A random sample of size 10000 from a Normal(mean = 0, sd = 100) distribution (use `rnorm()`)
+
+
+***
+***
+
+
+##  Practice Exam Problems:  5 and 6
+
+***Instructions:  Practice Lab Exam***
+
++  Problems 5 and 6 are practice lab exam problems.
++  You should expect to see more questions like this (open-ended) on both the lab exam and for the remainder of the semester.
++  For these practice exam questions, be sure to answer the question(s) asked.
++  In addition to answering the questions asked, **write 1-3 sentences describing why you made certain choices in your graphic.**  For example, why did you choose a histogram vs. density plot?  Pie chart vs. rose diagram vs. bar chart vs. spine chart?  Stacked vs. side-by-side vs. proportional bar chart vs. mosaic plot?  Why did you choose the bin width / number of bins in your histogram?  Why did you choose the bandwidth and kernel that you picked in your density plot?  Why did you decide to arrange the graphs the way you did (e.g. in a grid, horizontally, vertically).  Etc.
++  Remember, whenever you can supplement your answer with information from a statistical test, this is very beneficial!  Feel free to run statistical tests and include this information as part of your answer.
++  In the problems below, I specify how many graphics you are permitted to use.  Note that if you're using `facet_wrap()` or `facet_grid()`, this counts as a single graphic.  If you're using `grid.arrange()`, this counts as multiple graphics.
+
+
+***
+***
+
+
+#  Problem 5
+
+(15 points)
+
+**Give Me Some Sugar**
+
+Characterize the distribution of the amount of sugar per 100 grams of the food.  Does the distribution change depending on:
+
++  Country?
++  Presence or absence of additives?
+
+Please use no more than two graphics to answer this problem.
+
+
+***
+***
+
+
+
+#  Problem 6
+
+(15 points)
+
+**Low-Carb Diets**
+
+You're looking to change your diet and consume fewer carbohydrates, so you want to learn about what kinds of foods are high or low in carbs.  
+
+Characterize the distribution of the amount of carbohydrates per 100 grams of food.  
+
++  How many modes does the distribution have?  Describe each of these modes.
++  What types (`pnns_groups_1`) of foods are most common in each of these modes?
+
+Please use no more than one graphic to answer this problem.
+
+
+***
+***
+
