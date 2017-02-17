@@ -179,9 +179,8 @@ ggplot(data = bike_data) +
 ggplot(data = bike_data) +
   geom_bar(aes(x = usertype)) + 
   labs(title = "Proportion of Bike Rides by Usertype\nand Day of Week",
-       x = "Day of Week",
+       x = "Rider Type",
        y = "Number of Rides",
-       fill = "Rider Type",
        caption = "NYC Citi Bike Data, June 2016") +
   facet_wrap(~day_of_week) +
   my_theme +
