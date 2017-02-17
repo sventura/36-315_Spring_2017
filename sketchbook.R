@@ -219,4 +219,20 @@ gg_diagnose(model)
 
 
 
+library(tidyverse)
+food <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv")
+food
+
+
+
+
+
+
+
+
+
+
+
+
+
 

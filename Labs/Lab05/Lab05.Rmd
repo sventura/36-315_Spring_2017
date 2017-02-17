@@ -33,7 +33,7 @@ In this week's assignments, we'll finish our discussion of strictly categorical 
 
 #  Oral Evaluation Graphic
 
-This week's oral evaluation graphic is from FiveThirtyEight, taken on Thursday around 6:30pm:
+This week's oral evaluation graphic is from the [New York Times](https://www.nytimes.com/interactive/2015/01/06/upshot/how-nonemployed-americans-spend-their-weekdays-men-vs-women.html):
 
 <div style="width:1000px">
 ![](http://static01.nyt.com/images/2015/01/05/upshot/how-the-nonemployed-spend-their-weekdays-1420042964261/how-the-nonemployed-spend-their-weekdays-1420042964261-videoSixteenByNine600.png)
