@@ -260,7 +260,7 @@ span_vs_river
 The chi-squared statistic gives a p-value of $`r round(c2$p.value,6)`$, which means that we can conclude that the span of a bridge is dependent with the river it crosses. The Mosaic plot above gives the same conclusion, as the for bridges crossing the Ohio river, all brigdes (10) have long spans, whereas the other two rivers have the majority of bridges of medium length, and this difference in statistically significant. One might also explore a barplot or conditional proportion plot representation as seen below:
 
 ```{r}
-span_vs_river_bar <- ggplot(pitt_bridges,aes(fill = span, x = river)) + 
+span_vs_river_bar <- ggplot(pitt_bridges, aes(fill = span, x = river)) + 
                     geom_bar(position = "dodge") +
                     labs(y = "Number of Bridges",
                          x = "River bridge crosses",
@@ -269,7 +269,7 @@ span_vs_river_bar <- ggplot(pitt_bridges,aes(fill = span, x = river)) +
                     my_theme +
                     theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
                     
-span_vs_river_prop <- ggplot(pitt_bridges,aes(fill = span, x = river)) + 
+span_vs_river_prop <- ggplot(pitt_bridges, aes(fill = span, x = river)) + 
                     geom_bar(position = "fill") +
                     labs(y = "Conditional Proportion",
                          x = "River bridge crosses",
