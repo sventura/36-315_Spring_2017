@@ -132,9 +132,9 @@ Note:  As long as you specifed `aes(x = energy_100g)` in your original call to `
 
 g.  Compare your graphs in Problem 2 parts (a)-(f).  Which gives you the most information about the distribution of `energy_100g`?  Which graph is the easiest to read?  Which graph do you think is the most effective, overall?  Do any of the graphs contain unnecessary information?
 
-h.  Recreate the graph in (c), but this time, change the `adjust` parameter.  Try a few different values, such as 1/10, 1/2, 1, 2, 10.  What happens as we reduce the `adjust` parameter?  What happens as we increase the `adjust` parameter?  Pick a value that you think best displays the distribution of `energy_100g`.  Only include that version of the graph in your output for part (g).
+h.  Recreate the graph in (c), but this time, change the `adjust` parameter.  Try a few different values, such as 1/10, 1/2, 1, 2, 10.  What happens as we reduce the `adjust` parameter?  What happens as we increase the `adjust` parameter?  Pick a value that you think best displays the distribution of `energy_100g`.  Only include that version of the graph in your output for part (h).
 
-i.  Recreate the graph in (c), but this time, change the `kernel` parameter.  Try a few different values, such as `kernel = "gaussian"`, `kernel = "rectangular"`,  `kernel = "epanechnikov"`, and others.  What does the rectangular kernel do?  Pick your favorite non-Gaussian kernel and only display that plot for part (h).
+i.  Recreate the graph in (c), but this time, change the `kernel` parameter.  Try a few different values, such as `kernel = "gaussian"`, `kernel = "rectangular"`,  `kernel = "epanechnikov"`, and others.  What does the rectangular kernel do?  Pick your favorite non-Gaussian kernel and only display that plot for part (i).
 
 
 ***
