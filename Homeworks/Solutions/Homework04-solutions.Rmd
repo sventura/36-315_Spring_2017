@@ -211,18 +211,94 @@ The mosaic plot best displays the outcome of a statistical test, as it literally
 
 **Exploring Pittsburgh's Bridges**
 
-Read the Pittsburgh Bridges dataset into `R` from the following link on the course GitHub page:  https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv
+Read the Pittsburgh Bridges dataset into `R` from the following link on the course GitHub page:  https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/h
+
+```{r}
+pitt_bridges <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv")
+```
 
 a.  (3 points)  Which variables in the dataset are categorical?  For each categorical variable, describe the unique categories in context.  For example, for the `river` variable, what does each letter mean?  Hint:  It may help to look at a map of Pittsburgh.
 
+**Answer:**
+The categorical variables are `river`, `purpose`, `material`, `span`, `type`, and `lane` (will justify). 
+
+The `river` variable has 3 categories "A" if the bridge crosses the Allegheny river, "M" for Monogahela, and "O" for Ohio. Purpose has 3 categories, "Highway" for a highway bridge, "Aqueduct" for aqueducts (i.e. water) bridges, and "RR" for Railroad bridges. Span is a categorical variable describing the length of the span, with "short","medium", or "long". Materials describes the primary type of material the bridge is made of, with categories "wood","iron" or "steel". The type of bridge is recorded in the "type" column with options "wood",'SUSPEN' for suspension,   "simple-t" for simple span, "arch","cantilev" for cantilever, and "cont-t" for continuous span (for more descriptions of categories see http://pghbridges.com/basics.htm). Lanes, although numerical describes the number of lanes on a bridge, with 1,2,4, or 6 lanes as options, it makes sense to treat this as a varable since we don't expect bridges with 3,5 or non-integer values to appear.
+
 b.  (3 points)  Which variables are continuous?  What are the ranges of the continuous variables in the dataset?  Do you consider the `when.erected` variable to be continuous?  Why or why not?
+
+**Answer:** 
+The variables that are continuous are `when.erected` and `length`. `when.erected` ranges from 1819 to 1978, `length` ranges for 840 to 4558. I consider `when.erected` as a continuous variable because time is a continuous thing in natural and there should be assumptions that bridges built in similar years would be similar, which we won't be able to capture in categories, even if we made large categories. Additionally we have a large ranges of years, so most categorical analysis would become cumbersome/ with little interpretive power.
 
 c.  (3 points)  Are the `span` of the bridge and the `river` over which the bridge crosses independent?  Provide both statistical evidence and visual evidence.
 
+```{r}
+c2 <- chisq.test(x = pitt_bridges$span,y = pitt_bridges$river)
+```
+
+```{r}
+pitt_bridges$river = factor(pitt_bridges$river, #initially A, M, O
+                            labels = c("Allegheny","Monogahela","Ohio")) 
+
+span_vs_river <- ggplot(pitt_bridges,aes(y = span,x = river)) + geom_mosaic() +
+                mosaic_legend() +
+                labs(y = "Span of Bridge",x = "River bridge crosses",
+                title = "River bridge crosses vs Length of bridge") +
+                my_theme
+span_vs_river
+
+#table(pitt_bridges[,c("river","span")])
+```
+
+**Answer:**
+The chi-squared statistic gives a p-value of $`r round(c2$p.value,6)`$, which means that we can conclude that the span of a bridge is dependent with the river it crosses. The Mosaic plot above gives the same conclusion, as the for bridges crossing the Ohio river, all brigdes (10) have long spans, whereas the other two rivers have the majority of bridges of medium length, and this difference in statistically significant. One might also explore a barplot or conditional proportion plot representation as seen below:
+
+```{r}
+span_vs_river_bar <- ggplot(pitt_bridges,aes(fill = span,x = river)) + 
+                    geom_bar(position="dodge") +
+                    labs(y = "Number of Bridges",
+                         x = "River bridge crosses",
+                        title = "River bridge crosses \nvs Length of bridge",
+                        fill = "Span of Bridge") +
+                    my_theme +
+                    theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+                    
+span_vs_river_prop <- ggplot(pitt_bridges,aes(fill = span,x = river)) + 
+                    geom_bar(position="fill") +
+                    labs(y = "Conditional Proportion",
+                         x = "River bridge crosses",
+                        title = "River bridge crosses \nvs Length (Proportions)",
+                        fill = "Span of Bridge") +
+                    my_theme +
+                    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+library(gridExtra)
+grid.arrange(span_vs_river_bar,span_vs_river_prop,nrow = 1)
+```
+
+
 c.  (3 points)  Plot the conditional distributions of the `material` used to build the bridge given the `purpose` of the bridge.  Describe any interesting features you see.
+
+```{r}
+material_vs_purpose <- ggplot(pitt_bridges,aes(x = purpose,y = material)) + 
+                        geom_mosaic() +
+                        mosaic_legend() +
+                        labs(y = "Type of material bridge is made of",
+                             x = "Bridge purpose",
+                             title = "Bridge purpose vs material type") +
+                        my_theme
+material_vs_purpose
+```
+
+```{r}
+table(pitt_bridges[,c("material","purpose")])
+```
+
+**Answer:**
+It appears that aqueducts are not very plentiful, and as iron bridges aren't that common period, we see potental lack of independence based on having an iron aqueduct bridge.
 
 d.  (BONUS:  2 points)  Which Pittsburgh Bridge recently caught on fire and has been closed ever since?  What is the row number of this bridge in the Pittsburgh Bridges dataset?
 
+**Answer:**
+The Liberty Bridge recently caught on fire. It is row 46 in the data set. We figured this out by looking up the length of the bridge and the year in which it was erected on the internet, and comparing these values to those in the dataset.
 
 ***
 ***
@@ -246,9 +322,28 @@ Boxplots show several statistics in one simple plot:
 
 Now, let's go back to the `cars` dataset from Lab 04 and use boxplots to explore it's other variable -- the `dist` variable.
 
+```{r}
+data(cars)
+```
+
 a.  Using the `cars` dataset, use a boxplot to visualize the marginal distribution of the `dist` variable.  To do this, type `ggplot(data = cars, aes(x = factor(1), y = dist)) + geom_boxplot()`.  Add a title and proper labels.  Get rid of the ugly "factor(1)" on the x-axis (see the solutions for HW02, Problem 4c for how to do this).  Color the boxplot in a dark red color.
 
+```{r}
+dist_box <- ggplot(data = cars, aes(x = factor(""), y = dist)) + 
+            geom_boxplot(fill = "darkred") +
+            labs(x = "", y = "Stopping Distance in feet", 
+                 title = "Distribution of Stopping Distance in Feet")  +
+            my_theme +
+            theme(legend.position = "none")
+              
+dist_box
+```
+
+
 b.  Describe the distribution in context.  Demonstrate that you know what the `dist` variable is, and what your graph is showing.  What are some of the strengths of boxplots?  What are some of the weaknesses of boxplots? 
+
+**Answer:**
+The boxplot shows the range of distances cars going at different speeds took to stop in feet. We see that these should all take positive values, the distribution seems to be slightly skewed towards higher numbers based on the quantile analysis. Boxplots give us information about quantiles, so we can see directly the median, 25th and 75th quantiles and the range of the variable. On the other hand, boxplots do a poor job expressing more interesting structures of the distribution; boxplots don't allow us to assess modality, or other structure of the distribution beyond skew/symmetry.
 
 ***
 ***
@@ -263,17 +358,61 @@ b.  Describe the distribution in context.  Demonstrate that you know what the `d
 
 a.  What do you think about the definition of outliers in boxplots?  (See the previous problem for details.)  Which choices in this definition are arbitrary?  Are there any types of distributions for which this definition may not be fair?  (Hint:  What happens when we make a boxplot of an [exponential distribution](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Exponential_pdf.svg/325px-Exponential_pdf.svg.png)?)
 
+**Answer:**
+Outliers are defind are any value 1.5 IQR distance away from the 25th quantile (if lower than the 25th quantile) and 1.5 IQR distance away from the 7th quantile (if larger than the 75th quantile). Note that the IQR is defined as the distance between the 25th and 75th quantile. This definition seems arbitary in a number of ways, 1) the connection to distance away from the 25th or 75th, which could easily be replaced with the mean or median of the observations, 2) the decision to do 1.5 times the IQR. For skewed distributions like the exponential distribution this might classified points in the heavy tail as outliers even though there is a decent probably to be in the tail.
+
 b.  Describe how you could change boxplots in a way that preserves their strengths but improves upon their weaknesses.  Be creative!  (Note:  You do not have to actually create this graphic -- yet.)
+
+**Answer:**
+There are few ways you could imporve the presentation of the boxplot, you could plot a density estimation along with the boxplot, or just plot the density estimation and put the quantiles provided in the boxplot. 
+
+Additionally one could use a violin plot which is basically just like boxplot and density plot mixed into one. 
 
 c.  Create a boxplot of the `length` variable from the Pittsburgh Bridges dataset.  Describe any interesting features that you see.  Be sure the graph is properly labeled, titled, and colored.
 
+```{r}
+length_box <- ggplot(pitt_bridges,aes(x = factor(""),y = length)) +
+                  geom_boxplot(fill = "lightblue",color="blue") +
+                  labs(x = "", y = "Length of Bridge (ft)", 
+                  title = "Distribution of Bridge Length")  +
+                  my_theme +
+                  theme(legend.position = "none")
+length_box
+```
+
+
 d.  Now, visualize the conditional distributions of `length` given the `material` variable with side-by-side boxplots.  To do this, use a line of code similar to:  `ggplot(data = pgh_bridges, aes(x = material, y = length)) + geom_boxplot()` (obviously, adding appropriate titles/labels/colors/legends when appropriate).  Describe any interesting features of the conditional distribution of `length` given `material`.
+
+```{r}
+length_v_material_box <- ggplot(pitt_bridges,aes(x = material,y = length)) +
+                  geom_boxplot(aes(fill = material)) +
+                  labs(x = "Material Type", y = "Length of Bridge (ft)", 
+                  title = "Distribution of Bridge Length per Bridge Material") +
+                  my_theme +
+                  theme(legend.position = "none")
+length_v_material_box
+```
+
+**Answer:**
+The boxplots suggest that steel bridges are associated with longer bridges with all bridges above ~1500 ft build of built of steel, and the other two material types have very lower median lengths. Additionally as already observed in with the length of bridge variable, each conditional distribution is skewed, with lots of short bridges and a few longer bridges.
 
 e.  Repeat part (d), but use the `type` variable instead of `material` on the x-axis.  
 
-***
-***
+```{r}
+length_v_type_box <- ggplot(pitt_bridges,aes(x = type,y = length)) +
+                  geom_boxplot(aes(fill = type)) +
+                  labs(x = "Type of Bridge", y = "Length of Bridge (ft)", 
+                  title = "Distribution of Bridge Length per Bridge Type")  +
+                  my_theme +
+                  theme(legend.position = "none")
+length_v_type_box
+```
 
+**Answer:**
+Given type of bridges the distributions of the bridge lengths are no longer so skewed, with only "arch" and "simple-t" having very skewed distributions. Interestingly we include a "wood" type of bridge which should overlap directly with the wood material type obviously.
+
+***
+***
 
 #  Problem 7
 
@@ -289,7 +428,8 @@ a.  Create a histogram of the `length` variable.  Use 20 equally sized bins -- y
 ```{r}
 ggplot(data = bridge_data, aes(x = length)) +
   geom_histogram(bins = 20) + ylab("Number of Bridges") +
-  xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths")
+  xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths") +
+  my_theme
 ```
 
 b.  Repeat part (a), but this time, in your call to `geom_histogram()`, include `aes(fill=..count..)`.  What does this do to the graph?  
@@ -298,7 +438,8 @@ b.  Repeat part (a), but this time, in your call to `geom_histogram()`, include 
 ggplot(data = bridge_data, aes(x = length)) +
   geom_histogram(aes(fill=..count..), bins = 20) + ylab("Number of Bridges") +
   xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths") +
-  scale_fill_continuous(name = "Number of Bridges")
+  scale_fill_continuous(name = "Number of Bridges") +
+  my_theme
 ```
 
 Adding `aes(fill=..count..)` to the `geom_histogram()` call colors the each bin of the histogram according to the number of bridges contained within it on a continuous color scale.  The `..count..` object is calculated during your call to `geom_histogram()`; it specifies the count in each bin of the histogram.
@@ -309,7 +450,8 @@ c.  Repeat part (b), but this time, add `+ scale_fill_gradient("Legend Label", l
 ggplot(data = bridge_data, aes(x = length)) +
   geom_histogram(aes(fill=..count..), bins = 20) + ylab("Number of Bridges") +
   xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths") +
-  scale_fill_gradient("Number of Bridges", low = "green", high = "red")
+  scale_fill_gradient("Number of Bridges", low = "green", high = "red") +
+  my_theme
 ```
 
 `scale_fill_gradient()` sets the color scale used by fill argument.  Setting the `low` and `high` arguments sets the range of colors used
@@ -319,7 +461,9 @@ d.  Create a bar chart of the `when.erected` variable.  Use proper labels/titles
 ```{r}
 ggplot(data = bridge_data, aes(x = when.erected)) +
   geom_bar() + ylab("Number of Bridges") +
-  xlab("Year Bridge Erected") + ggtitle("Bridges Erected in Pittsburgh by Year")
+  xlab("Year Bridge Erected") + 
+  ggtitle("Bridges Erected in Pittsburgh by Year") +
+  my_theme
 ```
 
 e.  Create a histogram of the `when.erected` variable.  Use proper labels/titles/colors.  Using the same approach as we did in Lab 04, specify `binwidth = 1`.  Compare this graph to the graph in (d).
@@ -327,7 +471,9 @@ e.  Create a histogram of the `when.erected` variable.  Use proper labels/titles
 ```{r}
 ggplot(data = bridge_data, aes(x = when.erected)) +
   geom_histogram(binwidth = 1) + ylab("Number of Bridges") +
-  xlab("Year Bridge Erected") + ggtitle("Bridges Erected in Pittsburgh by Year")
+  xlab("Year Bridge Erected") + 
+  ggtitle("Bridges Erected in Pittsburgh by Year") +
+  my_theme
 ```
 
 This looks the same as the graph in (d) because a histogram with a different bin for each value is the same as a bar chart.  
@@ -337,8 +483,11 @@ Notice that with the bar chart, there is one particular issue:  If the year vari
 ```{r}
 ggplot(data = bridge_data, aes(x = as.factor(when.erected))) +
   geom_bar() + ylab("Number of Bridges") +
-  xlab("Year Bridge Erected") + ggtitle("Bridges Erected in Pittsburgh by Year") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+  xlab("Year Bridge Erected") + 
+  ggtitle("Bridges Erected in Pittsburgh by Year") +
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1,size = 10)) 
+  
 ```
 
 You might say, "But Sam, the year isn't stored as a factor here!"  While that's true, this is because Sam formatted the input dataset so that you wouldn't run into this issue.  In the real-world, depending on the format of the input dataset and the functions you use to read the data in, you will often encounter situations where variables with numeric values are stored as strings or factors, causing issues when plotting the data.
@@ -350,7 +499,8 @@ f.  Change the `binwidth` to something more appropriate (e.g. 10), in order to s
 ggplot(data = bridge_data, aes(x = when.erected)) +
   geom_histogram(binwidth = 10) + ylab("Number of Bridges") +
   xlab("Year") +
-  ggtitle("Bridges Erected in Pittsburgh by 10-Year Period")
+  ggtitle("Bridges Erected in Pittsburgh by 10-Year Period") +
+  my_theme
 ```
 
 The historical pace of bridge construction in Pittsburgh appears bimodal with peaks in the period from 1895 - 1905 and from 1925 - 1935.  There is some variation in other periods but outside of those two 10-year periods the average pace appears to be around 2.5 bridges per decade although there has been a decline from 1950 until the present.
@@ -361,7 +511,8 @@ Note that we can easily change the bin width to something like 5 years (as below
 ggplot(data = bridge_data, aes(x = when.erected)) +
   geom_histogram(binwidth = 5) + ylab("Number of Bridges") +
   xlab("Year") +
-  ggtitle("Bridges Erected in Pittsburgh by 10-Year Period")
+  ggtitle("Bridges Erected in Pittsburgh by 10-Year Period") +
+  my_theme
 ```
 
 g.  Use the `facet_wrap()` or `facet_grid()` functions to visualize the conditional distribution of the `when.erected` variable given `material`.  Describe and compare the different conditional distributions of `when.erected` given `material`.  Describe any relationship between these two variables that you observe.
@@ -371,7 +522,8 @@ ggplot(data = bridge_data, aes(x = when.erected)) +
   geom_histogram(binwidth = 10) + ylab("Number of Bridges") +
   xlab("Year") +
   ggtitle("Bridges Erected in Pittsburgh by 10-Year Period") +
-  facet_grid(material~.)
+  facet_grid(material~.) +
+  my_theme
 ```
 
 First note that the majority of the bridges built in Pittsburgh were made of steel.  A few iron bridges were built around 1850 and into the 1860s. Similarly, several wooden bridges were built in the mid to late 1800s.  However, all bridges built since 1900 have been made of steel.
