@@ -31,9 +31,12 @@ output:
 
 a.  What style guide are you using on this assignment?  (Up to 10 points will be deducted if you do not adhere to a specific style guide.)
 
-b.  Remember to include a floating table of contents in your submission.
+b.  Remember to include a floating table of contents in your submission.  See the header of this file (the `toc` and `toc_float` tags) for how to do this.
 
 c.  (BONUS:  2 points)  Please fill out the [early course feedback form](https://docs.google.com/forms/d/e/1FAIpQLSe47cXrrUB7CtiD3x1SUs5QR3p1QDczKBQ-uH3ZYrYX8euA7w/viewform?usp=send_form).  We are always looking to improve, so we appreciate your feedback.
+
+
+Below, we specify our theme.  Ours is pretty basic.  Do not use our theme -- come up with your own!  You are encouraged to be creative when doing so, but try not to create a theme that is too distracting to the viewer.
 
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
@@ -80,7 +83,7 @@ The only text associated with the graph is the title, which tells us we are look
 
 **Mosaic Plots vs. Stacked Bar Charts**:  
 
-Mosaic plots plot and stacked bar charts both show the marginal distribution of one variable on the x-axis, along with the distribution of a second variable on the y-axis conditional on the first. Both graphs also use relative bar heights on the y-axis in order to display the conditional distributions. 
+Mosaic plots plot and stacked bar charts both show the marginal distribution of one categorical variable on the x-axis, along with the distribution of a second categorical variable on the y-axis conditional on the first. Both graphs also use relative bar heights on the y-axis in order to display the conditional distributions. 
 
 The widths of the bars in a mosaic plots are proportional to the marginal distribution of the variable plotted on the x-axis, while they have no meaning in the stacked bar chart. In mosaic plots, the y-axis shows the proportions of the conditional distribution rather than the total counts. The overall heights of the bars are the same in a mosaic plot, while they differ in a stacked bar chart. Thus, cell counts are proportional to height in the stacked bar chart, but to the area of the boxes in the mosaic plot. Mosaic plots are also colored based on the standardized residuals of a Pearson chi-squared test for independence for each category, while stacked bar charts are colored based on the identification of each category within each stacked bar. 
 
@@ -187,6 +190,9 @@ ggplot(data = bike_data) +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
 ```
 
+Note that the code used to produce the above plots is largely identical, save for the minor differences that are associated with the different types of plots.
+
+
 b.  (2 points)
 
 The side-by-side bar chart is useful because it allows us to look at all of the conditional distributions in a single graph. It also allows us to differentiate between the categories of the seconds variable by color. The facted bar chart can be more flexible, since the scales on the y-axis can be changed for each graph if necessary and the facet categories can be positioned differently if desired. One may be more familiar or visually appealing than the other as well.
@@ -200,7 +206,7 @@ The proportional bar chart makes it easiest to see the conditional distribution 
 
 Arguably, either the stacked bar chart, the side-by-side bar chart, or the faceted bar chart could strike the best balance between showing the marginal distrbution of the first variable and the conditional of the second on the first. The stacked is the easiest of the three for looking at the marginal distribution of the first variable, but makes it slightly harder to see the conditional distribution as not all of the bars start at 0, thus forcing the reader to do some mental math. The faceted and side-by-side bar charts make it easier to see the condtional distribution but harder to look at the marginal distribution of the first variable since the viewer has to manually add the heights of the individual conditional bars to find the marginal count.
 
-The mosaic plot best displays the outcome of a statistical test, as it literally shows the Pearson residuals that are used in the chi-squared test for independence. 
+The mosaic plot best displays the outcome of a statistical test, as it literally shows the Pearson residuals that are used in the chi-square test for independence. 
 
 ***
 ***
@@ -222,12 +228,12 @@ a.  (3 points)  Which variables in the dataset are categorical?  For each catego
 **Answer:**
 The categorical variables are `river`, `purpose`, `material`, `span`, `type`, and `lane` (will justify). 
 
-The `river` variable has 3 categories "A" if the bridge crosses the Allegheny river, "M" for Monogahela, and "O" for Ohio. Purpose has 3 categories, "Highway" for a highway bridge, "Aqueduct" for aqueducts (i.e. water) bridges, and "RR" for Railroad bridges. Span is a categorical variable describing the length of the span, with "short","medium", or "long". Materials describes the primary type of material the bridge is made of, with categories "wood","iron" or "steel". The type of bridge is recorded in the "type" column with options "wood",'SUSPEN' for suspension,   "simple-t" for simple span, "arch","cantilev" for cantilever, and "cont-t" for continuous span (for more descriptions of categories see http://pghbridges.com/basics.htm). Lanes, although numerical describes the number of lanes on a bridge, with 1,2,4, or 6 lanes as options, it makes sense to treat this as a varable since we don't expect bridges with 3,5 or non-integer values to appear.
+The `river` variable has 3 categories "A" if the bridge crosses the Allegheny river, "M" for Monogahela, and "O" for Ohio. Purpose has 3 categories, "Highway" for a highway bridge, "Aqueduct" for aqueducts (i.e. water) bridges, and "RR" for Railroad bridges. Span is a categorical variable describing the length of the span, with "short","medium", or "long". Materials describes the primary type of material the bridge is made of, with categories "wood","iron" or "steel". The type of bridge is recorded in the "type" column with options "wood",'SUSPEN' for suspension,   "simple-t" for simple span, "arch","cantilev" for cantilever, and "cont-t" for continuous span (for more descriptions of categories see http://pghbridges.com/basics.htm). Lanes, although numerical describes the number of lanes on a bridge, with 1,2,4, or 6 lanes as options, it makes sense to treat this as a categorical varable since we don't expect bridges with 3,5 or non-integer values to appear, and it's rare that we'll ever observe a bridge with more than, say, 12 lanes.
 
 b.  (3 points)  Which variables are continuous?  What are the ranges of the continuous variables in the dataset?  Do you consider the `when.erected` variable to be continuous?  Why or why not?
 
 **Answer:** 
-The variables that are continuous are `when.erected` and `length`. `when.erected` ranges from 1819 to 1978, `length` ranges for 840 to 4558. I consider `when.erected` as a continuous variable because time is a continuous thing in natural and there should be assumptions that bridges built in similar years would be similar, which we won't be able to capture in categories, even if we made large categories. Additionally we have a large ranges of years, so most categorical analysis would become cumbersome/ with little interpretive power.
+The variables that are continuous are `when.erected` and `length`. `when.erected` specifies the year that the bridge was erected and ranges from 1819 to 1978; `length` specifies the length of the bridge and ranges for 840 to 4558.  We consider `when.erected` as a continuous variable because time is naturally a continuous construct, and we are just using the year to represent this continuous value.  More importantly, we would expect that that bridges built in similar (but non-identical) years would be similar, and we won't be able to capture this similarity if we treat `length` as a categorical variable, even if we made large categories. Additionally we have a large range of years, so most categorical analysis would become cumbersome / with little interpretive power.
 
 c.  (3 points)  Are the `span` of the bridge and the `river` over which the bridge crosses independent?  Provide both statistical evidence and visual evidence.
 
@@ -293,7 +299,7 @@ table(pitt_bridges[,c("material","purpose")])
 ```
 
 **Answer:**
-It appears that aqueducts are not very plentiful, and as iron bridges aren't that common period, we see potental lack of independence based on having an iron aqueduct bridge.
+It appears that aqueducts are not very plentiful, and as iron bridges aren't that common at all, we see potental lack of independence based on having an iron aqueduct bridge.
 
 d.  (BONUS:  2 points)  Which Pittsburgh Bridge recently caught on fire and has been closed ever since?  What is the row number of this bridge in the Pittsburgh Bridges dataset?
 
@@ -359,7 +365,7 @@ The boxplot shows the range of distances cars going at different speeds took to 
 a.  What do you think about the definition of outliers in boxplots?  (See the previous problem for details.)  Which choices in this definition are arbitrary?  Are there any types of distributions for which this definition may not be fair?  (Hint:  What happens when we make a boxplot of an [exponential distribution](https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Exponential_pdf.svg/325px-Exponential_pdf.svg.png)?)
 
 **Answer:**
-Outliers are defind are any value 1.5 IQR distance away from the 25th quantile (if lower than the 25th quantile) and 1.5 IQR distance away from the 7th quantile (if larger than the 75th quantile). Note that the IQR is defined as the distance between the 25th and 75th quantile. This definition seems arbitary in a number of ways, 1) the connection to distance away from the 25th or 75th, which could easily be replaced with the mean or median of the observations, 2) the decision to do 1.5 times the IQR. For skewed distributions like the exponential distribution this might classified points in the heavy tail as outliers even though there is a decent probably to be in the tail.
+Outliers are defind are any value 1.5 IQR distance away from the 25th quantile (if lower than the 25th quantile) and 1.5 IQR distance away from the 7th quantile (if larger than the 75th quantile). Note that the IQR is defined as the distance between the 25th and 75th quantile. This definition seems arbitary in a number of ways, 1) the connection to distance away from the 25th or 75th, which could easily be replaced with the mean or median of the observations (or some other measure), 2) the decision to do 1.5 times the IQR. For skewed distributions like the exponential distribution this might classified points in the heavy tail as outliers even though there is a decent probably to be in the tail.
 
 b.  Describe how you could change boxplots in a way that preserves their strengths but improves upon their weaknesses.  Be creative!  (Note:  You do not have to actually create this graphic -- yet.)
 
@@ -371,12 +377,13 @@ Additionally one could use a violin plot which is basically just like boxplot an
 c.  Create a boxplot of the `length` variable from the Pittsburgh Bridges dataset.  Describe any interesting features that you see.  Be sure the graph is properly labeled, titled, and colored.
 
 ```{r}
-length_box <- ggplot(pitt_bridges,aes(x = factor(""),y = length)) +
-                  geom_boxplot(fill = "lightblue",color="blue") +
-                  labs(x = "", y = "Length of Bridge (ft)", 
-                  title = "Distribution of Bridge Length")  +
-                  my_theme +
-                  theme(legend.position = "none")
+length_box <- 
+  ggplot(pitt_bridges,aes(x = factor(""),y = length)) +
+  geom_boxplot(fill = "lightblue",color="blue") +
+  labs(x = "", y = "Length of Bridge (ft)", 
+       title = "Distribution of Bridge Length")  +
+  my_theme +
+  theme(legend.position = "none")
 length_box
 ```
 
@@ -384,12 +391,13 @@ length_box
 d.  Now, visualize the conditional distributions of `length` given the `material` variable with side-by-side boxplots.  To do this, use a line of code similar to:  `ggplot(data = pgh_bridges, aes(x = material, y = length)) + geom_boxplot()` (obviously, adding appropriate titles/labels/colors/legends when appropriate).  Describe any interesting features of the conditional distribution of `length` given `material`.
 
 ```{r}
-length_v_material_box <- ggplot(pitt_bridges,aes(x = material,y = length)) +
-                  geom_boxplot(aes(fill = material)) +
-                  labs(x = "Material Type", y = "Length of Bridge (ft)", 
-                  title = "Distribution of Bridge Length per Bridge Material") +
-                  my_theme +
-                  theme(legend.position = "none")
+length_v_material_box <- 
+  ggplot(pitt_bridges,aes(x = material,y = length)) +
+  geom_boxplot(aes(fill = material)) +
+  labs(x = "Material Type", y = "Length of Bridge (ft)", 
+       title = "Distribution of Bridge Length per Bridge Material") +
+  my_theme +
+  theme(legend.position = "none")
 length_v_material_box
 ```
 
@@ -427,30 +435,31 @@ bridge_data = read.csv("https://raw.githubusercontent.com/sventura/315-code-and-
 a.  Create a histogram of the `length` variable.  Use 20 equally sized bins -- you can specify this with `bins = 20` in your call to `geom_histogram()`.  Be sure that your graph is properly labeled and titled.  
 ```{r}
 ggplot(data = bridge_data, aes(x = length)) +
-  geom_histogram(bins = 20) + ylab("Number of Bridges") +
+  geom_histogram(bins = 20, color = "black", fill = "red") + 
+  ylab("Number of Bridges") +
   xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths") +
   my_theme
 ```
 
-b.  Repeat part (a), but this time, in your call to `geom_histogram()`, include `aes(fill=..count..)`.  What does this do to the graph?  
+b.  Repeat part (a), but this time, in your call to `geom_histogram()`, include `aes(fill = ..count..)`.  What does this do to the graph?  
 
 ```{r}
 ggplot(data = bridge_data, aes(x = length)) +
-  geom_histogram(aes(fill=..count..), bins = 20) + ylab("Number of Bridges") +
+  geom_histogram(aes(fill = ..count..), bins = 20) + ylab("Number of Bridges") +
   xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths") +
   scale_fill_continuous(name = "Number of Bridges") +
   my_theme
 ```
 
-Adding `aes(fill=..count..)` to the `geom_histogram()` call colors the each bin of the histogram according to the number of bridges contained within it on a continuous color scale.  The `..count..` object is calculated during your call to `geom_histogram()`; it specifies the count in each bin of the histogram.
+Adding `aes(fill = ..count..)` to the `geom_histogram()` call colors the each bin of the histogram according to the number of bridges contained within it on a continuous color scale.  The `..count..` object is calculated during your call to `geom_histogram()`; it specifies the count in each bin of the histogram.
 
 c.  Repeat part (b), but this time, add `+ scale_fill_gradient("Legend Label", low = "green", high = "red")` to the line of code.  Use an appropriate legend label.  Try a few different combinations of colors.  What does `scale_fill_gradient()` do?
 
 ```{r}
 ggplot(data = bridge_data, aes(x = length)) +
-  geom_histogram(aes(fill=..count..), bins = 20) + ylab("Number of Bridges") +
+  geom_histogram(aes(fill = ..count..), bins = 20) + ylab("Number of Bridges") +
   xlab("Length of Bridge") + ggtitle("Histogram of Pittsburgh Bridge Lengths") +
-  scale_fill_gradient("Number of Bridges", low = "green", high = "red") +
+  scale_fill_gradient("Number of Bridges", low = "red", high = "blue") +
   my_theme
 ```
 
@@ -490,14 +499,15 @@ ggplot(data = bridge_data, aes(x = as.factor(when.erected))) +
   
 ```
 
-You might say, "But Sam, the year isn't stored as a factor here!"  While that's true, this is because Sam formatted the input dataset so that you wouldn't run into this issue.  In the real-world, depending on the format of the input dataset and the functions you use to read the data in, you will often encounter situations where variables with numeric values are stored as strings or factors, causing issues when plotting the data.
+You might say, "But Sam, the year isn't stored as a factor here!"  While that's true, this is because Sam formatted the input dataset so that you wouldn't run into this issue.  In the real-world, depending on the format of the input dataset and the functions you use to read in the data, you will often encounter situations where variables with numeric values are stored as strings or factors, causing issues when plotting the data.
 
 
 f.  Change the `binwidth` to something more appropriate (e.g. 10), in order to smooth out the distribution.  Describe the marginal distribution of `when.erected`.  In what decades were the most Pittsburgh bridges built?  
 
 ```{r}
 ggplot(data = bridge_data, aes(x = when.erected)) +
-  geom_histogram(binwidth = 10) + ylab("Number of Bridges") +
+  geom_histogram(binwidth = 10, color = "black", fill = "red") + 
+  ylab("Number of Bridges") +
   xlab("Year") +
   ggtitle("Bridges Erected in Pittsburgh by 10-Year Period") +
   my_theme
@@ -509,7 +519,8 @@ Note that we can easily change the bin width to something like 5 years (as below
 
 ```{r}
 ggplot(data = bridge_data, aes(x = when.erected)) +
-  geom_histogram(binwidth = 5) + ylab("Number of Bridges") +
+  geom_histogram(binwidth = 5, color = "black", fill = "red") + 
+  ylab("Number of Bridges") +
   xlab("Year") +
   ggtitle("Bridges Erected in Pittsburgh by 10-Year Period") +
   my_theme
@@ -519,7 +530,8 @@ g.  Use the `facet_wrap()` or `facet_grid()` functions to visualize the conditio
 
 ```{r}
 ggplot(data = bridge_data, aes(x = when.erected)) +
-  geom_histogram(binwidth = 10) + ylab("Number of Bridges") +
+  geom_histogram(binwidth = 10, color = "black", fill = "red") + 
+  ylab("Number of Bridges") +
   xlab("Year") +
   ggtitle("Bridges Erected in Pittsburgh by 10-Year Period") +
   facet_grid(material~.) +
