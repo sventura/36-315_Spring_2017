@@ -528,9 +528,9 @@ Note that we can easily change the bin width to something like 5 years (as below
 ```{r}
 ggplot(data = bridge_data, aes(x = when.erected)) +
   geom_histogram(binwidth = 5, color = "black", fill = "red") + 
-  ylab("Number of Bridges") +
-  xlab("Year") +
-  ggtitle("Bridges Erected in Pittsburgh by 5-Year Period") +
+  labs(y = "Number of Bridges", 
+       x = "Year",
+       title = "Bridges Erected in Pittsburgh by 5-Year Period") +
   my_theme
 ```
 
@@ -539,9 +539,9 @@ g.  Use the `facet_wrap()` or `facet_grid()` functions to visualize the conditio
 ```{r}
 ggplot(data = bridge_data, aes(x = when.erected)) +
   geom_histogram(binwidth = 10, color = "black", fill = "red") + 
-  ylab("Number of Bridges") +
-  xlab("Year") +
-  ggtitle("Bridges Erected in Pittsburgh by 10-Year Period") +
+  labs(y = "Number of Bridges", 
+       x = "Year", 
+       title = "Bridges Erected in Pittsburgh by 10-Year Period") +
   facet_grid(material~.) +
   my_theme
 ```
