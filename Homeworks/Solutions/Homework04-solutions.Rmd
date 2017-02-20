@@ -534,7 +534,7 @@ ggplot(data = bridge_data, aes(x = when.erected)) +
   my_theme
 ```
 
-g.  Use the `facet_wrap()` or `facet_grid()` functions to visualize the conditional distribution of the `when.erected` variable given `material`.  Describe and compare the different conditional distributions of `when.erected` given `material`.  Describe any relationship between these two variables that you observe.
+g.  
 
 ```{r}
 ggplot(data = bridge_data, aes(x = when.erected)) +
