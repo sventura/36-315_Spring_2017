@@ -115,10 +115,10 @@ b.  (2 points)  The side-by-side bar chart and the facetted bar chart are almost
 
 c.  (2 points each) Answer the following questions about the (relative) strengths and weaknesses of each graph in (a):
 
-+  In which graph is it easiest to see the marginal distribution of the first variable?  
-+  In which graph is it easiest to see the conditional distributions of the second variable given each category of the first variable?  
-+  Which graph(s) provide the best balance of showing the marginal distribution of the first variable and the conditional distributions of the second variable?
-+  In which graph is it easy to see the outcome of a statistical test?  
++  In which graph is it easiest to see the marginal distribution of the first variable?  Why?
++  In which graph is it easiest to see the conditional distributions of the second variable given each category of the first variable?  Why?
++  Which graph(s) provide the best balance of showing the marginal distribution of the first variable and the conditional distributions of the second variable?  Why?
++  In which graph is it easy to see the outcome of a statistical test?  Why?
 
 
 ***

@@ -142,7 +142,7 @@ d.  (5 points)  Repeat part (c), but with a conditional density estimate plot in
 
 e.  (10 points)  Examine the plots from the following lines of code.  Why does the rug plot show up in some plots, but not in others?  Why do the middle-column plots look different from the others?  Which line of code is most efficient and appropriate to use, given how `ggplot()` uses the `aes()` function?
 
-```{r, fig.width = 12, fig.height = 8, warning = F, message = F}
+```{r, fig.width = 12, fig.height = 8, warning = FALSE, message = FALSE}
 library(gridExtra)
 plot1 <- ggplot(food) + geom_histogram(aes(x = log(salt_100g))) + geom_rug()
 plot2 <- ggplot(food) + geom_histogram(aes(x = log(salt_100g))) + geom_rug(aes(x = salt_100g))
