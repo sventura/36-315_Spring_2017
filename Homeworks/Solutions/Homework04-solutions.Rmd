@@ -238,14 +238,14 @@ The variables that are continuous are `when.erected` and `length`. `when.erected
 c.  (3 points)  Are the `span` of the bridge and the `river` over which the bridge crosses independent?  Provide both statistical evidence and visual evidence.
 
 ```{r}
-c2 <- chisq.test(x = pitt_bridges$span,y = pitt_bridges$river)
+c2 <- chisq.test(x = pitt_bridges$span, y = pitt_bridges$river)
 ```
 
 ```{r}
 pitt_bridges$river = factor(pitt_bridges$river, #initially A, M, O
-                            labels = c("Allegheny","Monogahela","Ohio")) 
+                            labels = c("Allegheny", "Monogahela", "Ohio")) 
 
-span_vs_river <- ggplot(pitt_bridges, aes(y = span,x = river)) + 
+span_vs_river <- ggplot(pitt_bridges, aes(y = span, x = river)) + 
   geom_mosaic() +
                 mosaic_legend() +
                 labs(y = "Span of Bridge", x = "River bridge crosses",
@@ -253,7 +253,7 @@ span_vs_river <- ggplot(pitt_bridges, aes(y = span,x = river)) +
                 my_theme
 span_vs_river
 
-#table(pitt_bridges[,c("river","span")])
+#table(pitt_bridges[,c("river", "span")])
 ```
 
 **Answer:**
@@ -261,7 +261,7 @@ The chi-squared statistic gives a p-value of $`r round(c2$p.value,6)`$, which me
 
 ```{r}
 span_vs_river_bar <- ggplot(pitt_bridges,aes(fill = span, x = river)) + 
-                    geom_bar(position="dodge") +
+                    geom_bar(position = "dodge") +
                     labs(y = "Number of Bridges",
                          x = "River bridge crosses",
                         title = "River bridge crosses\nvs Length of bridge",
