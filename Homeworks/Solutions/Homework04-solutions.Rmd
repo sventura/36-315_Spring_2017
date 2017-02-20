@@ -185,7 +185,7 @@ ggplot(data = bike_data) +
        x = "Rider Type",
        y = "Number of Rides",
        caption = "NYC Citi Bike Data, June 2016") +
-  facet_wrap(~day_of_week) +
+  facet_wrap(~ day_of_week) +
   my_theme +
   theme(axis.text.x = element_text(angle = 60, vjust = 0.5))
 ```
@@ -245,9 +245,10 @@ c2 <- chisq.test(x = pitt_bridges$span,y = pitt_bridges$river)
 pitt_bridges$river = factor(pitt_bridges$river, #initially A, M, O
                             labels = c("Allegheny","Monogahela","Ohio")) 
 
-span_vs_river <- ggplot(pitt_bridges,aes(y = span,x = river)) + geom_mosaic() +
+span_vs_river <- ggplot(pitt_bridges, aes(y = span,x = river)) + 
+  geom_mosaic() +
                 mosaic_legend() +
-                labs(y = "Span of Bridge",x = "River bridge crosses",
+                labs(y = "Span of Bridge", x = "River bridge crosses",
                 title = "River bridge crosses vs Length of bridge") +
                 my_theme
 span_vs_river
@@ -259,20 +260,20 @@ span_vs_river
 The chi-squared statistic gives a p-value of $`r round(c2$p.value,6)`$, which means that we can conclude that the span of a bridge is dependent with the river it crosses. The Mosaic plot above gives the same conclusion, as the for bridges crossing the Ohio river, all brigdes (10) have long spans, whereas the other two rivers have the majority of bridges of medium length, and this difference in statistically significant. One might also explore a barplot or conditional proportion plot representation as seen below:
 
 ```{r}
-span_vs_river_bar <- ggplot(pitt_bridges,aes(fill = span,x = river)) + 
+span_vs_river_bar <- ggplot(pitt_bridges,aes(fill = span, x = river)) + 
                     geom_bar(position="dodge") +
                     labs(y = "Number of Bridges",
                          x = "River bridge crosses",
-                        title = "River bridge crosses \nvs Length of bridge",
+                        title = "River bridge crosses\nvs Length of bridge",
                         fill = "Span of Bridge") +
                     my_theme +
                     theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
                     
-span_vs_river_prop <- ggplot(pitt_bridges,aes(fill = span,x = river)) + 
-                    geom_bar(position="fill") +
+span_vs_river_prop <- ggplot(pitt_bridges,aes(fill = span, x = river)) + 
+                    geom_bar(position = "fill") +
                     labs(y = "Conditional Proportion",
                          x = "River bridge crosses",
-                        title = "River bridge crosses \nvs Length (Proportions)",
+                        title = "River bridge crosses\nvs Length (Proportions)",
                         fill = "Span of Bridge") +
                     my_theme +
                     theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -284,7 +285,7 @@ grid.arrange(span_vs_river_bar,span_vs_river_prop,nrow = 1)
 c.  (3 points)  Plot the conditional distributions of the `material` used to build the bridge given the `purpose` of the bridge.  Describe any interesting features you see.
 
 ```{r}
-material_vs_purpose <- ggplot(pitt_bridges,aes(x = purpose,y = material)) + 
+material_vs_purpose <- ggplot(pitt_bridges, aes(x = purpose, y = material)) + 
                         geom_mosaic() +
                         mosaic_legend() +
                         labs(y = "Type of material bridge is made of",
@@ -295,7 +296,7 @@ material_vs_purpose
 ```
 
 ```{r}
-table(pitt_bridges[,c("material","purpose")])
+table(pitt_bridges[,c("material", "purpose")])
 ```
 
 **Answer:**
@@ -339,8 +340,7 @@ dist_box <- ggplot(data = cars, aes(x = factor(""), y = dist)) +
             geom_boxplot(fill = "darkred") +
             labs(x = "", y = "Stopping Distance in feet", 
                  title = "Distribution of Stopping Distance in Feet")  +
-            my_theme +
-            theme(legend.position = "none")
+            my_theme 
               
 dist_box
 ```
@@ -378,12 +378,11 @@ c.  Create a boxplot of the `length` variable from the Pittsburgh Bridges datase
 
 ```{r}
 length_box <- 
-  ggplot(pitt_bridges,aes(x = factor(""),y = length)) +
-  geom_boxplot(fill = "lightblue",color="blue") +
+  ggplot(pitt_bridges,aes(x = factor(""), y = length)) +
+  geom_boxplot(fill = "lightblue", color = "blue") +
   labs(x = "", y = "Length of Bridge (ft)", 
        title = "Distribution of Bridge Length")  +
-  my_theme +
-  theme(legend.position = "none")
+  my_theme
 length_box
 ```
 
@@ -392,7 +391,7 @@ d.  Now, visualize the conditional distributions of `length` given the `material
 
 ```{r}
 length_v_material_box <- 
-  ggplot(pitt_bridges,aes(x = material,y = length)) +
+  ggplot(pitt_bridges,aes(x = material, y = length)) +
   geom_boxplot(aes(fill = material)) +
   labs(x = "Material Type", y = "Length of Bridge (ft)", 
        title = "Distribution of Bridge Length per Bridge Material") +
@@ -407,7 +406,7 @@ The boxplots suggest that steel bridges are associated with longer bridges with 
 e.  Repeat part (d), but use the `type` variable instead of `material` on the x-axis.  
 
 ```{r}
-length_v_type_box <- ggplot(pitt_bridges,aes(x = type,y = length)) +
+length_v_type_box <- ggplot(pitt_bridges,aes(x = type, y = length)) +
                   geom_boxplot(aes(fill = type)) +
                   labs(x = "Type of Bridge", y = "Length of Bridge (ft)", 
                   title = "Distribution of Bridge Length per Bridge Type")  +
@@ -438,8 +437,8 @@ a.
 ggplot(data = bridge_data, aes(x = length)) +
   geom_histogram(bins = 20, color = "black", fill = "red") +
   labs(y = "Number of Bridges", 
-     x = "Year Bridge Erected", 
-     title = "Bridges Erected in Pittsburgh by Year") +
+     x = "Length of Bridge (ft.)", 
+     title = "Distribution of Lengths of Pittsburgh Bridges") +
   my_theme
 ```
 
@@ -449,8 +448,8 @@ b.
 ggplot(data = bridge_data, aes(x = length)) +
   geom_histogram(aes(fill = ..count..), bins = 20) + 
   labs(y = "Number of Bridges", 
-     x = "Year Bridge Erected", 
-     title = "Bridges Erected in Pittsburgh by Year", 
+     x = "Length of Bridge (ft.)", 
+     title = "Distribution of Lengths of Pittsburgh Bridges", 
      fill = "Number of Bridges") +
   my_theme
 ```
@@ -463,8 +462,8 @@ c.
 ggplot(data = bridge_data, aes(x = length)) +
   geom_histogram(aes(fill = ..count..), bins = 20) + 
   labs(y = "Number of Bridges", 
-     x = "Year Bridge Erected", 
-     title = "Bridges Erected in Pittsburgh by Year") +
+     x = "Length of Bridge (ft.)", 
+     title = "Distribution of Lengths of Pittsburgh Bridges") +
   scale_fill_gradient("Number of Bridges", low = "red", high = "blue") +
   my_theme
 ```
@@ -542,7 +541,7 @@ ggplot(data = bridge_data, aes(x = when.erected)) +
   labs(y = "Number of Bridges", 
        x = "Year", 
        title = "Bridges Erected in Pittsburgh by 10-Year Period") +
-  facet_grid(material~.) +
+  facet_grid(material ~ .) +
   my_theme
 ```
 
@@ -570,8 +569,10 @@ There are additional factors that contributed to bridge construction in Pittsbur
 ```{r}
 #Create theme that can be added to plots
 my_theme <-  theme_bw() + # White background, black and white theme
-  theme(axis.text = element_text(size = 15, family = "Times", color="indianred4"),
-        text = element_text(size = 18, family = "Times", face="bold", color="darkslategrey"))
+  theme(axis.text = element_text(size = 15, family = "Times", 
+                                 color = "indianred4"),
+        text = element_text(size = 18, family = "Times",
+                            face = "bold", color = "darkslategrey"))
 
 ggplot(data = bridge_data, aes(x = when.erected)) +
   geom_histogram(binwidth = 10) + 
