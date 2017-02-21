@@ -353,19 +353,36 @@ grid.arrange(a,b,c,d,nrow = 2)
 ***
 ***
 
-
 #  Problem 5
 
 (15 points)
 
 **Give Me Some Sugar**
 
-Characterize the distribution of the amount of sugar per 100 grams of the food.  Does the distribution change depending on:
+```{r}
+#Plots of sugar per 100 grams of food, conditional on country and additives. 
+ggplot(data = food) + 
+  geom_density(aes(x = sugars_100g), fill = "#666666", 
+               color = "black", adjust = 1.5) + 
+  labs(x = "Sugar per 100g of Food (g)",
+       y = "Density of Sugar Distribution", 
+       title = "Density Estimate of Sugar per 100g of Food",
+       subtitle = "Conditional on Country and Additives",
+       caption = "Open Food Facts Dataset") + 
+  facet_grid(additives_n ~ countries_en, margins = TRUE) +
+  my_theme +
+  theme(strip.text.x = element_text(size = 8),
+        axis.text.x = element_text(angle = 45, vjust = 0.5))
+```
 
-+  Country?
-+  Presence or absence of additives?
+The distribution of sugar per 100 grams of food ranges from 0 to 100 grams of sugar. The median is around 4 grams of sugar per 100 grams of food. It has a large mode at around 2 grams of sugar, with a smaller modes at around 45 grams.  The distribution is skewed right. 
 
-Please use no more than two graphics to answer this problem.
+Based on the faceted density plots, the distribution of the amount of sugar changes depending on the presence of additives. For all of the countries, the means and medians of the distributions of sugar for food without additives is substantially lower than for food with additives, and the right tail is less dense. The overall conditional distribution of sugar given additives shows the same pattern; there is a heavier right tail and less density near the mode at the lower end of the sugar distribution, meaning that food with additives tend to have more sugar than those without. However, many of the extreme high values of sugar per 100 grams of food are actually foods without additives. 
+
+The graphs also show a significant difference between the conditional distributions of sugar per 100 grams of food by country. In particular, the distribution for Spain seems to have a smaller mean and median amount of sugar compared to other countries, as well as a larger density near the mode, which lies at the lower end of the distribution of sugar in food. The distributions for the United States and United Kingdom seem to have a larger mean and median amount of sugar compared to other countries, whether or not additives were added to the food, and their distributions seem to have a heavier tail compared to the other two countries. 
+
+I decided to use a kernel density estimation to plot the distribution of sugar per 100 grams of food because the variable is continuous, and using a density estimate is a good way to show 1-dimensional distributions of a continuous variable. I chose to use the grid to compare the conditional distributions across countries and additives because it allows the viewer to compare the distributions on the same scale. The graphs are lined up such that it is easy to compare the distribution of sugar conditioned on additives between the different countries or the distribution of sugar conditioned on country between the different additive stauses; this does make it harder to compare the marginal distributions. 
+
 
 
 ***
@@ -388,6 +405,25 @@ Characterize the distribution of the amount of carbohydrates per 100 grams of fo
 
 Please use no more than one graphic to answer this problem.
 
+```{r}
+ggplot(data = food) +
+    geom_histogram(aes(x = carbohydrates_100g, fill = pnns_groups_1), 
+                 position = "stack", color = "black",
+                 binwidth = 2.5) + 
+  labs(title = "KDE of Carbohydrates per 100g of Food", 
+       x = "Carbohydrates per 100g of Food (g)", 
+       y = "Density of Protein Distribution", 
+       fill = "Type of Food",
+       subtitle = "Conditional on Type of Food",
+       caption = "Open Food Facts Dataset") + 
+  my_theme
+```
+
+The distribution of grams of carbohydrates per 100 grams of food ranges between 0 and 100 grams per 100 grams of food. The distribution of carbohydrates in food is skewed right, with several categories of food that have substantially more carbohydrates compared to most. The median is around 14.7 grams per 100. The distribution has or threetwo modes. The global mode is at around 2 grams per 100. There is a definite second local mode at around 60-65 grams per 100, and a potential third smaller local mode at around 10 grams per 100.
+
+The most common types of food at the first mode at 2 grams of protein per 100 grams of food are fruits and vegetables, fish, eggs, and meat, and fats and sauces. This can be seen from the high proportion of green, olive green, and light blue in the stacked histogram plot. The most common types of food at the second mode at 60 grams are cereals and potatoes and sugary snacks. We can see this from examining the distribution of colors near 60 grams on the x-axis, where there is a large proportion of the brown and pink color in the histogram corresponding to the categories. The most common types of food at the third potential mode at 20 grams of protein per 100 grams of food are beverages, fat and sauces, and fruits and vegetables. We can see this from examining the distribution of colors near 20g, where we see a high proportion of red, olive green, and light blue.
+
+I decided to use a stacked histogram to plot the conditional distribution of carbohydrates per 100 grams of food rather than a side-by-side or faceted bar chart because the former does a better job of displaying the marginal distribution of carbohydrates and letting us examine its modality compared to the latter two. I chose a histogram instead of a density chart because the stacked density chart does take in to account the counts of each of the categories, potentially skewing our view of the marginal distribution of carbohydrates. I chose to set the bandwidth of the histogram to 2.5 so I know the range that each bar corresponds to.
 
 ***
 ***
