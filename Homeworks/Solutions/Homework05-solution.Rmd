@@ -406,14 +406,6 @@ I decided to use a kernel density estimation to plot the distribution of sugar p
 
 **Low-Carb Diets**
 
-You're looking to change your diet and consume fewer carbohydrates, so you want to learn about what kinds of foods are high or low in carbs.  
-
-Characterize the distribution of the amount of carbohydrates per 100 grams of food.  
-
-+  How many modes does the distribution have?  Describe each of these modes.
-+  What types (`pnns_groups_1`) of foods are most common in each of these modes?
-
-Please use no more than one graphic to answer this problem.
 
 ```{r}
 ggplot(data = food) +
