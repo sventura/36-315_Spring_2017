@@ -360,6 +360,16 @@ grid.arrange(a,b,c,d,nrow = 2)
 **Give Me Some Sugar**
 
 ```{r}
+#Plots of sugar per 100 grams of food
+ggplot(data = food) + 
+  geom_density(aes(x = sugars_100g), fill = "#666666", 
+               color = "black", adjust = 1.5) + 
+  labs(x = "Sugar per 100g of Food (g)",
+       y = "Density of Sugar Distribution", 
+       title = "Density Estimate of Sugar per 100g of Food",
+       caption = "Open Food Facts Dataset") + 
+  my_theme
+
 #Plots of sugar per 100 grams of food, conditional on country and additives. 
 ggplot(data = food) + 
   geom_density(aes(x = sugars_100g), fill = "#666666", 
