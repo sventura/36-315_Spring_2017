@@ -366,7 +366,7 @@ ggplot(data = food) +
                color = "black", adjust = 1.5) + 
   labs(x = "Sugar per 100g of Food (g)",
        y = "Density of Sugar Distribution", 
-       title = "Density Estimate of Sugar per 100g of Food",
+       title = "Distribution of Sugar per 100g of Food",
        caption = "Open Food Facts Dataset") + 
   my_theme
 
