@@ -376,7 +376,7 @@ ggplot(data = food) +
                color = "black", adjust = 1.5) + 
   labs(x = "Sugar per 100g of Food (g)",
        y = "Density of Sugar Distribution", 
-       title = "Density Estimate of Sugar per 100g of Food",
+       title = "Distribution of Sugar per 100g of Food",
        subtitle = "Conditional on Country and Additives",
        caption = "Open Food Facts Dataset") + 
   facet_grid(additives_n ~ countries_en, margins = TRUE) +
@@ -412,7 +412,7 @@ ggplot(data = food) +
     geom_histogram(aes(x = carbohydrates_100g, fill = pnns_groups_1), 
                  position = "stack", color = "black",
                  binwidth = 2.5) + 
-  labs(title = "KDE of Carbohydrates per 100g of Food", 
+  labs(title = "Distribution of Carbohydrates per 100g of Food", 
        x = "Carbohydrates per 100g of Food (g)", 
        y = "Density of Protein Distribution", 
        fill = "Type of Food",
