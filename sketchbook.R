@@ -251,14 +251,20 @@ head(mutate(geyser,
             lag1 = dplyr::lag(duration, 1),
             lag2 = dplyr::lag(duration, 2),
             lag3 = dplyr::lag(duration, 3),
-            lead1 = dplyr::lead(duration, 1),
+            lead1 = dplyr::lead(duration, 1)
             ))
 
 
-
-
-
-
+options(tibble.width = Inf)
+set.seed(10)
+shark <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/attacks_test.csv")
+shark <- mutate(shark, 
+                SharkLength = rpois(nrow(shark), 10),
+                SharkLength = ifelse(SharkLength < 4, rpois(nrow(shark), 4) + 4,
+                                     SharkLength))
+write.csv("/Users/sam/Desktop/CMU-VAP/315/315-code-and-datasets/315-code-and-datasets/data/shark-attacks-spring-2017.csv")
+ggplot(shark, aes(x = Year, y = SharkLength)) +
+  geom_point() + geom_smooth(method = lm)
 
 
 

@@ -1,0 +1,221 @@
+---
+title: "36-315 Homework 06, Spring 2017"
+author: "Your Name Here"
+date: "Due Wednesday, March 1st, 2017 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Homework 06:  Practice Lab Exam
+
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW06.Rmd -- e.g. "sventura-HW06.Rmd") to the Homework 06 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+
+#  Problem 0
+
+**Style Guide and Table of Contents**
+
+a.  What style guide are you using on this assignment?  (Up to 10 points will be deducted if you do not adhere to a specific style guide.)
+
+b.  Remember to include a floating table of contents in your submission.
+
+c.  Use your theme for all problems.
+
+
+***
+***
+
+
+#  Instructions:  Lab Exam
+
++  For all lab exam questions, be sure to answer the question(s) asked.
++  In addition to answering the questions, **write 1-3 sentences describing why you made certain choices in your graphic.**  For example, why did you choose a histogram vs. density plot?  Pie chart vs. rose diagram vs. bar chart vs. spine chart?  Stacked vs. side-by-side bar chart?  Why did you choose the bin width / number of bins in your histogram?  Why did you choose the bandwidth and kernel that you picked in your density plot?  Why did you decide to arrange the graphs the way you did (e.g. in a grid, horizontally, vertically).  Etc.
++  Remember, whenever you can supplement your answer with information from a statistical test, this is very beneficial!  Feel free to run statistical tests and include this information as part of your answer.
+
+
+###  For all problems below, you should justify your answer with a single graph.
+
+Using `facet_wrap()` or `facet_grid()` counts as one graph, while using `grid.arrange()` does not.
+
+
+
+***
+***
+
+
+
+#  Data:  Shark Attacks!
+
+Load the shark attack data from the course GitHub page at the following link: [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/attacks_test.csv] 
+
+The data is taken from Kaggle and was originally compiled by the global shark attack file.  [More information is available here.](https://www.kaggle.com/teajay/global-shark-attacks)
+
+
+
+
+<div style="width:600px">
+![](https://mpcenglish.files.wordpress.com/2012/07/shark15.jpg)
+</div>
+
+
+
+***
+***
+
+
+#  Problem 1
+
+**Victim Blaming?**
+
+Graph:  (10 points)
+
+a.  (4 points)  Characterize the distribution of the `Type` of shark attack.  Describe any interesting features you see.
+
+b.  (3 points)  Compare the different conditional distributions of `Sex` given each `Type` of shark attack.  Are female victims relatively more or less common in any of the shark attack types?  Are unknown-gender victims more or less common in any of the shark attack types?
+
+c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+***
+***
+
+
+
+
+#  Problem 2
+
+**Attacking All Ages**
+
+Graph:  (10 points)
+
+a.  (8 points)  Characterize the distribution of the `Age` of shark attack victims.  Describe any interesting features you see.
+
+b.  (2 points)  Is the distribution of `Age` normally distributed?  Why or why not?
+
+c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+
+
+
+***
+***
+
+
+
+#  Problem 3
+
+**Gender Bias?**
+
+Graph:  (10 points)
+
+(Note:  `SharkLength` is measured in feet.)
+
+a.  (8 points)  Are sharks getting longer over time?  Provide visual evidence.
+
+b.  (2 points)  Are sharks involved in fatal attacks getting longer over time?
+
+c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+
+
+
+***
+***
+
+
+
+
+#  Problem 4
+
+**Back in My Day...**
+
+Graph:  (10 points)
+
+a.  (10 points)  Since 1850, is the `Age` of shark attack victims at the time of the attack getting older, getting younger, or staying roughly the same?
+
+b.  (5 points)  Is the `Age` of **female** shark attack victims at the time of the attack getting older, getting younger, or staying roughly the same?
+
+c.  (8 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+
+***
+***
+
+
+
+
+#  Problem 5
+
+**Attack Trends**
+
+Graph:  (10 points)
+
+a.  (10 points)  Characterize the marginal distribution of the year in which the attack occurred (`Year`).  Are there any time periods with increases or decreases in the number of attacks?  Are there particular types of attacks that correspond to these increases or decreases?
+
+b.  (3 points)  The movie "Jaws" was released in 1975.  Does there appear to be an increase in reported shark attacks after the movie's release?  If so, would you say that the release and subsequent popularity of "Jaws" caused the increase in reported shark attacks?
+
+c.  (2 points)  Would you say that the distribution of `Year` is approximately normally distributed?  Why or why not?
+
+d.  (8 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+e.  (BONUS:  2 points)  Legend has it that shark attacks stemming from "Sea Disasters" (`Type == "Sea Disaster"`) tend to occur in clusters because of ocean curses.  That is, shark attacks stemming from sea disasters tend to occur within short time spans of each other.  Is there any evidence to suggest that this is true?  Are there any years with a large number of shark attacks stemming from sea disasters?
+
+
+***
+***
+
+
+
+
+#  Problem 6
+
+**Shark Week?  Try Shark Month**
+
+Graph:  (10 points)
+
+a.  (10 points)  You are terrified of shark attacks, but you love being in the water.  Are there particular months of the year where its safer to be in the water than others?  Does this change depending on `Country`?  (You should consider only the countries in your dataset.)
+
+b.  (3 points)  Are the month of the attack and the country of the attack independent?  (Remember, you can supplement your graph with the results of a statistical test if your graph is not sufficient to answer this question.)
+
+c.  (3 points)  Why does the USA appear to follow a different pattern than Australia, South Africa, and New Zealand in terms the months in which shark attacks most frequently occur?
+
+d.  (8 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+
+***
+***
+
+
+#  Problem 7
+
+**Days Are Numbered**
+
+Graph:  (10 points)
+
+a.  (8 points)  Do shark attacks occur more commonly on certain days of the week than others?  Does this change depending on if the shark attack is fatal?  How has this changed over time, since 1850?
+
+b.  (2 points)  Which time spans had the most fatal shark attacks that occured on weekends (Saturdays and Sundays)?
+
+c.  (3 points)  List the different marginal and conditional distributions shown in your graph.  (E.g., write sentences like:  "The conditional distributions of `Age` given each  `Type` is shown in the stacked histogram" or "The marginal distribution of `Sex` can be found by looking at the heights of the main bars in the stacked bar chart" or "The conditional distributions of `Type` given each category of `Sex` can be found by looking at the heights of the cells in the mosaic plot."  Do this for each marginal or conditional distribution shown in your graph.)
+
+d.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+
+***
+***
+
