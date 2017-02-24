@@ -215,6 +215,11 @@ data(Cars93)
 
 model <- lm(Price ~ Passengers + Fuel.tank.capacity, data = Cars93)
 gg_diagnose(model)
+gg_resfitted(model)
+gg_resX(model)
+gg_reshist(model)
+gg_boxcox(model)
+gg_qqplot(model)
 ?gg_diagnose
 
 
@@ -222,6 +227,36 @@ gg_diagnose(model)
 library(tidyverse)
 food <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv")
 food
+
+
+ggplot(food, aes(y = energy_100g, x = fat_100g, color = nutrition_grade_fr,
+                 size = proteins_100g)) + 
+  geom_point() + 
+  labs(
+    title = "my title",
+    subtitle = "sub",
+    color = "this is my new legend title",
+    size = "amount of protein"
+  ) + scale_x_sqrt() + 
+  scale_y_sqrt()
+
+
+
+
+
+library(datasets)
+data("geyser")
+head(geyser)
+head(mutate(geyser, 
+            lag1 = dplyr::lag(duration, 1),
+            lag2 = dplyr::lag(duration, 2),
+            lag3 = dplyr::lag(duration, 3),
+            lead1 = dplyr::lead(duration, 1),
+            ))
+
+
+
+
 
 
 
