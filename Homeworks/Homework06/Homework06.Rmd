@@ -119,15 +119,15 @@ c.  (5 points)  Write 1-3 sentences describing why you made certain choices in y
 
 #  Problem 3
 
-**Gender Bias?**
+**Length Problems**
 
 Graph:  (10 points)
 
 (Note:  `SharkLength` is measured in feet.)
 
-a.  (8 points)  Are sharks getting longer over time?  Provide visual evidence.
+a.  (6 points)  Are sharks getting longer over time?
 
-b.  (2 points)  Are sharks involved in fatal attacks getting longer over time?
+b.  (4 points)  Are sharks involved in fatal attacks getting longer over time?
 
 c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
 
@@ -146,7 +146,7 @@ c.  (5 points)  Write 1-3 sentences describing why you made certain choices in y
 
 Graph:  (10 points)
 
-a.  (10 points)  Since 1850, is the `Age` of shark attack victims at the time of the attack getting older, getting younger, or staying roughly the same?
+a.  (9 points)  Since 1850, is the `Age` of shark attack victims at the time of the attack getting older, getting younger, or staying roughly the same?
 
 b.  (5 points)  Is the `Age` of **female** shark attack victims at the time of the attack getting older, getting younger, or staying roughly the same?
 
@@ -165,7 +165,7 @@ c.  (8 points)  Write 1-3 sentences describing why you made certain choices in y
 
 Graph:  (10 points)
 
-a.  (10 points)  Characterize the marginal distribution of the year in which the attack occurred (`Year`).  Are there any time periods with increases or decreases in the number of attacks?  Are there particular types of attacks that correspond to these increases or decreases?
+a.  (9 points)  Characterize the marginal distribution of the year in which the attack occurred (`Year`).  Are there any time periods with increases or decreases in the number of attacks?  Are there particular types of attacks that correspond to these increases or decreases?
 
 b.  (3 points)  The movie "Jaws" was released in 1975.  Does there appear to be an increase in reported shark attacks after the movie's release?  If so, would you say that the release and subsequent popularity of "Jaws" caused the increase in reported shark attacks?
 
@@ -188,7 +188,7 @@ e.  (BONUS:  2 points)  Legend has it that shark attacks stemming from "Sea Disa
 
 Graph:  (10 points)
 
-a.  (10 points)  You are terrified of shark attacks, but you love being in the water.  Are there particular months of the year where its safer to be in the water than others?  Does this change depending on `Country`?  (You should consider only the countries in your dataset.)
+a.  (9 points)  You are terrified of shark attacks, but you love being in the water.  Are there particular months of the year where its safer to be in the water than others?  Does this change depending on `Country`?  (You should consider only the countries in your dataset.)
 
 b.  (3 points)  Are the month of the attack and the country of the attack independent?  (Remember, you can supplement your graph with the results of a statistical test if your graph is not sufficient to answer this question.)
 
@@ -211,11 +211,25 @@ a.  (8 points)  Do shark attacks occur more commonly on certain days of the week
 
 b.  (2 points)  Which time spans had the most fatal shark attacks that occured on weekends (Saturdays and Sundays)?
 
-c.  (3 points)  List the different marginal and conditional distributions shown in your graph.  (E.g., write sentences like:  "The conditional distributions of `Age` given each  `Type` is shown in the stacked histogram" or "The marginal distribution of `Sex` can be found by looking at the heights of the main bars in the stacked bar chart" or "The conditional distributions of `Type` given each category of `Sex` can be found by looking at the heights of the cells in the mosaic plot."  Do this for each marginal or conditional distribution shown in your graph.)
+c.  (2 points)  List the different marginal and conditional distributions shown in your graph.  (E.g., write sentences like:  "The conditional distributions of `Age` given each  `Type` is shown in the stacked histogram" or "The marginal distribution of `Sex` can be found by looking at the heights of the main bars in the stacked bar chart" or "The conditional distributions of `Type` given each category of `Sex` can be found by looking at the heights of the cells in the mosaic plot."  Do this for each marginal or conditional distribution shown in your graph.)
 
 d.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
 
 
 ***
 ***
+
+
+#  Problem 8
+
+(2 points each)
+
+**Read Your Feedback**
+
+Read your feedback from Lab03, Lab04, Lab05 (if graded), HW03, HW04, and HW05 (if graded) on Blackboard.
+
+a.  Write 1-3 sentences about what you did well on in these assignments.
+
+b.  Write 1-3 sentences about what you did wrong on these assignments.
+
 
