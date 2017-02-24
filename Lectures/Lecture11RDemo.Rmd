@@ -1,7 +1,7 @@
 ---
 title: "Lecture 11 + R Demo"
 author: "Sam Ventura"
-date: "February 20th, 2017"
+date: "February 22nd, 2017"
 output: 
   html_document:
     toc:  true
@@ -39,7 +39,7 @@ library(ggplot2)
 data(Cars93)
 #head(Cars93)
 
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
   geom_point()
 
 ```
@@ -52,15 +52,18 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) +
 We can color by a third variable, whether it's categorical (different color for each category):
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
-  geom_point(aes(colour = Origin))
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  geom_point(aes(color = Origin))
+
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price, color = Origin)) + 
+  geom_point()
 ```
 
 ...or continuous (with a color scale/gradient):
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
-  geom_point(aes(colour = Weight))
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price, color = Weight)) + 
+  geom_point()
 ```
 
 ##  Point size (`size`)
@@ -68,8 +71,8 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) +
 We can also map variables to other aesthetics, e.g. `size`:
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
-  geom_point(aes(size = Weight))
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price, size = Weight)) + 
+  geom_point()
 ```
 
 
@@ -78,8 +81,8 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) +
 ... or the type (`shape`) of points:
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
-  geom_point(aes(shape = Origin), size = 2)
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price, shape = Origin)) + 
+  geom_point(size = 3)
 ```
 
 
@@ -88,8 +91,8 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) +
 ... or the shading (`alpha`) of the points:
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
-  geom_point(aes(alpha = Weight), color = "red")
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price, alpha = Weight)) + 
+  geom_point(color = "red")
 ```
 
 
@@ -97,10 +100,10 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) +
 
 We can even do several of these at once:
 
-```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
-  geom_point(aes(size = Weight, color = Type, shape = Origin,
-                 alpha = Horsepower))
+```{r, fig.height = 7, fig.width = 8}
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price, size = Weight, 
+                     color = Type, shape = Origin, alpha = Horsepower)) + 
+  geom_point()
 ```
 
 The above graph is actually a 6-dimensional graphic:
@@ -120,9 +123,9 @@ Mixing point types is an easy way to make (aesthetically) nice looking graphics!
 
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
-  geom_point(colour="black", size = 4.5) +
-  geom_point(colour="pink", size = 4) +
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  geom_point(color="black", size = 5) +
+  geom_point(color="pink", size = 4) +
   geom_point(aes(shape = Origin))
 ```
 
@@ -147,8 +150,9 @@ For example, we can add a linear regression line to our plot very easily.
 To do this, we can use `+ geom_smooth(method = lm)`:
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
-  geom_point() + geom_smooth(method = lm, se = FALSE)
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  geom_point() + 
+  geom_smooth(method = lm, se = FALSE)
 ```
 
 ##  Linear regression (with error bars)
@@ -156,8 +160,9 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) +
 Above, I added `se = FALSE` so that the standard error bars do not show up in the graph.  Setting this parameter to `TRUE` instead, we get:
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = Price) + 
-  geom_point() + geom_smooth(method = lm, se = TRUE)
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  geom_point() + 
+  geom_smooth(method = lm, se = TRUE)
 ```
 
 This isn't a very good fit (e.g. look at residuals vs. fitted), so perhaps a variable transformation will help.
@@ -170,8 +175,12 @@ This isn't a very good fit (e.g. look at residuals vs. fitted), so perhaps a var
 We can transform continuous variables as well -- again, **within the plot**.
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) + 
-  geom_point(aes(alpha = Weight))
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = log(Price))) + 
+  geom_point()
+
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  geom_point() + 
+  scale_y_log10()
 ```
 
 
@@ -180,17 +189,20 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) +
 Sometimes, variable transformations (e.g. `log()` or `sqrt()`) are useful when we're doing linear regression, in order to get a better fit
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) + 
-  geom_point() + geom_smooth(method = lm, se = FALSE)
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = log(Price))) + 
+  geom_point() + 
+  geom_smooth(method = lm, se = FALSE)
 ```
 
 
 ###  SEs with Transformations
+
 I added `se = FALSE` so that the standard error bars do not show up in the graph.  Setting this parameter to `TRUE` instead, we get:
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) + 
-  geom_point() + geom_smooth(method = lm, se = TRUE)
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = log(Price))) + 
+  geom_point() + 
+  geom_smooth(method = lm, se = TRUE)
 ```
 
 
@@ -199,22 +211,27 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) +
 We can specify different alpha-levels for our confidence bands in liner regression.  The default is 0.95.  What if we changed it to 0.9?  0.99?
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) + 
-  geom_point() + stat_smooth(method = lm, se = TRUE, level = 0.9)
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) + 
-  geom_point() + stat_smooth(method = lm, se = TRUE, level = 0.99)
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = log(Price))) + 
+  geom_point() + 
+  stat_smooth(method = lm, se = TRUE, level = 0.9)
+
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = log(Price))) + 
+  geom_point() + 
+  stat_smooth(method = lm, se = TRUE, level = 0.99)
 ```
 
 
 ##  Non-Linear Trends
 
-We can also do other types of modeling, e.g. local regression / loess smoothing
+We can also do other types of modeling, e.g. local regression / loess smoothing:
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) + 
-  geom_point() + geom_smooth(method = loess, se = TRUE)
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  geom_point() + 
+  geom_smooth(method = loess, se = TRUE)
 ```
 
+Check the help documentation for `geom_smooth()` and `stat_smooth()` to see what methods are available, and how to adjust them.
 
 
 ##  Leave The Points.  Take The Regression Model.
@@ -222,7 +239,7 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) +
 We don't even need to plot the points to do this -- sometimes we might want to just plot the regression model:
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) +
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = log(Price))) +
   geom_smooth(method = loess, se = TRUE)
 ```
 
@@ -230,17 +247,9 @@ ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) +
 As always, can adjust some parameters:
 
 ```{r}
-ggplot(Cars93) + aes(x = Fuel.tank.capacity, y = log(Price)) +
+ggplot(Cars93, aes(x = Fuel.tank.capacity, y = log(Price))) +
   geom_smooth(method = loess, se = TRUE, fill = "blue", 
-              colour = "darkblue", size = 2, alpha = 0.2)
+              color = "darkblue", size = 2, alpha = 0.2)
 ```
-
-
-#  Next time:
-
-+  Pairs plots
-+  Don't forget about marginal distributions!
-+  2-D Kernel Density Estimation
-+  Heat Maps
 
 

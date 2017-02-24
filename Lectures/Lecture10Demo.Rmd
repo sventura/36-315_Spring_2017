@@ -19,7 +19,7 @@ library(ggplot2)
 data(Cars93)
 #head(Cars93)
 
-ggplot(Cars93) + aes(x = Fuel.tank.capacity) + 
+ggplot(Cars93, aes(x = Fuel.tank.capacity)) + 
   geom_histogram(bins = 20, fill = "red", color = "black") + 
   geom_rug()
 
