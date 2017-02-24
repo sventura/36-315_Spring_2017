@@ -1,0 +1,432 @@
+---
+title: "36-315 Homework 05, Spring 2017"
+author: "Sample Solutions"
+date: "Due Wednesday, February 22, 2017 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Homework 05:  Density Estimates, Histograms, and Parameter Selection
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW05.Rmd -- e.g. "sventura-HW05.Rmd") to the Homework 05 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+#  Problem 0
+
+**Style Guide and Tabbed HTML Output**
+
+a.  What style guide are you using on this assignment?  (Up to 10 points will be deducted if you do not adhere to a specific style guide.)
+
+b.  Remember to include a floating table of contents in your submission.
+
+
+***
+***
+
+
+#  Problem 1
+
+(5 points)
+
+**Build your #brand**
+
+As we will discuss in lecture on Monday, most data journalists use the same graphical theme, so that all graphs they create look the same way.  This is a good way to build your brand if you're doing any type of online data journalism.  Some examples:  The New York Times, FiveThirtyEight, Quartz, HuffingtonPost, The Washington Post, and many others.  It's also common practice to do this when writing academic papers, either for classes or journals.
+
+As you did on Homework04, create a new `ggplot()` theme.  Pick a font and color scheme of your choice.  Use a white or grey background in your theme, but feel free to use other colors elsewhere on the graph.  Feel free to adjust other thematic features as you see fit.  
+
+**Be somewhat conservative here.**  You don't want to distract the viewer with hot pink plot backgrounds and light green axes.  All text should be readable and easy on the eyes.
+
+**Use these theme for all parts of all problems for this homework!**  The same will go for all future assignments.
+
+**For this problem, just store your theme in a variable called `AndrewID_315_theme` (obviously, substitute your Andrew ID here).**  Many students wrote a function that allowed them to supplant certain features of their theme when they wanted.  This is not necessary, but you are welcome to do so.  See the Homework04 solutions for an example theme, but **DO NOT just copy the instructors' theme!**  Pick something that will be unique to YOU.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+my_theme <-  theme_bw() + # White background, black and white theme
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+```
+
+
+***
+***
+
+##  Note
+
+Congratulations!  We won't be doing too many more "critique a graph from the internet" problems for the rest of the semester.  It's important that you gain an understanding of how to do this early on in the course, so that you can build and develop your skills at writing about graphs.  For the most part, everyone has made some major strides in this area over the past few weeks.  I hope you enjoyed these exercises, and that you recognize the value in providing objective criticisms of others' work.
+
+
+***
+***
+
+##  Load the Food Facts Data
+
+**Load the Food Facts dataset into R.**  This is a carefully chosen, modified subset of the data provided [here](https://www.kaggle.com/openfoodfacts/world-food-facts) by Kaggle.  Documentation for all of the variables is available at that link as well.
+
+The Food Facts data is available on the Course GitHub page [here](https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv).
+
+When you read it into `R`, store it in an object called `food`, then complete the following problems.
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+food <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv")
+```
+
+***
+***
+
+
+#  Problem 2
+
+**Density Estimates vs. Histograms**
+
+In this problem, we'll examine the distribution of `energy_100g` with density estimates, histograms, and rug plots.
+
+a.  (1 point)  Look at the help documentation for the `energy_100g` variable on Kaggle.  What is this variable?  What are the units?
+
+b.  (4 points)  Create two density plots of the `energy_100g` variable.  In the first, use a small bandwidth, so that many local features of the distribution are shown, and the density estimate is somewhat "jagged" / "rigid" / not smooth.  In the second, use a larger bandwidth, so that the local features of the distribution are smoothed out.  Use `grid.arrange()` to arrange these plots into a 2x1 grid.  Compare and contrast the two plots.  Discuss which features are easier or more difficult to see in each of the plots.
+
+c.  (4 points)  Create two histograms of the `energy_100g` variable.  In the first, use a small bin width (or a large number of bins), so that many local features of the distribution are shown, and the histogram is somewhat "jagged" / "rigid" / not smooth.  In the second, use a larger bin width (or a small number of bins), so that the local features of the distribution are smoothed out.  Use `grid.arrange()` to arrange these plots into a 2x1 grid.  Compare and contrast the two plots.  Discuss which features are easier or more difficult to see in each of the plots.
+
+d.  (6 points)  Does the distribution of `energy_100g` differ depending on the nutrition grade (`nutrition_grade_fr`) of the food?  Answer this graphically in three ways:  First, with a "stacked histogram" (fill the bars according to the nutrition grade).  Second, with a "conditional density plot" (have five density curves -- one for each category of nutrition grade -- on a single plot, with each curve colored according to the nutrition grade).  Third, by creating facetted histograms of `energy_100g`, facetting on `nutrition_grade_fr`.
+
+Note:  Part (d) is an example of the type of question you might see on a lab example.
+
+e.  (2 points)  In part (d), does it make more sense to display the facetted histograms in a 1x5 (one row, five columns) grid or a 5x1 (five rows, one column) grid?  What are the advantages and disadvantages of each approach?  Which features of the histograms are easier or more difficult to compare depending on what you chose?
+
+Aside:  Note that the nutrition grade is an ordered categorical variable.  As such, it would be nice if you used an appropriate color gradient.  
+
+To manually assign the colors to each category, use `my_colors <- c(a = "darkred", b = "pink", c = "lightgrey", d = "lightblue", e = "darkblue")`.  Then use `+ scale_fill_manual(values = my_colors)` or `+ scale_color_manual(values = my_colors)`.  
+
+A better way to automatically build the color gradient, so that it will work with any number of categories, is to use the following code.
+
+```{r, warning = F, message = F}
+color1 <- "green"
+color2 <- "red"
+palette <- c(color1, "grey", color2)
+n_values <- length(unique(food$nutrition_grade_fr))
+
+ggplot(food, aes(x = energy_100g, fill = nutrition_grade_fr)) + geom_histogram() + 
+  scale_fill_manual(name = "Nutrition Grades",
+                  values = colorRampPalette(palette)(n_values))
+```
+
+That said, you should always avoid using red and green in the same plot, since red-green colorblind viewers will not be able to distinguish the colors.
+
+f.  (3 points)  Recreate the first plot from part (d), but use your own color gradient.  You can use an adjusted version of the above code to do this.  (Please do not include the example graph in your final submission.)  You are also welcome to change the middle color (currently "grey") to something else (e.g. "white"), or remove the middle color entirely.
+
+
+***
+***
+
+
+
+#  Problem 3
+
+a.  (2 points)  What information is contained in the `salt_100g` variable?
+
+We can find documentation on the variables [here](https://world.openfoodfacts.org/data/data-fields.txt). The variable salt_100g correspond to the amount of salt (in grams) for 100 grams or 100 ml of product (solid vs liquid). I'll use the notation "g per 100 g / 100 ml" for this relationship even though "/" tends to suggest "per".
+
+b.  (3 points)  Which countries typically have foods with higher salt content?  To answer this, visualize the distribution of `salt_100g` given the `countries_en` variable with a stacked histogram.  Describe the distribution.  Be sure to mention center, spread, skew, and modality.  What about the distribution makes it hard to answer this question?
+
+Note:  Part (b) is an example of the type of question you might see on a lab example.
+
+```{r}
+b <- ggplot(food,aes(x = salt_100g,fill = countries_en)) +
+  geom_histogram(binwidth = .4) + scale_x_continuous(limits = c(-1,13) ) +
+  labs(title = "Distribution of Grams of Salt in food per 100g / 100 ml",
+       x = "Salt Content in Food (g per 100g /100ml)",
+       y = "Number of Food Items",
+       fill = "Country") + my_theme
+outliers <- round(tail(sort(food$salt_100g),5),2)
+b
+```
+
+The plot above has 5 outliers at values of `r outliers[1]`,`r outliers[2]`,`r outliers[3]`,`r outliers[4]`,and `r outliers[5]` grams of salt per 100 g / 100 ml. There appears to be a large mode around 0 for all countries. The distribution is positively skewed, decaying in a manner similar to an exponential distribution with almost no values great there 20 although there are a few outliers with values above 60. The grams of salt for 100 g or 100 ml are also non-negative which should be expected.  It is impossible to tell what countries these foods are associated with given the scale of the figure. The center of the distribution for all countries is probably near 1 but again the scale makes it hard to tell. It is difficult to see which countries have food with the most salt but since the United Kingdom and Germany appear to be more concentrated around 0 we can guess that the United States and Spain have saltier food.
+
+c.  (5 points)  Visualize the log-transformed `salt_100g` variable (in `R`, the `log()` function gives the natural log by default).  To do this, use `ggplot(food) + geom_histogram(aes(x = log(salt_100g)))`, and be sure to add appropriate titles and axis labels (in particular, what are the units on the x-axis?) and use a larger-than-default number of bins.  Is it easier to answer the question in (b) with this graph?  Are there particular countries with higher salt content in their foods?
+
+
+```{r}
+c <- ggplot(food,aes(x = log(salt_100g),fill = countries_en)) +
+  geom_histogram(binwidth = .4) + 
+  labs(title = "Distribution of Grams of Salt in food per 100g / 100 ml",
+       x = "Log of Salt Content in Food (grams per 100g /100 ml)",
+       y = "Number of Food Items",
+       fill = "Country") + my_theme
+c
+```
+
+**Although this distribution may seem nice, we're excluded `r sum(food$salt_100g==0)` observations that have 0 salt content for 100 g / 100 ml since log(0) doesn't exist**. If we were to analysis this plot we might conclude that there appears to that Germany does indeed tend to have less salty foods, none of the saltiest foods are from Germany (above 2 on the log scale, so around 7 grams of salt per 100 g / 100 ml). The overall distribution suggest that we might have a bimodal distribution for foods with some salt. The United States still appears to have the saltiest food since it has as many very salty foods as Spain without also having the non-salty foods (not including food without salt).
+
+**A better approach to applying a log transformation to scale the data would be to apply a transformation like $log(x+1)$, and we do so below:**
+```{r}
+c2 <- ggplot(food,aes(x = log(salt_100g + 1),fill = countries_en)) +
+  geom_histogram(binwidth = .1) + 
+  labs(title = "Distribution of Grams of Salt in food per 100g / 100 ml",
+       x = "Log(Salt Content + 1) in Food (grams per 100g /100 ml)",
+       y = "Number of Food Items",
+       fill = "Country") + my_theme
+c2
+```
+
+In the $log(x + 1)$ transformation of salt content in food per 100 g / 100 ml, we see that overall we have a multiple modal distribution, and that Germany has much less highly salty foods (foods with log(salt +1) > .8, i.e. 1.22 grams of salt per 100 g / 100 ml). Spain tends also to have high amount of no salt foods, but also higher amounts of food with highly salt foods. America appears to have the least amount of no salt foods and the a decent amount have highly salt foods. **I will continue the analysis using this $log(x+1)$ transformation.**
+
+d.  (5 points)  Repeat part (c), but with a conditional density estimate plot instead of a stacked histogram.  Use the `adjust` parameter to reduce the bandwidth to 75% of the default value.
+
+Finally
+
+```{r}
+ggplot(food,aes(x = log(salt_100g+1),color=countries_en))+
+  geom_density(adjust = .75) + 
+  #scale_x_continuous(limit = c(-.1,3)) +
+    labs(title = "Distribution of Grams of Salt in food per 100g / 100 ml",
+       x = "Log(Salt Content + 1) in Food (grams per 100g /100 ml)",
+       y = "Number of Food Items",
+       color = "Country") + my_theme
+```
+
+
+The density distributions help express that the distribution of the United States food's salt connent sees a much larger proportion than the other countries in around the second model of more highly salted foods. The other countries don't have a clear order on quanities of more highly salted foods, but they do in the number of foods with very low/ zero grams of salt per 100 g / 100 ml, which Germany having the most of these food items (per total food items reported), followed by Spain, the UK, and the US. 
+
+e.  (10 points)  Examine the plots from the following lines of code.  Why does the rug plot show up in some plots, but not in others?  Why do the middle-column plots look different from the others?  Which line of code is most efficient and appropriate to use, given how `ggplot()` uses the `aes()` function?
+
+```{r, fig.width = 12, fig.height = 8, warning = F, message = F}
+library(gridExtra)
+plot1 <- ggplot(food) + geom_histogram(aes(x = log(salt_100g))) + geom_rug() #doesn't show - wasn't told what x is (not passed along)
+plot2 <- ggplot(food) + geom_histogram(aes(x = log(salt_100g))) + geom_rug(aes(x = salt_100g)) #should show, but is dealing with incorrect transformation of parameter
+plot3 <- ggplot(food) + geom_histogram(aes(x = log(salt_100g))) + geom_rug(aes(x = log(salt_100g))) #should show, given directly
+plot4 <- ggplot(food, aes(x = log(salt_100g))) + geom_histogram() + geom_rug() #should show, in initialized area
+plot5 <- ggplot(food, aes(x = log(salt_100g))) + geom_histogram() + geom_rug(aes(x = salt_100g)) # should show, but overrides the transformation
+plot6 <- ggplot(food, aes(x = log(salt_100g))) + geom_histogram() + geom_rug(aes(x = log(salt_100g))) #should show- overkill
+
+grid.arrange(plot1, plot2, plot3, plot4, plot5, plot6, ncol = 3)
+```
+
+The rug plot shows up only if it is given an `salt_100g` as an `x` variable. This can happen in two ways:
+
+If `aes(x = log(salt_100g)` is set inside the `ggplot()` function then it is passed to `geom_rug()` since anything set in `ggplot()` is used as the default for subsequent layers.
+
+If `aes(x = log(salt_100g))` is not set inside the `ggplot()` but is set in `geom_rug()` then the rug plot displays that data (i.e. `salt_100g`).
+
+The middle two plots look different because here the rug plot uses salt_100g while the histogram uses  log(salt_100g). The fourth plot is the most efficient and appropriate to use.
+
+To efficiently use the structure of `ggplot` with relationship to passing variables to structure via `aes` we can say that `plot4` does the best job, the other plots that work correctly (`plot3`,`plot6`) provide multiple times when we call the same `aes(x = log(salt_100g))`.
+
+f.  (BONUS:  2 points)  `ggplot()` has many scaling functions built in.  What can you add to the following line of code (where it currently says `+ ???` to put the x-axis on the square-root scale?  What about the log-base-10 scale?
+
+`ggplot(food, aes(x = salt_100g)) + geom_histogram() + geom_rug() + ???`
+
+For the square root use `scale_x_sqrt(), for log base 10 use `scale_x_log10()`.
+
+***
+***
+
+#  Problem 4
+
+(20 points)
+
+**Automatically Specify Bin Width**
+
+Write a function called `auto_binwidth()` that automates the choice of a bin width for a 1-D histogram.  Your function should work as follows:
+
+```{r}
+auto_binwidth <- function(x, adjust = 1) {
+  nquantiles <- max(2 * log(length(x)), 1) + 2
+  vals <- quantile(x, probs = seq(0, 1, length.out = nquantiles))
+  widths <- vals[-1] - vals[-nquantiles]
+  binwidth <- median(widths)
+  return(adjust * binwidth)
+}
+
+#ggplot(data = food, aes(x = salt_100g)) + 
+#  geom_histogram(binwidth = auto_binwidth(food$salt_100g))
+```
+
+That is, it should select the bin width automatically given, as input, the variable you are plotting on the x-axis.
+
+Your function should take into account some combination of the following features:
+
++  The minimum and maximum (or the range/spread) of the variable
++  The variance (or standard deviation) of the variable
++  The skewness of the variable
++  The number of observations / sample size
++  Other important statistics (e.g. mean, median, quantiles, etc)
++  Anything else you think may help
+
+The function should output a single number, specifying the bin width to be used in the histogram (adjusted with an adjustment factor specified by the user).
+
+You may NOT use or look up existing functions/formulas for automatically specifying the bin width or number of bins in a histogram.  The purpose of this problem is to get you to think about what's important when choosing this parameter.  Blindly copying down a formula from the internet does not achieve this goal.
+
+Other than that, how you define your function is up to you.  Ideally, your bin width will adapt to different types of distributions and be dependent on the sample size.  For example, if you only have 20 observations, you probably don't want a histogram with 30 bins!
+
+Demonstrate that your function works on:
+
++  One continuous variable from the `food` dataset
++  One continuous variable from the `pgh_bridges` dataset
++  A random sample of size 100 from a Normal(mean = 0, sd = 1) distribution (use `rnorm()`)
++  A random sample of size 10000 from a Normal(mean = 0, sd = 100) distribution (use `rnorm()`)
+
+
+**Commentary**:
+For a bandwith we first split the data into `2 * log(length(x)) + 1` different bins, or for small `n` into two binds. The boundaries are set by evenly spaced quantiles. So if there are 9 bins we look at the different between the minimum and the 10th quantile, the 20th and 10th quantile etc. We then calculate the median binwidth and use that as our binwidth.
+
+We split the data into `2 * log(length(x))` because we are looking for a function that will grow more slowly than `n` so that our estimate at a given point weights a larger numbers of data points as `n` grows but they should be closer to it, hence the sublinear growth. We then want to take into account that data between some quantiles will be more spread out than at others. Taking the median width attempts to balance this in a way that will be less skewed by outliers than the mean.
+```{r}
+pgh_bridges <- 
+  read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv")
+```
+
+
+```{r}
+
+smaller_title_update <- theme(title = element_text(size = 12))
+
+a <- ggplot(food,aes(x = sugars_100g)) + 
+  geom_histogram(binwidth = auto_binwidth(food$sugars_100g)) +
+    labs(title = "Distribution of Sugar in foods", 
+         subtitle = "per 100g / 100 ml",
+       x = "Sugar in Food (grams per 100g /100 ml)",
+       y = "Number of Food Items") + my_theme + smaller_title_update
+
+b <- ggplot(pgh_bridges,aes(x = length)) + 
+  geom_histogram(binwidth =
+                   auto_binwidth(pgh_bridges$length)) +
+    labs(title = "Distribution Bridge Length,",
+         subtitle = "Pittsburgh",
+       x = "Bridge Length (ft)",
+       y = "Number of Bridges") + my_theme + smaller_title_update
+
+data100 <- data.frame(x = rnorm(n = 100))
+data10000 <- data.frame(x = rnorm(n = 10000))
+
+
+c <- ggplot(data100,aes(x = x)) + 
+  geom_histogram(binwidth =
+                   auto_binwidth(data100$x)) +
+  labs(title = "Sample of 100 iid Normal(0,1)",
+       subtitle = "Empirical Distribution",
+       x = "value",
+       y = "count") + my_theme + smaller_title_update
+
+d <- ggplot(data10000,aes(x = x)) + 
+  geom_histogram(binwidth =
+                   auto_binwidth(data10000$x)) +
+    labs(title = "Sample of 1000 iid Normal(0,1)",
+       subtitle = "Empirical Distribution",
+       x = "value",
+       y = "count") + my_theme + smaller_title_update
+
+grid.arrange(a,b,c,d,nrow = 2)
+```
+
+***
+***
+
+
+#  Practice Exam Problems:  5 and 6 (Description)
+
+***Instructions:  Practice Lab Exam***
+
++  Problems 5 and 6 are practice lab exam problems.
++  You should expect to see more questions like this (open-ended) on both the lab exam and for the remainder of the semester.
++  For these practice exam questions, be sure to answer the question(s) asked.
++  In addition to answering the questions asked, **write 1-3 sentences describing why you made certain choices in your graphic.**  For example, why did you choose a histogram vs. density plot?  Pie chart vs. rose diagram vs. bar chart vs. spine chart?  Stacked vs. side-by-side vs. proportional bar chart vs. mosaic plot?  Why did you choose the bin width / number of bins in your histogram?  Why did you choose the bandwidth and kernel that you picked in your density plot?  Why did you decide to arrange the graphs the way you did (e.g. in a grid, horizontally, vertically).  Etc.
++  Remember, whenever you can supplement your answer with information from a statistical test, this is very beneficial!  Feel free to run statistical tests and include this information as part of your answer.
++  In the problems below, I specify how many graphics you are permitted to use.  Note that if you're using `facet_wrap()` or `facet_grid()`, this counts as a single graphic.  If you're using `grid.arrange()`, this counts as multiple graphics.
+
+
+***
+***
+
+#  Problem 5
+
+(15 points)
+
+**Give Me Some Sugar**
+
+```{r}
+#Plots of sugar per 100 grams of food
+ggplot(data = food) + 
+  geom_density(aes(x = sugars_100g), fill = "#666666", 
+               color = "black", adjust = 1.5) + 
+  labs(x = "Sugar per 100g of Food (g)",
+       y = "Density of Sugar Distribution", 
+       title = "Distribution of Sugar per 100g of Food",
+       caption = "Open Food Facts Dataset") + 
+  my_theme
+
+#Plots of sugar per 100 grams of food, conditional on country and additives. 
+ggplot(data = food) + 
+  geom_density(aes(x = sugars_100g), fill = "#666666", 
+               color = "black", adjust = 1.5) + 
+  labs(x = "Sugar per 100g of Food (g)",
+       y = "Density of Sugar Distribution", 
+       title = "Distribution of Sugar per 100g of Food",
+       subtitle = "Conditional on Country and Additives",
+       caption = "Open Food Facts Dataset") + 
+  facet_grid(additives_n ~ countries_en, margins = TRUE) +
+  my_theme +
+  theme(strip.text.x = element_text(size = 8),
+        axis.text.x = element_text(angle = 45, vjust = 0.5))
+```
+
+The distribution of sugar per 100 grams of food ranges from 0 to 100 grams of sugar. The median is around 4 grams of sugar per 100 grams of food. It has a large mode at around 2 grams of sugar, with a smaller modes at around 45 grams.  The distribution is skewed right. 
+
+Based on the faceted density plots, the distribution of the amount of sugar changes depending on the presence of additives. For all of the countries, the means and medians of the distributions of sugar for food without additives is substantially lower than for food with additives, and the right tail is less dense. The overall conditional distribution of sugar given additives shows the same pattern; there is a heavier right tail and less density near the mode at the lower end of the sugar distribution, meaning that food with additives tend to have more sugar than those without. However, many of the extreme high values of sugar per 100 grams of food are actually foods without additives. 
+
+The graphs also show a significant difference between the conditional distributions of sugar per 100 grams of food by country. In particular, the distribution for Spain seems to have a smaller mean and median amount of sugar compared to other countries, as well as a larger density near the mode, which lies at the lower end of the distribution of sugar in food. The distributions for the United States and United Kingdom seem to have a larger mean and median amount of sugar compared to other countries, whether or not additives were added to the food, and their distributions seem to have a heavier tail compared to the other two countries. 
+
+I decided to use a kernel density estimation to plot the distribution of sugar per 100 grams of food because the variable is continuous, and using a density estimate is a good way to show 1-dimensional distributions of a continuous variable. I chose to use the grid to compare the conditional distributions across countries and additives because it allows the viewer to compare the distributions on the same scale. The graphs are lined up such that it is easy to compare the distribution of sugar conditioned on additives between the different countries or the distribution of sugar conditioned on country between the different additive stauses; this does make it harder to compare the marginal distributions. 
+
+
+
+***
+***
+
+
+
+#  Problem 6
+
+(15 points)
+
+**Low-Carb Diets**
+
+
+```{r}
+ggplot(data = food) +
+    geom_histogram(aes(x = carbohydrates_100g, fill = pnns_groups_1), 
+                 position = "stack", color = "black",
+                 binwidth = 2.5) + 
+  labs(title = "Distribution of Carbohydrates per 100g of Food", 
+       x = "Carbohydrates per 100g of Food (g)", 
+       y = "Density of Protein Distribution", 
+       fill = "Type of Food",
+       subtitle = "Conditional on Type of Food",
+       caption = "Open Food Facts Dataset") + 
+  my_theme
+```
+
+The distribution of grams of carbohydrates per 100 grams of food ranges between 0 and 100 grams per 100 grams of food. The distribution of carbohydrates in food is skewed right with a heavy tail. Several categories of food have substantially more carbohydrates compared to most. The median is around 14.7 grams per 100. The distribution has two or three modes. The global mode is at around 2 grams per 100. There is a definite second local mode at around 60-65 grams per 100, and a potential third smaller local mode at around 10 grams per 100.
+
+The most common types of food at the first mode at 2 grams of protein per 100 grams of food are fruits and vegetables, fish, eggs, and meat, and fats and sauces. This can be seen from the high proportion of green, olive green, and light blue in the stacked histogram plot. The most common types of food at the second mode at 60 grams are cereals and potatoes and sugary snacks. We can see this from examining the distribution of colors near 60 grams on the x-axis, where there is a large proportion of the brown and pink color in the histogram corresponding to the categories. The most common types of food at the third potential mode at 20 grams of protein per 100 grams of food are beverages, fat and sauces, and fruits and vegetables. We can see this from examining the distribution of colors near 20g, where we see a high proportion of red, olive green, and light blue.
+
+I decided to use a stacked histogram to plot the conditional distribution of carbohydrates per 100 grams of food rather than a side-by-side or faceted bar chart because the former does a better job of displaying the marginal distribution of carbohydrates and letting us examine its modality compared to the latter two. I chose a histogram instead of a density chart because the stacked density chart does take in to account the counts of each of the categories, potentially skewing our view of the marginal distribution of carbohydrates. I chose to set the bandwidth of the histogram to 2.5 so I know the range that each bar corresponds to.
+
+***
+***
+
