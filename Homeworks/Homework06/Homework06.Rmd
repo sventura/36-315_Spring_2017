@@ -62,7 +62,7 @@ Using `facet_wrap()` or `facet_grid()` counts as one graph, while using `grid.ar
 
 #  Data:  Shark Attacks!
 
-Load the shark attack data from the course GitHub page at the following link: [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/attacks_test.csv] 
+Load the shark attack data from the course GitHub page at the following link: [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/shark-attacks-spring-2017.csv] 
 
 The data is taken from Kaggle and was originally compiled by the global shark attack file.  [More information is available here.](https://www.kaggle.com/teajay/global-shark-attacks)
 
