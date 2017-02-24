@@ -1,0 +1,164 @@
+---
+title: "36-315 Lab 06"
+author: "Your Name Here"
+date: "Due Friday, February 24th, 2017 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 06:  Trends, Transformations, and Correlations in 2-D Continuous Data
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab06.Rmd -- e.g. "sventura-Lab06.Rmd") to the Lab 02 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+In this week's assignments, we'll finish our discussion of strictly categorical data and move on to continuous data.
+
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+This week's oral evaluation graphic is from the [FiveThirtyEight](https://fivethirtyeight.com/features/what-makes-nigel-richards-the-best-scrabble-player-on-earth/):
+
+<div style="width:600px">
+![](https://espnfivethirtyeight.files.wordpress.com/2015/07/oliver-feature-scrabble-1.png?quality=90&strip=all&w=575&ssl=1)
+</div>
+
+***
+
+**Sam Says**:  It's important to avoid inserting your own commentary when discussing graphics  Your job, as a statistician / data scientist / quantitative analyst, is to interpret the graph for the viewer.  Discuss the facts presented via the data/graphic; avoid overstepping your boundaries by inserting your own opinions into what should be a presentation of facts.
+
+Reminder, the following strategy is ideal when presenting graphs orally:
+
++  First, explain what is being shown in the graph.  What is being plotted on each axis?  What do the colors correspond to?  What are the units (if applicable)?  What are the ranges of different variables (if applicable)?  Where does the data come from (if applicable)?
+
++  Next, explain the main takeaway of the graph.  What do you want the viewer to understand after having seen this graph?
+
++  If applicable, explain any secondary takeaways or other interesting findings.
+
++  Finally, for this class, but not necessarily in general:  Critique the graph.  What do you like/dislike?  What would you keep/change?  Etc.
+
+
+
+#  Problem 1
+
+**Loading The Data**
+
+Download the Lecture 11 R Demo file from Blackboard / Course Content.  Use the example code in this file to help you with this assignment.
+
+a.  (5 points)  Load the Food Facts dataset from a previous assignment, and store this in an object called `food`.  Which variables are continuous?  What is the lower bound (if any) on the possible values of these continuous variables?  What is the upper bound (if any) on these continuous variables?
+
+b.  (5 points)  Use your theme for all graphs in this assignment!
+
+
+***
+***
+
+
+#  Problem 2
+
+**Transformations**
+
+a.  (5 points)  Create two graphs, arranged into a 1x2 grid:
+
++  A histogram of the `proteins_100g` variable conditioned on the presence of absence of additives
++  A density estimate of the `proteins_100g` variable conditioned on the presence of absence of additives
+
+Is the distribution of `proteins_100g` skewed left or skewed right?  Does this change depending on the presence or absence of additives?
+
+b.  (10 points)  Often, with skewed data, it can be helpful to transform the data so that we can better visualize the distribution of possible values.  This often also helps when we use statistical models for continuous variables (e.g. linear regression).  Create four graphs, arranged into a 2x2 grid:
+
++  A histogram of the `proteins_100g` variable conditioned on the presence of absence of additives **at the log scale**
++  A density estimate of the `proteins_100g` variable conditioned on the presence of absence of additives **at the log scale**
++  A histogram of the `proteins_100g` variable conditioned on the presence of absence of additives **at the square root scale**
++  A density estimate of the `proteins_100g` variable conditioned on the presence of absence of additives **at the square root scale**
+
+To create the log scale graphs, use something like `aes(x = log(proteins_100g))`.
+
+To create the square root scale graphs, use something like `aes(x = sqrt(proteins_100g))`.  Alternatively, you can add `scale_x_sqrt()` to your `ggplot()` call.
+
+c.  (1 point)  How many food items in the dataset have 0 grams of protein (per 100g of the food)?
+
+d.  (1 point)  What is the square root of 0 (i.e. $\sqrt(0)$)?
+
+e.  (1 point)  What is the log of 0 (i.e. $log_e(0)$)?
+
+f.  (2 points)  What does `ggplot()` do when you ask it to plot `NA`, `Inf`, or `-Inf` values?
+
+g.  (5 points)  To get around this issue, recreate the log-scale histogram in part (b), but this time, use something like `aes(x = log(proteins_100g + epsilon))`.  Try this for different values of `epsilon`, e.g. `epsilon = 1` and `epsilon = 0.01`.  How much does this change the resulting plots?  Include both versions of histogram in your answer to this question.
+
+
+***
+***
+
+
+#  Problem 3
+
+(5 points each)
+
+**Visualizing 2-D Continuous Data with Scatterplots**
+
+a.  Create a scatterplot with `fat_100g` as the independent variable (on the x-axis) and `energy_100g` as the dependent variable (on the y-axis).  Consult the Lecture 11 R Demo for how to do this.
+
+b.  Describe the joint distribution of these two variables.  What interesting features do you see?  Do the two variables appear to be associated or correlated with each other?  Is there any group structure in the data?
+
+c.  Repeat part (a), but color the points by the food group (`pnns_groups_1`)  Are there particular areas of the graph where foods with certain good groups are common or uncommon?  Interpret your findings in the context of the problem.
+
+d.  Repeat part (c), but this time, facet on the food group instead of coloring the points.  In your opinion, is it easier to answer the questions asked in (c) with facetting or with the colors?  Do you think this is true generally, or does it depend on the problem?
+
+e.  Repeat part (c), but this time, change the point type to correspond to the presence or absence of additives.  With so many data points, is it easy to tell if foods with or without additives occur in certain portions of the graph?
+
+f.  Repeat part (e), but this time, change either the size of the point or the shade/transparency of the point (`alpha`) to correspond to another continuous variable in the dataset.  Does the continuous variable you chose appear to be associated with either of the other variables you're plotting here?
+
+g.  Repeat part (a), but this time, add a linear regression line to the plot, with no error bars.  Does the line appear to provide a good fit to the variables being plotted here?  Why or why not?
+
+h.  Repeat part (g), but this time, add a non-linear regression line to the plot instead of a linear regression line, again with no error bars.  Does the non-linear regression model appear to provide a better or worse fit than the linear model in part (g)?  Why?  Are there any particular areas of the graph where the line does not closely match the underlying data?  If so, where?
+
+i.  Repeat part (h), but this time, color the points by their food group.  Be sure to have only a single non-linear regression line in the plot.  To do this, you'll need to specify the `x` and `y` aesthetics in the initial call to `aes()` in `ggplot()`, and the `color` aesthetic in the call to `geom_point()`.  For example, the following code should get you started:  `ggplot(food, aes(x = fat_100g, y = energy_100g)) + geom_point(aes(color = pnns_groups_1)) + geom_smooth()`.
+
+j.  Repeat part (h), but this time, add several non-linear regression lines to the plot -- one for each of the food groups.  To do this, just move the specification of the `color` aesthetic from `geom_point()` to the original call to `aes()` in `ggplot()`.  For example, the following code should get you started:  `ggplot(food, aes(x = fat_100g, y = energy_100g, color = pnns_groups_1)) + geom_point() + geom_smooth(se = FALSE)`.
+
+k.  Explain why you get different plots in parts (i) and (j) even though the code you use is very similar.  Why does one produce a plot with a single trend line, and the other a plot with several trend lines?
+
+***
+***
+
+#  Problem 4
+
+(5 points each)
+
+**Correlations**
+
+a.  Look up the help documentation on the `cor()` function.  What is the correlation of the `fat_100g` and `energy_100g` variables?
+
+b.  Uncomment the following code, and answer the following questions:
+
++  What does the following code do?  
++  Which pair of two unique variables has the strongest positive correlation?  
++  Which pair of variables below has the strongest negative correlation? 
+
+
+```{r}
+#food %>% 
+#  select(fat_100g, energy_100g, sugars_100g, proteins_100g) %>%
+#  cor
+````
+
+
+***
+***
