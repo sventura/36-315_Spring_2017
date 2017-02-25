@@ -248,7 +248,8 @@ b.  Create a bar chart of `day_of_week` using the standard approach:  `ggplot(da
 ```{r}
 ggplot(bike_data, aes(x = day_of_week)) +
   geom_bar(fill = "blue") +
-  labs(x = "Day of Week", title = "Distribution of Day of Week")
+  labs(x = "Day of Week", title = "Distribution of Day of Week",
+       y = "Number of Rides")
 ```
 
 c.  Often, with large datasets, it can take a small amount of time to do the calculations necessary to create the bar chart.  This is because when you call `geom_bar()`, it tabulates the counts in each category when the line of code is run.  For large datasets, it's better to store the counts ahead of time and then reference these when creating the bar chart, as we did in Lab 03 with `gender_marginal`.  Here, create a bar plot showing the distribution of `day_of_week` (at the count scale), but calculate the marginal distribution ahead of time (i.e., use an approach similar to Lab 03 Problem 1).
@@ -260,7 +261,8 @@ day_counts <- bike_data %>%
 
 ggplot(day_counts, aes(x = day_of_week, y = count)) +
   geom_bar(stat = "identity", fill = "blue") +
-  labs(x = "Day of Week", title = "Distribution of Day of Week")
+  labs(x = "Day of Week", title = "Distribution of Day of Week", 
+       y = "Number of Rides")
 ```
 
 
@@ -269,7 +271,8 @@ d.  The same applies to 2-D bar charts.  First, build a stacked bar chart of `da
 ```{r}
 ggplot(bike_data, aes(x = day_of_week, fill = less_than_15_mins)) +
   geom_bar(stat = "count") +
-  labs(x = "Day of Week", 
+  labs(x = "Day of Week",
+       y = "Number of Rides",
        title = "Distribution of Day Of Week",
        subtitle = "By Length of Ride (Short vs. Long)") +
   scale_fill_discrete(guide = guide_legend(title = "Length of Ride")) +
@@ -288,6 +291,7 @@ day_15 <- bike_data %>%
 ggplot(day_15, aes(x = day_of_week, y = count, fill = less_than_15_mins)) +
   geom_bar(stat = "identity") +
   labs(x = "Day of Week", 
+       y = "Number of Rides",
        title = "Distribution of Day Of Week",
        subtitle = "By Length of Ride (Short vs. Long)") +
   scale_fill_discrete(guide = guide_legend(title = "Length of Ride")) +
@@ -314,6 +318,7 @@ day_15 <- bike_data %>%
 ggplot(day_15, aes(x = day_of_week, y = count, fill = less_than_15_mins)) + 
  geom_bar(stat = "identity", position = "dodge") +
   labs(x = "Day of Week", 
+       y = "Number of Rides",
        title = "Distribution of Day Of Week",
        subtitle = "By Length of Ride (Short vs. Long)") +
  scale_fill_discrete(guide = guide_legend(title = "Length of Ride"))
@@ -327,8 +332,8 @@ g.  Another way to visualize two categorical variables is with a "proportional" 
 ggplot(day_15, aes(x = day_of_week, y = count, fill = less_than_15_mins)) + 
  geom_bar(stat = "identity", position = "fill") +
   labs(x = "Day of Week", 
-       y = "Proportion of Rides by Length",
-       title = "Conditional Distribution of Length of Ride given Day Of Week") +
+       title = "Conditional Distribution of Length of Ride given Day Of Week",
+       y = "Proportion of Rides") +
  scale_fill_discrete(guide = guide_legend(title = "Length of Ride"))
 ```
 
@@ -445,7 +450,7 @@ ggplot(day_15, aes(x = fct_relevel(day_of_week, ordered_days),
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
        x = "Day of Week", 
-       y = "Proportion of Rides by Length",
+       y = "Proportion of Rides",
        fill = "Length of Ride")
 ```
 
@@ -466,7 +471,7 @@ ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days),
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
        x = "Day of Week", 
-       y = "Proportion of Rides by Length",
+       y = "Proportion of Rides",
        fill = "Length of Ride")
 ```
 
@@ -566,6 +571,7 @@ ggplot(airline_tweets, aes(x = airline, fill = airline_sentiment)) +
   geom_bar() + 
   labs(fill = "Airline Sentiment",
        title = "Distribution of Airline in Airline-Related Tweets",
+       y = "Number of Rides",
        x = "Airline")
 ```
 
@@ -620,7 +626,6 @@ ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days),
        fill = "Length of Ride") +
   theme(legend.position="bottom")
 ```
-
 
 
 
