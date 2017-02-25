@@ -327,6 +327,7 @@ g.  Another way to visualize two categorical variables is with a "proportional" 
 ggplot(day_15, aes(x = day_of_week, y = count, fill = less_than_15_mins)) + 
  geom_bar(stat = "identity", position = "fill") +
   labs(x = "Day of Week", 
+       y = "Proportion of Rides by Length",
        title = "Conditional Distribution of Length of Ride given Day Of Week") +
  scale_fill_discrete(guide = guide_legend(title = "Length of Ride"))
 ```
@@ -444,7 +445,7 @@ ggplot(day_15, aes(x = fct_relevel(day_of_week, ordered_days),
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
        x = "Day of Week", 
-       y = "Number of Rides",
+       y = "Proportion of Rides by Length",
        fill = "Length of Ride")
 ```
 
@@ -465,7 +466,7 @@ ggplot(day_15, aes(x = fct_recode(fct_relevel(day_of_week, ordered_days),
        subtitle = "Conditional on Day of Week",
        caption = "NYC Citi Bike data, June 2016",
        x = "Day of Week", 
-       y = "Number of Rides",
+       y = "Proportion of Rides by Length",
        fill = "Length of Ride")
 ```
 
