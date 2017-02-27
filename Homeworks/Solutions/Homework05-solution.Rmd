@@ -134,8 +134,8 @@ cond_dens <- ggplot(food, aes(x =energy_100g, color = nutrition_grade_fr)) +
   geom_density(adjust = 1.5) + 
   labs(x = "Kilojoules per 100 grams", 
        y = "Density",
-       title = "Conditional Distribution of Energy \n given Nutrition Grade") + 
-  guides(color = guide_legend(title = "Nutrition Grade")) + 
+       title = "Conditional Distribution of Energy \n given Nutrition Grade", 
+       color = "Nutrition Grade") + 
   my_theme
 
 facetted_density <- ggplot(food, aes(energy_100g)) +
