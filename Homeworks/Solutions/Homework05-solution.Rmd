@@ -44,36 +44,21 @@ b.  Remember to include a floating table of contents in your submission.
 
 **Build your #brand**
 
-As we will discuss in lecture on Monday, most data journalists use the same graphical theme, so that all graphs they create look the same way.  This is a good way to build your brand if you're doing any type of online data journalism.  Some examples:  The New York Times, FiveThirtyEight, Quartz, HuffingtonPost, The Washington Post, and many others.  It's also common practice to do this when writing academic papers, either for classes or journals.
-
-As you did on Homework04, create a new `ggplot()` theme.  Pick a font and color scheme of your choice.  Use a white or grey background in your theme, but feel free to use other colors elsewhere on the graph.  Feel free to adjust other thematic features as you see fit.  
-
-**Be somewhat conservative here.**  You don't want to distract the viewer with hot pink plot backgrounds and light green axes.  All text should be readable and easy on the eyes.
-
-**Use these theme for all parts of all problems for this homework!**  The same will go for all future assignments.
-
-**For this problem, just store your theme in a variable called `AndrewID_315_theme` (obviously, substitute your Andrew ID here).**  Many students wrote a function that allowed them to supplant certain features of their theme when they wanted.  This is not necessary, but you are welcome to do so.  See the Homework04 solutions for an example theme, but **DO NOT just copy the instructors' theme!**  Pick something that will be unique to YOU.
-
-```{r, warning=FALSE, message=FALSE}
-library(tidyverse)
+```{r}
+#Create theme that can be added to plots
+library(data.table)
+library(ggplot2)
+library(gridExtra)
 my_theme <-  theme_bw() + # White background, black and white theme
   theme(axis.text = element_text(size = 12, color="indianred4"),
         text = element_text(size = 14, face="bold", color="darkslategrey"))
 ```
 
-
-***
-***
-
-##  Note
-
-Congratulations!  We won't be doing too many more "critique a graph from the internet" problems for the rest of the semester.  It's important that you gain an understanding of how to do this early on in the course, so that you can build and develop your skills at writing about graphs.  For the most part, everyone has made some major strides in this area over the past few weeks.  I hope you enjoyed these exercises, and that you recognize the value in providing objective criticisms of others' work.
-
-
 ***
 ***
 
 ##  Load the Food Facts Data
+
 
 **Load the Food Facts dataset into R.**  This is a carefully chosen, modified subset of the data provided [here](https://www.kaggle.com/openfoodfacts/world-food-facts) by Kaggle.  Documentation for all of the variables is available at that link as well.
 
@@ -81,10 +66,10 @@ The Food Facts data is available on the Course GitHub page [here](https://raw.gi
 
 When you read it into `R`, store it in an object called `food`, then complete the following problems.
 
-```{r, warning = FALSE, message = FALSE}
-library(tidyverse)
-food <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv")
+```{r, warning = F, message = F}
+food <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/food-facts.csv")
 ```
+
 
 ***
 ***
@@ -96,43 +81,123 @@ food <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datase
 
 In this problem, we'll examine the distribution of `energy_100g` with density estimates, histograms, and rug plots.
 
-a.  (1 point)  Look at the help documentation for the `energy_100g` variable on Kaggle.  What is this variable?  What are the units?
+a. `energy_100g` is number of kilojoules (kJ) per 100 grams of food. 
 
-b.  (4 points)  Create two density plots of the `energy_100g` variable.  In the first, use a small bandwidth, so that many local features of the distribution are shown, and the density estimate is somewhat "jagged" / "rigid" / not smooth.  In the second, use a larger bandwidth, so that the local features of the distribution are smoothed out.  Use `grid.arrange()` to arrange these plots into a 2x1 grid.  Compare and contrast the two plots.  Discuss which features are easier or more difficult to see in each of the plots.
+b.
+```{r}
+density_small_bw <- ggplot(food, aes(x = energy_100g)) + geom_density(bw = 30) + 
+  labs(x = "Kilojoules per 100 Grams", y = "Density",
+       title = "Amount of Energy per 100 Grams") + 
+  my_theme
 
-c.  (4 points)  Create two histograms of the `energy_100g` variable.  In the first, use a small bin width (or a large number of bins), so that many local features of the distribution are shown, and the histogram is somewhat "jagged" / "rigid" / not smooth.  In the second, use a larger bin width (or a small number of bins), so that the local features of the distribution are smoothed out.  Use `grid.arrange()` to arrange these plots into a 2x1 grid.  Compare and contrast the two plots.  Discuss which features are easier or more difficult to see in each of the plots.
 
-d.  (6 points)  Does the distribution of `energy_100g` differ depending on the nutrition grade (`nutrition_grade_fr`) of the food?  Answer this graphically in three ways:  First, with a "stacked histogram" (fill the bars according to the nutrition grade).  Second, with a "conditional density plot" (have five density curves -- one for each category of nutrition grade -- on a single plot, with each curve colored according to the nutrition grade).  Third, by creating facetted histograms of `energy_100g`, facetting on `nutrition_grade_fr`.
+density_large_bw <- ggplot(food, aes(x = energy_100g)) + geom_density(bw = 100) + 
+  labs(x = "Kilojoules per 100 Grams", y = "Density", 
+       title = "Amount of Energy per 100 Grams") + 
+  my_theme
 
-Note:  Part (d) is an example of the type of question you might see on a lab example.
+grid.arrange(density_small_bw, density_large_bw, nrow=2)
+```
 
-e.  (2 points)  In part (d), does it make more sense to display the facetted histograms in a 1x5 (one row, five columns) grid or a 5x1 (five rows, one column) grid?  What are the advantages and disadvantages of each approach?  Which features of the histograms are easier or more difficult to compare depending on what you chose?
+Lower bandwidths make it easier to visualize local features of the distribution (small modes and valleys), while higher bandwidths make it easier to see global features (larger modes, center, spread). 
 
-Aside:  Note that the nutrition grade is an ordered categorical variable.  As such, it would be nice if you used an appropriate color gradient.  
+c. 
+```{r}
+hist_small_bin <- ggplot(food, aes(x = energy_100g)) + 
+  geom_histogram(binwidth = 50) + 
+  labs(x = "Kilojoules per 100 Grams", y = "Number of Foods", 
+       title = "Distribution of Energy per 100 Grams") + 
+  my_theme
 
-To manually assign the colors to each category, use `my_colors <- c(a = "darkred", b = "pink", c = "lightgrey", d = "lightblue", e = "darkblue")`.  Then use `+ scale_fill_manual(values = my_colors)` or `+ scale_color_manual(values = my_colors)`.  
+hist_larger_bin <- ggplot(food, aes(x = energy_100g)) + 
+  geom_histogram(binwidth = 300) + 
+  labs(x = "Kilojoules per 100 Grams", y = "Number of Foods",
+       title = "Distribution of Energy per 100 Grams") + 
+  my_theme
 
-A better way to automatically build the color gradient, so that it will work with any number of categories, is to use the following code.
+grid.arrange(hist_small_bin, hist_larger_bin, nrow = 2)
+```
 
-```{r, warning = F, message = F}
-color1 <- "green"
-color2 <- "red"
-palette <- c(color1, "grey", color2)
-n_values <- length(unique(food$nutrition_grade_fr))
+As with above, lower binwidths make it easier to visualize local features of the distribution (small modes and valleys), while larger binwidths make it easier to see global features (larger modes, center, spread). 
+
+d. 
+```{r}
+stacked_hist <- ggplot(data = food, aes(energy_100g, fill = nutrition_grade_fr)) + 
+  geom_histogram(binwidth = 350) +
+  labs(x = "Kilojoules per 100 Grams", 
+       y = "Number of Foods", 
+       title = "Conditional Distribution of Energy \n given Nutrition Grade", 
+       fill = "Nutrition Grade") +
+  my_theme
+
+cond_dens <- ggplot(food, aes(x =energy_100g, color = nutrition_grade_fr)) + 
+  geom_density(adjust = 1.5) + 
+  labs(x = "Kilojoules per 100 grams", 
+       y = "Density",
+       title = "Conditional Distribution of Energy \n given Nutrition Grade", 
+       color = "Nutrition Grade") + 
+  my_theme
+
+facetted_density <- ggplot(food, aes(energy_100g)) +
+  geom_density() + 
+  facet_wrap(~nutrition_grade_fr, ncol=1) + 
+  labs (x = "Kilojoules per 100 Grams", 
+        y = "Density", 
+        title = "Conditional Distribution of Energy \n given Nutrition Grade") + 
+  my_theme
+
+grid.arrange(stacked_hist, cond_dens, nrow = 2)
+```
+
+```{r, fig.height=6, echo=FALSE}
+facetted_density
+```
+
+The distribution of energy per 100 grams changes depending on nutritional grade.  From the density estimates of `energy_100g` facetted on `nutrition_grade_fr`, we see that the conditional distributions for nutritional grades a, b, c are right skewed. We see that nutritional grades a, b, c and e have modes around 300 kiljoules.  In addition, nutritional grades a and b have modes near 1500 kilojoules.  The distribution of kilojoules for nutritional grade "d" has a mode around 1600 kilojoules and the distribution of kilojoules for nutritional grade "e" has a mode around 2100 kJ and another just above 3000 kJ.  
+
+
+e. It makes more sense to display the facetted density estimates in a 5x1 grid because it is easier to compare the locations of the distributions on the x-axis.  For example, a vertical facet would make it easy to visualize and compare modes in the conditional distributions.  However, it is advantageous to facet horizontally when trying to compare features on the y-axis.   
+
+
+(Aside:  Note that the nutrition grade is an ordered categorical variable.  As such, it would be nice if you used an appropriate color gradient.  To manually assign the colors to each category, use `my_colors <- c(a = "darkred", b = "pink", c = "lightgrey", d = "lightblue", e = "darkblue")`.  Then use `+ scale_fill_manual(values = my_colors)` or `+ scale_color_manual(values = my_colors)`.  Another way to automatically build the color gradient, so that it will work with any number of categories, is to use the following code.)
+
+```{r, warning = F, message = F, include=FALSE}
+color1 = "green"
+color2 = "red"
+palette = c(color1, "grey", color2)
 
 ggplot(food, aes(x = energy_100g, fill = nutrition_grade_fr)) + geom_histogram() + 
   scale_fill_manual(name = "Nutrition Grades",
-                  values = colorRampPalette(palette)(n_values))
+                  values = colorRampPalette(palette)(length(unique(food$nutrition_grade_fr))),
+                  labels = sort(unique(food$nutrition_grade_fr)),
+                  drop = FALSE) + 
+  labs(title = "Conditional Distribution of Energy \n Given Nutritional Grade")
 ```
 
-That said, you should always avoid using red and green in the same plot, since red-green colorblind viewers will not be able to distinguish the colors.
+That said, you want to avoid using red and green in the same plot, since red-green colorblind viewers will not be able to distinguish the colors.
 
 f.  (3 points)  Recreate the first plot from part (d), but use your own color gradient.  You can use an adjusted version of the above code to do this.  (Please do not include the example graph in your final submission.)  You are also welcome to change the middle color (currently "grey") to something else (e.g. "white"), or remove the middle color entirely.
 
+```{r}
+color1 <- "darkblue"
+color2 <- "lightblue"
+palette <- c(color1, "grey", color2)
+
+ ggplot(data = food, aes(energy_100g, fill = nutrition_grade_fr)) + 
+  geom_histogram(binwidth = 350) +
+  labs(x = "Kilojoules per 100 Grams", 
+       y = "Number of Foods",
+       title = "Conditional Distribution of \n Energy given Nutrition Grade") +
+  scale_fill_manual(name = "Nutrition Grades",
+                  values = colorRampPalette(palette)(length(unique(food$nutrition_grade_fr))),
+                  labels = sort(unique(food$nutrition_grade_fr)),
+                  drop = FALSE) + my_theme
+
+```
+
 
 ***
 ***
-
 
 
 #  Problem 3
@@ -288,7 +353,7 @@ For a bandwith we first split the data into `2 * log(length(x)) + 1` different b
 We split the data into `2 * log(length(x))` because we are looking for a function that will grow more slowly than `n` so that our estimate at a given point weights a larger numbers of data points as `n` grows but they should be closer to it, hence the sublinear growth. We then want to take into account that data between some quantiles will be more spread out than at others. Taking the median width attempts to balance this in a way that will be less skewed by outliers than the mean.
 ```{r}
 pgh_bridges <- 
-  read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv")
+  read.csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/bridges-pgh.csv")
 ```
 
 
