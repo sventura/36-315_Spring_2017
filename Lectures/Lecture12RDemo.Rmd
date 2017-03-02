@@ -1,0 +1,162 @@
+---
+title: "Lecture 12 + R Demo"
+author: "Sam Ventura"
+date: "March 1st, 2017"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+#  Continuing 2+ Dimensional Continuous Data
+
+***
+
+###  The graphs below don't have proper titles, axis labels, legends, etc.  Please take care to do this on your own graphs.
+
+***
+
+```{r, warning = FALSE, message = FALSE}
+library(MASS)
+library(tidyverse)
+data(Cars93)
+```
+
+
+***
+
+
+
+#  2-D Density Estimates
+
+We're all experts in 1-D Kernel Density Estimation by now.  Let's move on to 2-D KDE.
+
+###  Contour Plots -- Geometry:  `geom_density2d`
+
+```{r, cache = F}
+ggplot(data = Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  geom_density2d()
+```
+
+We'll discuss contour plots more in Lecture on Monday.
+
+
+###  Can Mix Geometries, Add Points As Well
+
+Below is a contour plot with a scatterplot overlayed:
+
+```{r, cache = F}
+ggplot(data = Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  geom_density2d() + 
+  geom_point()
+```
+
+Notice how both geometries use the same aesthetics, which are inherited from the initial call to `ggplot()`.
+
+
+###  Can Use `stat_density2d` to specify additional parameters
+
+For example, we can change the fill type:
+
+```{r, cache = F}
+ggplot(data = Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  stat_density2d(aes(fill = ..level..), geom = "polygon") + 
+  geom_point()
+```
+
+
+Note:  The default coloring scheme isn't the best.  How could you change the color scheme from default to something else?  (Think about how we changed the color schemes in other plots.)  We'll do this below.
+
+We might also want to change the bandwidth.  In 2-D KDE, we must specify two bandwidths -- one for the x-direction, one for the y-direction.
+
+
+
+###  Similarly, we can make heat maps!
+
+To do this, include `fill = ..density.., geom = "tile", contour = F` in your call to `stat_density2d`, as below:
+
+```{r, cache = F}
+ggplot(data = Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  stat_density2d(aes(fill = ..density..), geom = "tile", contour = F) + 
+  geom_point()
+```
+
+Again, I recommend changing the default color scheme, as below:
+
+```{r, cache = F}
+ggplot(data = Cars93, aes(x = Fuel.tank.capacity, y = Price)) + 
+  stat_density2d(aes(fill = ..density..), geom = "tile", contour = F) + 
+  geom_point() + 
+  scale_fill_gradient(low = "white", high = "red")
+```
+
+
+###  Density Estimation is Useful in Clustering
+
+We'll use the Fisher's Iris dataset to show this:
+
+```{r, cache = F}
+data("iris")
+head(iris)
+
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) + 
+  geom_point()
+```
+
+How many clusters are there?
+
+```{r, cache = F}
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) + 
+  geom_density2d() + 
+  geom_point()
+```
+
+Do the clusters correspond to the categorical variable in the dataset?
+
+```{r, cache = F}
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) + 
+  geom_density2d() + 
+  geom_point(aes(color = Species)) + 
+  labs(color = "Iris Species")
+```
+
+
+Where are the modes in the density estimate?  Do they correspond to any of the groups/colors (Species in the Iris data)?
+
+###  Bandwidth:  Now in 2 dimensions
+
+```{r, cache = F}
+ggplot(data = iris, aes(x = Sepal.Length, y = Petal.Length)) + 
+  geom_density2d(h = c(1, 1/2)) + 
+  geom_point(aes(color = Species))
+```
+
+Now, how many clusters are there?
+
+Try varying the bandwidth in the above code.  Try both large and small values.
+
+
+#  Pairs Plots with the `GGally` Package
+
+Pairs plot:  A matrix of scatterplots and other types of graphs, useful for getting a quick view of an entire data.frame
+
+There's a great implementation of these in the `GGally` package, called `ggpairs`.
+
+First, let's pick a few variables from the `Cars93` dataset.  Then, we'll take the appropriate subset of the data and plot it.
+
+```{r, cache = F, warning = F, message = F}
+#install.packages("GGally")
+library(GGally)
+cars_sub <- select(Cars93, Price, Fuel.tank.capacity, AirBags, Origin)
+ggpairs(cars_sub, columns = 1:3, aes(color = Origin))
+
+```
+
+What information do we get out of this plot?
+
+Try adding more variables here and seeing what happens!
+
+***
+
