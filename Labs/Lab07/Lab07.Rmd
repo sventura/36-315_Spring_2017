@@ -1,0 +1,127 @@
+---
+title: "36-315 Lab 07"
+author: "Your Name Here"
+date: "Due Friday, March 3, 2017 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 07:  2-D Continuous Data and Violin Plots
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab07.Rmd -- e.g. "sventura-Lab07.Rmd") to the Lab 07 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+***
+***
+
+
+#  No Oral Evaluation This Week
+
+I want you to focus on preparing for the Lab Exam, so there will be no Oral Evaluations this week.
+
+
+
+***
+***
+
+
+#  Load the Data
+
+Load the Italian olive oils dataset into R from the following location on the course GitHub page, and store it in a `data.frame` called `olive`:  [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/olive_oil.csv]
+
+Brief data description:  
+
++  Groups:  Two choices -- three macro-`area`s and nine specific `region`s in Italy
++  Covariates:  Eight variables (chemical measurements on acid components of oil)
+
+[For more information on the data, see here.](http://artax.karlin.mff.cuni.cz/r-help/library/pdfCluster/html/oliveoil.html)
+
+**Note:  The units are on the variables in this dataset are a little confusing, so don't worry about including units on your graphs this week.  We will discuss this when we use this data in a future assignment.**
+
+<div style="width:500px">
+![](http://photos.wikimapia.org/p/00/00/37/62/83_big.jpg)
+</div>
+
+***
+***
+
+
+#  Problem 1
+
+(10 points each)
+
+**Pairs Plots for a Quick Data Assessment**
+
+Refer to the R Demos from this week's lectures (on Blackboard) if you don't know how to do these problems.  In particular, you can use the Lecture 12 R Demo for this question.
+
+a.  Create a subset of the `olive` dataset.  Include the `area` and `region` variables in your subset, and pick three continuous variables to include in your subset (your choice).  Keep all rows of the dataset.  Call this subset `olive_sub`.  To do this, use `olive_sub = dplyr::select(olive, var1, var2, var3, area, region)`.  
+
+(Sam says:  The `dplyr::` portion of the above line of code tells `R` to use the `select()` function the `dplyr` package.  This is a useful trick when there are multiple functions with the same name across different packages.  If the first package you load is the `tidyverse` or `dplyr` package, you do not need this portion of the code.)
+
+b.  In your subset, overwrite the `area` and `region` variables so that they each area is associated with its area name, and each region is associated with its region name.  See the "Description" portion of the help file [here](http://artax.karlin.mff.cuni.cz/r-help/library/pdfCluster/html/oliveoil.html) for the names.  They are listed in order.
+
+c.  Create a pairs plot of your subset.  See the Lecture 12 R Demo for how to do this.  You'll need to install the `GGally` package to do this.  Use your new `area` variable as the color variable in your pairs plot.  Describe any interesting features you see.
+
+Sam says:  A "pairs plot" is a useful plot when you want a quick overview of the dataset without doing too much work.  Here's an explanation of what the (default) pairs plot shows:
+
++  On the diagonal, a the marginal distribution of a single variable is plotted.  For categorical variables, a bar chart is used.  For continuous variables, a density estimate is used.
++  On the off-diagonals, pairs of variables are plotted against each other.
++  For pairs of categorical variables, a facetted bar chart is shown.  On each side of the diagonal, the marginal / conditional variables are flipped so that you can see both versions of the graph.
++  For pairs of continuous variables, a scatterplot is shown.  On the other side of the diagonal, the correlation of the two variables is shown.
++  For pairs of mixed variables (one categorical, one continuous), either a facetted histogram (on one side of the diagonal) or a facetted box plot (on the other side of the diagonal) is shown.
++  If a color variable is supplied, all graphs and statistics are split by the categories of the color variable.
+
+I wouldn't recommend using pairs plots in assignments or formal reports.  They're more useful for you -- the statistician / data scientist -- to get a quick overview of the dataset than they are to communicate useful information to your viewers.
+
+d.  From your pairs plot in (c), find the pair of continuous variables with the lowest (in absolute value) correlation.  Create a scatterplot of this pair of variables.  Color the points in your scatterplot according to the `region` of each observation.  Let the point type (`shape`) of your observation depend on the `area`.
+
+e.  Describe any interesting features you see in your graph from part (d).  In particular, do the areas and regions appear to be associated or grouped with each other?
+
+
+
+***
+***
+
+
+#  Problem 2
+
+(10 points each)
+
+**Density Estimates and Heat Maps**
+
+Refer to the Lecture 12 R Demo (on Blackboard) if you don't know how to do these problems.
+
+a.  Recreate your graph from part (d) of Problem 1, but this time, overlay a 2-D density estimate of your two variables in the form of a contour plot.  See the Lecture 12 R Demo for how to do this.  
+
+b.  From your graph in (a), are there any modes / groups apparent in the data?  Do the groups correspond to any of the areas or regions?
+
+c.  Create a heat map of the two variables you used in your scatterplot from Problem 1, part (d).  Use a non-default color scheme in your heatmap.
+
+
+
+***
+***
+
+
+#  Problem 3
+
+(20 points)
+
+**Work on the Lab Exam**
+
+You don't need to turn anything in for this problem.
+
+***
+***
