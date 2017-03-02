@@ -268,6 +268,22 @@ ggplot(shark, aes(x = Year, y = SharkLength)) +
 
 
 
+install.packages("hrbrthemes")
+library(hrbrthemes)
+library(MASS)
+data(Cars93)
+
+my_plot <- ggplot(Cars93, aes(x = Fuel.tank.capacity, y = Price)) + geom_point() + 
+  labs(
+    title = "statitsical",
+    subtitle = "grahpics",
+    x = "adn",
+    y = "vizualisation"
+  )
+
+gg_check(my_plot)
+
+
 
 
 
