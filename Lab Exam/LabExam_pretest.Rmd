@@ -1,0 +1,153 @@
+---
+title: "36-315 Lab Exam, Spring 2017"
+author: "Your Name Here"
+date: "This Is The Pre-Test.  The Exam Is On March 8, 2017 in Lab"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Lab Exam:  Movie Night
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-LabExam.Rmd -- e.g. "sventura-LabExam.Rmd") to the Lab Exam submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+
+
+#  Instructions:  Lab Exam
+
++  For all lab exam questions, be sure to answer the question(s) asked.
++  In addition to answering the questions, **write 1-3 sentences describing why you made certain choices in your graphic.**  For example, why did you choose a histogram vs. density plot?  Pie chart vs. rose diagram vs. bar chart vs. spine chart?  Stacked vs. side-by-side bar chart?  Why did you choose the bin width / number of bins in your histogram?  Why did you choose the bandwidth and kernel that you picked in your density plot?  Why did you decide to arrange the graphs the way you did (e.g. in a grid, horizontally, vertically).  Etc.
++  Remember, whenever you can supplement your answer with information from a statistical test, this is very beneficial!  Feel free to run statistical tests and include this information as part of your answer.
+
+
+###  For all problems below, you should justify your answer with a single graph.
+
+Using `facet_wrap()` or `facet_grid()` counts as one graph, while using `grid.arrange()` does not.
+
+
+###  Reminder:  On the day of the lab exam, you'll have a slightly different version of the data and problems.  Additionally, there may be 1-2 short answer questions for you to answer beyond those listed here.
+
+
+***
+***
+
+
+
+#  Data:  IMDB Movies
+
+Load the IMDB movie data from the course GitHub page at the following link: [https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/imdb_pretest.csv] 
+
+The data is taken from Kaggle.  [More information is available here.](https://www.kaggle.com/deepmatrix/imdb-5000-movie-dataset)  Note:  This is a heavily altered version of the original data.
+
+
+
+
+<div style="width:600px">
+![](https://pedestriantv-prod.s3.amazonaws.com/images/article/2017/02/27/space-jam-mem-619-386.jpg)
+</div>
+
+
+
+
+***
+***
+
+
+
+#  Problem 1
+
+**All About Content**
+
+Characterize the distribution of the `content_rating` of IMDB movies.  Describe any interesting features you see.
+
+
+***
+***
+
+
+
+
+#  Problem 2
+
+**Mo' Money Mo' Profit**
+
+For our purposes, a film's profit is defined to be the `gross` minus the `budget`.
+
+Characterize the distribution of the profit of movies in the IMDB dataset.  Describe any interesting features you see.  
+
+
+
+***
+***
+
+
+
+#  Problem 3
+
+**Lights, Camera, ...**
+
+Is there any association between the `country` in which the movie was filmed and whether or not it was an action film?  Are action films more or less commonly created in particular countries compared to others?   
+
+(Aside:  See the `genre` variable.  You may need to do some data manipulation to determine if a film is an action film.  `grepl(pattern = "[string to search for]", x = [column to search]))` may help.)
+
+
+***
+***
+
+
+
+
+#  Problem 4
+
+**Buying Good Reviews**
+
+Do movies with larger budgets typically receive higher IMDB rating scores?  
+
+
+
+***
+***
+
+
+
+
+#  Problem 5
+
+**Consider Certain Aspects**
+
+Characterize the distribution of `aspect_ratio` of films.  Would you consider any films to be outliers?  Which ones?  Why?
+
+
+***
+***
+
+
+
+
+#  Problem 6
+
+**Time To Profit**
+
+Are movie profits increasing over time?  
+
+
+
+***
+***
+
+
+

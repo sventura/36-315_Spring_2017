@@ -285,10 +285,67 @@ gg_check(my_plot)
 
 
 
+library(tidyverse)
+library(forcats)
 
 
+olive <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/olive_oil.csv")
+olive <- mutate(olive, area = as.character(area), region = as.character(region))
 
 
+options(tibble.width = Inf)
+imdb <- read_csv("/Users/sam/Downloads/movie_metadata.csv") %>%
+  select(color, num_critic_for_reviews, duration, gross, genres, movie_title, 
+         num_voted_users, cast_total_facebook_likes, language, country, 
+         content_rating, budget, title_year, imdb_score, aspect_ratio, 
+         movie_facebook_likes) %>%
+  filter(content_rating %in% c("R", "PG-13", "PG", "G", "NC-17"),
+         content_rating %in% c("R", "PG-13", "PG", "G", "Not Rated", "NC-17"),
+         #country %in% c("USA", "UK", "Germany", "France", "Canada", "Australia"),
+         #country %in% c("USA", "UK", "Germany", "France", "Canada", "Australia"),
+         country %in% c("USA", "UK", "Germany", "France", "Canada"),
+         !is.na(language),
+         !is.na(content_rating)) %>%
+  mutate(language = ifelse(language == "English", "English", "Other"),
+         movie_title = gdata::trim(movie_title)) %>%
+  filter(movie_title != "Frat Party",
+         #movie_title != "This Is Martin Bonner",
+         movie_title != "Indie Game: The Movie") %>%
+  arrange(desc(aspect_ratio))
+imdb
+write.csv(imdb, "/Users/sam/Desktop/CMU-VAP/315/315-code-and-datasets/315-code-and-datasets/data/imdb-pretest.csv")
+
+ggplot(imdb, aes(x = aspect_ratio)) + geom_histogram()
+ggplot(imdb, aes(x = content_rating)) + geom_bar() + coord_flip()
+
+ggplot(imdb, aes(x = duration, y = gross)) + geom_point() + 
+  geom_smooth(method = lm)
+
+ggplot(imdb, aes(x = title_year, y = aspect_ratio)) + geom_point() + 
+  geom_smooth()
+
+ggplot(imdb, aes(x = title_year, y = duration)) + geom_point() + 
+  geom_smooth()
+
+ggplot(imdb, aes(x = imdb_score, y = num_voted_users)) + geom_point() + 
+  geom_smooth()
+
+ggplot(imdb, aes(x = budget, y = gross)) + geom_point() + 
+  geom_smooth()
+
+ggplot(imdb, aes(x = log(budget + 1), y = imdb_score, color = content_rating)) + 
+  geom_point() + geom_smooth(method = lm)
+
+ggplot(imdb, aes(x = duration, color = language)) + geom_density()
+
+imdb <- mutate(imdb, 
+               profit = gross - budget, 
+               is_action = grepl(pattern = "Action", x = genres),
+               is_romance = grepl(pattern = "Romance", x = genres))
+ggplot(imdb, aes(x = imdb_score, y = profit, color = is_action)) + 
+  geom_point() + geom_smooth()
+ggplot(imdb, aes(x = title_year, y = profit, color = is_action)) + 
+  geom_point() + geom_smooth(method = lm)
 
 
 
