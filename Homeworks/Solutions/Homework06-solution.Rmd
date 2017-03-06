@@ -1,0 +1,373 @@
+---
+title: "Homework 06 Solutions"
+author: "Your Friendly Course Staff"
+date: "???"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Lab Exam:  Shark Attacks!
+
+***
+***
+
+```{r, message = F, warning = F}
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(devtools)
+library(tidyverse)
+
+#  Load in geom_mosaic() code if necessary
+source_url("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/code/geom_mosaic.R")
+
+#  Simple theme with white background, legend at the bottom
+my_theme <-  theme_bw() +
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+
+#  Colorblind-friendly color pallette
+my_colors <- c("#000000", "#56B4E9", "#E69F00", "#F0E442", "#009E73", "#0072B2", 
+               "#D55E00", "#CC7947")
+
+#shark <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/attacks_test.csv")
+shark <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/shark-attacks-spring-2017.csv")
+
+```
+
+*** 
+
+#  Problem 1
+
+**Victim Blaming?**
+
+Graph:  (10 points)
+
+a.  (4 points)  Characterize the distribution of the `Type` of shark attack.  Describe any interesting features you see.
+```{r, warning=FALSE, message=FALSE}
+shark_attacks <- mutate(shark, Type2 = ifelse(Type == "Boat","Boating",Type))
+ggplot(data = shark_attacks, aes(x = Type2, fill = Sex)) + geom_bar() +
+    labs(title = "Number of Shark Attacks by Type of Attack",
+         x = "Attack Type", y = "Number of Attacks") +
+    scale_fill_discrete(name = "Victim Sex", 
+                        labels=c("Female", "Male", "Unknown")) + 
+    my_theme + 
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+From the figure we can see that the vast majority of the attacks are "Unprovoked".  The "Invalid" and "Provoked" types are the next most frequent categories but there are about 1/8 as many of each as there are "Unprovoked" attacks.  The types "Boat" and "Boating" are combined into a single category which occurs about half as frequently as "Invalid" and "Provoked" attacks.  The final type of attack "Sea Disaster" is a very uncommon occurrence.
+
+b.  (3 points)  Compare the different conditional distributions of `Sex` given each `Type` of shark attack.  Are female victims relatively more or less common in any of the shark attack types?  Are unknown-gender victims more or less common in any of the shark attack types?
+
+A noticeable number of female victims show up only in the "Invalid" and "Unprovoked" types of attacks although this may be partially because they are two of the larger categories.  It is certainly the case that there are relatively more female victims in the "Invalid" category than in the "Provoked" category but comparisons between categories is more difficult. Victims of unknown `Sex` also appear to be more common in "Boating" attacks and possibly in "Invalid" attacks.
+
+c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+Using a stacked bar chart in a figure shows both the marginal distribution of `Type` and the conditional distribution of `Sex` (conditioned on `Type`).  The types "Boat" and "Boating" are combined since the last year in which a "Boating" attack was recorded is `r max(shark_attacks$Year[shark_attacks$Type == "Boating"])` and the first year a "Boat" attack was recorded is `r min(shark_attacks$Year[shark_attacks$Type == "Boat"])`.  The fact that there is no overlap in the years these were recorded suggest that the difference may only be one of reporting.
+
+***
+***
+
+#  Problem 2
+
+**Attacking All Ages**
+
+Graph:  (10 points)
+
+a.  (8 points)  Characterize the distribution of the `Age` of shark attack victims.  Describe any interesting features you see.
+```{r, warning=FALSE, message=FALSE}
+ggplot(data = filter(shark, Age != -5), aes(x = Age)) + geom_density(bw = 4) +
+    labs(x = "Attack Victim Age", y = "Density",
+         title = "Distribution of Shark Attack Victim Age") +
+    my_theme
+
+```
+
+There are `r sum(shark_attacks$Age == -5)` observations marked with an Age of -5 of `r nrow(shark_attacks)` observations or `r round(mean(shark_attacks$Age == -5), 2) * 100`% of the total.  There correspond to missing/unknowna ges, and thus are excluded from the graphic as they do not give us information about the distribution the age of shark attack victims.  
+
+Looking at the remaining observations there appear to be three modes, at 25, 50 and 80.  With the one at 25 being the largest, followed by the mode at 50 and then the mode at 80.  The oldest recorded victim was `r max(shark_attacks$Age)` years old, and the youngest was `r min(filter(shark_attacks, Age != -5)$Age)`.  The distribution is somewhat skewed and declines as `Age` increases but the tail is fairly heavy.
+
+b.  (2 points)  Is the distribution of `Age` normally distributed?  Why or why not?
+
+The distribution of `Age` is not normally distributed.  If we ignore the missing values, the distribution is not symmetric and appears to have three modes as shown in the figure.  Even if we knew what the missing values were and including them made the distribution symmetric and unimodal it would still not contain values less than zero and so would not be normally distributed.
+
+c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+A natural choice for examining the distribution of a continuous variable like Age is a density plot.  The missing values were excluded because the value of -5 was assigned arbitrarily and thus does not give useful information about the distribution of the age of shark attack victims.  The bandwidth of 4 was selected to create a generally smooth density that still displayed prominent modes.
+
+###  Sam Says
+
+It's perfectly fine to use a density plot here, even though the ages are measured in integer values.  That said, you should use a bandwidth that spans at least one year, so that we don't see tiny bumps in the distribution corresponding to each unique value of age.  We used a bandwidth of 4 to smooth out the bumps corresponding to the integer values of age.
+
+***
+***
+
+# Problem 3
+
+**Length Problems**
+
+Graph:  (10 points)
+
+```{r}
+shark_1850 <- filter(shark, Year >= 1850, Age >= 0)
+ggplot(data = shark_1850, aes(x = Year, y = SharkLength)) +
+  geom_point(aes(color = Fatal), alpha = 0.66) + xlim(1845, 2016) + 
+  geom_smooth(method = lm, color = "red", aes(fill = factor(1)),
+              size = 2.5) + 
+  geom_smooth(data = filter(shark_1850, Fatal == "Y"), 
+              method = lm, color = "blue", alpha = 0.5) + 
+  scale_color_manual(values = my_colors, 
+                     labels = c("N" = "Not Fatal", "Y" = "Fatal", "UNKNOWN" = "Unknown")) +
+  scale_fill_manual(values = "red", 
+                    labels = "All Fatality Statuses") + 
+  labs(x = "Year of Shark Attack", y = "Length of Shark (ft.)",
+       title = "Length of Shark vs. Year of Shark Attack,\nby Fatality",
+       fill = "Overall Relationship", color = "Fatality of Attack",
+       subtitle = "Fatal Relationship in Black") + 
+  my_theme
+
+cor_length <- round(cor(shark_1850$Year, shark_1850$SharkLength), 2)
+
+cor_fatal <- round(cor(filter(shark_1850, Fatal == "Y")$Year, 
+                       filter(shark_1850, Fatal == "Y")$SharkLength), 2)
+```
+
+
+a.  (6 points)  Are sharks getting longer over time?
+
+It does not seem that sharks involved in sharks attacks are getting longer over time. There does not seem to be a clear upward or downward trend in the points in the scatterplot between the year of attack and length of attacking shark. The linear trend line that we added to the graph looks fairly close to horizontal as well, another indication that there is no association between length of shark and time. The correlation between the two variables is 0.02, which is extremely low and not nearly enough to indicate any relationship between attacking shark length and time. 
+
+b.  (4 points)  Are sharks involved in fatal attacks getting longer over time?
+
+It does not seem that sharks involved in fatal sharks attacks are getting longer over time. The points on the scatterplot for the fatal attacks do not show any clear trend between shark length and time for fatal attacks. While the linear smoothing line has a slightly higher magnitude slope compared to the one for the entire data set, it is still very close to horizontal, especially relative to the standard errors. The correlation between the two variables is 0.04, which again is extremely low and not nearly enough to indicate any relationship between attacking shark length and time for fatal attacks. 
+
+c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+I chose a scatterplot here since we have two continuous variables, time and length of shark attack, as well as a categorical variable, whether the attack was fatal, that we could display by changing some aesthetic about the points, in this case the color. I also added a linear regression line to the plot in order to better see the relationship between the two variables in the graph as it is difficult to tell if there is a relationship just by looking at the points, especially for just fatal attacks. 
+
+
+***
+***
+
+#  Problem 4
+
+**Back in My Day...**
+
+Graph:  (10 points)
+
+```{r}
+ggplot(data = shark_1850, aes(x = Year, y = Age)) +
+  geom_point(aes(color = Sex), alpha = 0.66) + xlim(1845, 2016) + 
+  geom_smooth(method = lm, color = "red", aes(fill = factor(1))) + 
+  geom_smooth(data = filter(shark_1850, Sex == "F"), 
+              method = lm, color = "black") + 
+  scale_color_manual(name = "Gender of Victim", values = my_colors, 
+                     labels = c("F" = "Female", "M" = "Male", "U" = "Unknown")) +
+  scale_fill_manual(name = "Overall Relationship", values = "red", 
+                    labels = "All Genders") + 
+  labs(x = "Year of Shark Attack", y = "Age of Victim",
+       title = "Age of Victim vs. Year of Shark Attack,\nby Gender of Victim",
+       subtitle = "Female Relationship in Black") + 
+  my_theme
+
+cor_1850 <- round(cor(shark_1850$Year, shark_1850$Age), 2)
+```
+
+a.  (10 points)  Since 1850, is the `Age` of shark attack victims at the time of the attack getting older, getting younger, or staying roughly the same?
+
+Since 1850, the age of shark attack victims is clearly increasing, as indicated by the positively-sloped red linear regression line in the scatterplot above.  The correlation between the age of the victim and the year of the attack, however, is low-to-moderate, at only `r cor_1850`.
+
+
+b.  (5 points)  Is the `Age` of **female** shark attack victims at the time of the attack getting older, getting younger, or staying roughly the same?
+
+Interestingly, the age of female shark attack victims has not changed at all since 1850.  First, notice that there are very few female shark attack victims before 1950 -- the earliest such victim in our dataset was attacked around 1910.  The frequency of female shark attack victims has increased substantially since then (as has the overall frequency, so this isn't surprising).  However, as indicated by the black linear regression line for the females-only group, there is no relationship between the year of the attack and the age of the female victim.
+
+
+c.  (8 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+I chose a scatterplot (colored by gender) here since we have two continuous variables (age and year), and we were explicitly asked about the relationship between thse two variables conditional on gender (a categorical variable).
+
+I added linear regression lines to the graph to indicate the relationship between the two variables in each subset of data (all genders and females-only), since the linear regression provided a better fit than a non-parametric regression curve and is easier to interpret.
+
+I subsetted the data to include non-missing ages (otherwise, using regression would be inappropriate since it would consider the NAs to have the value -5, biasing the regression results and our assessment of the trend in attack ages over time), adjusted the x-axis limits slightly to make the graph more visually appealing, and moved the legends to the bottom of the graph to ensure that the graph does not appear squished in the HTML output.
+
+
+***
+***
+
+
+
+
+#  Problem 5
+
+**Attack Trends**
+
+Graph:  (10 points)
+
+```{r}
+shark <- mutate(shark, Type = ifelse(Type == "Boat", "Boating", Type))
+
+ggplot(data = shark, aes(x = Year, fill = Type)) +
+  geom_histogram(color = "darkgrey", binwidth = 5) + 
+  geom_rug(data = filter(shark, Type == "Sea Disaster"), 
+           aes(x = jitter(Year, amount = 0.4)), color = my_colors[4]) + 
+  scale_fill_manual(name = "Attack Type", values = my_colors) + 
+  scale_color_manual(name = "Attack Type", values = my_colors) + 
+  labs(x = "Year of Shark Attack", y = "Frequency of Attacks",
+       title = "Frequency of Shark Attacks over Time, by Attack Type") + 
+  scale_x_continuous(breaks = seq(1775, 2020, by = 25)) + 
+  geom_vline(xintercept = 1975, lty = 2) + my_theme
+
+percents <- round(table(shark$Type) / nrow(shark) * 100, 1)
+first_attack <- min(shark$Year)
+last_attack <- max(shark$Year)
+```
+
+
+a.  (10 points)  Characterize the marginal distribution of the year in which the attack occurred (`Year`).  Are there any time periods with increases or decreases in the number of attacks?  Are there particular types of attacks that correspond to these increases or decreases?
+
+The distribution of hte year in which shark attacks occur is skewed left and increasing over time, with large increases around the late 1950s and from roughly 1980 to 2005.  The data spans 200 years, with the earliest shark attack occurring in the year `r first_attack`, while the last attack occurred this year (`r last_attack`).  It's difficult to describe the center of the distribution, since the distribution itself is so heavily skewed left.  The largest mode in the distribution (the peak) occurs around 2005, where there at least 200 shark attacks reported in each of the five-year spans from the late 1990s and on.  There is a smaller mode around 1960, where there is a shark increase in the frequency of shark attacks beginning around the late 1950s.  Interestingly, unprovoked shark attacks comprise `r percents[5]`% of the attacks in this dataset.  However, in the mode around the late 1950s / early 1960s, unprovoked shark attacks comprise only about half of these attacks.  There was a large spike in both the number of provoked shark attacks and the number of boating-related shark attacsk.  This time span was also the first where there was a large number of invalid shark attack reports.  In the largest mode (near the 2000s), there is no particular type of attack that corresponds to this.  That said, the proportion of unprovoked shark attacks seems to be increasing over time, as evidenced by the large proportion of green bars in the graph.
+
+
+b.  (3 points)  The movie "Jaws" was released in 1975.  Does there appear to be an increase in reported shark attacks after the movie's release?  If so, would you say that the release and subsequent popularity of "Jaws" caused the increase in reported shark attacks?
+
+The increase in reported shark attacks after about 1980 is extremely dramatic.  There could be several potential reasons for this, and I would not say that it is due to the release and popularity of "Jaws" alone.  First, the world population has increased substantially in the last two centuries, which could account for the rise in shark attacks.  Second, it's possible that vactioning in shark-populated regions has increased substantially in the last 200 years, which also could account for the rise in shark attacks.  Third, it's possible (if not, highly likely) that better systems are in place since 1950 for reporting shark attacks across the world or in specific countries than existed before 1950, which likely accounts for a large proportion in the number of **reported** shark attacks.  Finally, while it's not appropriate to attribute the rise in shark attacks solely to "Jaws", this cultural phenomenon surely impacted public awareness of shark attacks and could account for some of the increase in reported shark attacks, especially those that were deemed to be "invalid" or "provoked".
+
+
+c.  (2 points)  Would you say that the distribution of `Year` is approximately normally distributed?  Why or why not?
+
+No, the distribution of `Year` is definitely not normally distributed.  It is not symmetric -- instead, it is heavily skewed left.  It is not uniomdal -- instead, there is one large mode and one smaller mode.  Finally, it does not have a bell-shape.  A KS test is not necessary to confirm this, since the data is so obviously not normally distributed.
+
+
+d.  (8 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+I used a histogram with a bin-width of 5 years, since after trying multiple bin widths, a 5-year bin width allows us to see the persistent features of the distribution (the large modes) while also allowing us to look closely at local features of the distribution.
+
+I added a rug plot so that I could see specifically where shark attacks resulting from Sea Disasters fell, jittering the years by a small amount so that individual attacks are not hidden behind others.
+
+I colored the bars by the attack type (combining the "Boat" and "Boating" categories, since it's reasonable to assume that they mean the same thing) rather than using a facetted graph because it's easier to see the marginal distribution of the year of the attack in this single plot, but it also easily allows me to visually determine if particular types of attack correspond to particular modes in the distribution of the year of the attack.
+
+
+e.  (BONUS:  2 points)  Legend has it that shark attacks stemming from "Sea Disasters" (`Type == "Sea Disaster"`) tend to occur in clusters because of ocean curses.  That is, shark attacks stemming from sea disasters tend to occur within short time spans of each other.  Is there any evidence to suggest that this is true?  Are there any years with a large number of shark attacks stemming from sea disasters?
+
+There is no evidence to suggest that Sea Disasters occur in clusters.  However, it's entirely possible that in our dataset, individual sea disasters that result in multiple shark attacks are causing the attacks to appear more clustered than they are in reality.  Specifically, the trio of attacks on July 26th, 1885 all resulted from the same Sea Disaster in Hawaiee.  The same is true for the two attacks that occured on July 25th, 1983 in Queensland.  Perhaps there's a late-July curse for shark attacks resulting from Sea Disasters!
+
+
+***
+***
+
+
+
+
+#  Problem 6
+
+**Shark Week?  Try Shark Month**
+
+Graph:  (10 points)
+
+```{r, warning = F, message = F}
+shark <- mutate(shark, month = factor(substr(Date, 6, 7), 
+                                      levels = c("01", "02", "03", "04", "05", 
+                                                 "06", "07", "08", "09", "10",
+                                                 "11", "12"), 
+                               labels = month.abb))
+
+ggplot(shark, aes(fill = Country, x = month)) + geom_bar(color = "darkgrey") +
+  labs(x = "Month of Shark Attack", y = "Frequency of Attacks",
+       title = "Month of Shark Attacks, by Country of Attack") + 
+  scale_x_discrete(drop = F) + my_theme + 
+  scale_fill_manual(name = "Country of Attack", values = my_colors)
+
+#  Adding 0.5 to the contingency table to help with estimation issues for missing months
+chi_sq_7 <- chisq.test(table(shark$month, shark$Country) + 0.5)
+```
+
+a.  (10 points)  You are terrified of shark attacks, but you love being in the water.  Are there particular months of the year where its safer to be in the water than others?  Does this change depending on `Country`?  (You should consider only the countries in your dataset.)
+
+Looking strictly at the months of shark attacks, summer months (July and August) appear to have more shark attacks than other months, which could make sense, since more people are swimming in oceans in the summers.  There are no attacks reported in January, February, March, or May, so those appear to be the safest months to go into the water assuming the reported data is accurate.  In particular, it's very strange that there are no attacks in May, but over 200 attacks in both April and June, so it's likely that there is some mistake in the data (for more, see below in Sam Says).  
+
+Interestingly, the frequency of attacks changes substantially depending on the country of the attack.  In particular, attacks in the US are much more common in the summer months, and less common in the winter months, while attacks in Australia, New Zealand, and South Africa are more common in the US winter months and less common in the US summer months.  This makes perfect sense, since the summer and winter are flipped in the southern hemisphere, where these countries are located!
+
+
+b.  (3 points)  Are the month of the attack and the country of the attack independent?  (Remember, you can supplement your graph with the results of a statistical test if your graph is not sufficient to answer this question.)
+
+Visually, there is a clear dependence between the month of the attack and the country of the attack, with no concerns about sample size.  Statistically, we can look at the results of a chi-square test to confirm this.  Note that we compute the chi-square test using only the months that actually exist in our dataset to avoid estimation issues, so this only gives us an approximation of the true result.  The chi-square test yields a test statistic of `r round(chi_sq_7$statistic, 2)`, which is extremely large.  This corresponds to a $p$-value of `r chi_sq_7$p.value`, which is significant at any reasonable level of statistical significance.  As such, we can conclude that there is overwhelming evidence to reject the null hypothesis of independence and conclude that the month of the attack and the country of the attack are associated with each other.
+
+
+c.  (3 points)  Why does the USA appear to follow a different pattern than Australia, South Africa, and New Zealand in terms the months in which shark attacks most frequently occur?
+
+This is discussed above in (a), but to repeat:  The summer and winter months are flipped for countries in the northern and southern hemispheres.  As such, since more people are swimming in oceans in the summer months, the number of attacks per country is greater in the summer months, so the observed pattern makes sense.  If we had data for January, February, March, and May, we would almost certainly see this trend continue.
+
+
+d.  (8 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+I chose a stacked bar chart here because I really like the way you can clearly see changes in the proportions of attacks corresponding to each country when moving across the x-axis and looking at the individual colors.  
+
+The stacked bar chart also gives me a clear view of the marginal distribution of the month of the attack, which is asked about in the problem, so it is an ideal choice in this case compared to a side-by-side bar chart.
+
+A mosaic plot would also be a good choice here, but I think the stacked bar chart supplemented with a chi-square test is better here, since the visual trend of the changes in the frequency of attacks for each country is so much more clear in the stacked bar chart.
+
+
+###  Sam Says:  
+
+There actually are shark attacks in the months of January, February, March, and May.  I just removed these months when creating the dataset to make things a bit more difficult!  We'll continue working with this dataset in the future, and we'll use a more complete version of it when we do!
+
+
+***
+***
+
+#  Problem 7
+
+**Days Are Numbered**
+Graph:  (10 points)
+
+```{r, fig.height = 7}
+sharks_subset1 <- mutate(shark_attacks, 
+                    day_of_week = weekdays(as.Date(Date)),
+                    day_of_week = factor(day_of_week, levels = c("Sunday", "Monday", 
+                                                                 "Tuesday", "Wednesday", 
+                                                                 "Thursday", "Friday", 
+                                                                 "Saturday")))
+
+shark_attacks$Fatal <- as.factor(shark_attacks$Fatal)
+fatal_labels <- c("Y" = "Fatal", "N" = "Not Fatal", "UNKNOWN" = "Fatality Unknown", "(all)" = "All")
+
+sharks_subset1$Date <- as.Date(sharks_subset1$Date)
+sharks_subset1$Year <- as.numeric(format(sharks_subset1$Date, "%Y"))
+
+ggplot(sharks_subset1[which(sharks_subset1$Year >= 1850),]) + 
+  geom_histogram(aes(y = ..density.., x = Year, fill = day_of_week), binwidth = 10) + 
+  facet_grid(Fatal~., labeller = as_labeller(fatal_labels),
+             margins = TRUE) + 
+  labs(x = "Year", y = "Density", 
+       title = "Occurence of Shark Attacks Over Time by \n Day of Week and Fatality") + 
+  scale_fill_discrete(name = "Day of Week") + 
+  my_theme
+```
+
+```{r, warning=F, message=F}
+table(sharks_subset1$day_of_week)
+chisq.test(sharks_subset1$day_of_week, sharks_subset1$Fatal)
+```
+a. 
+
+From the graphic and the table, we see that shark attacks occur more commonly on Saturday and Sundays and less commonly on weekdays.  The distribution of attacks for each day of the week doesn't appear to depend on the fatality of the shark attack. Based on the the chi-squared test and the resulting p-value of 0.82, we determine that day of the week and whether or not the attack was fatal are independent.  Since 1850 we see that the number of fatal and non-fatal shark attacks have increased overall. Specifically, the number of shark attacks on Saturdays and Sundays has increased since 1850, most of which were non-fatal attacks.  
+
+b.  
+
+We see that 1955-1965s and 2005-2010s had the most fatal shark attacks occurring on Saturdays.  The 1945s-1965s and 1985-1995s had the most fatal shark attacks on Sundays.  
+
+c. 
+
+Through facetting, we see the conditional distributions of year given day of the week for each category of `Fatal`.  And the fill of the histogram visualizes the conditional distribution of year given day of the week and is displayed for each category of `Fatal`.  
+
+d. 
+
+I chose to treat year as a continuous variable, and thus I used a density histogram displaying the stacked conditional distributions.  I facetted by fatality because it allows us to compare the distributions of years given day of the week for each of the three categories of fatality - fatal attack, non-fatal attack and unknown.  Overall, this graphical arrangement allows us to most effectively answer the questions at hand regarding the different relationships between one continuous and two categorical variables.  
+
+***
+***
+
