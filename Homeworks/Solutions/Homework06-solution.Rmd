@@ -164,13 +164,15 @@ ggplot(data = shark_1850, aes(x = Year, y = Age)) +
   geom_smooth(method = lm, color = "red", aes(fill = factor(1))) + 
   geom_smooth(data = filter(shark_1850, Sex == "F"), 
               method = lm, color = "black") + 
-  scale_color_manual(name = "Gender of Victim", values = my_colors, 
+  scale_color_manual(values = my_colors, 
                      labels = c("F" = "Female", "M" = "Male", "U" = "Unknown")) +
-  scale_fill_manual(name = "Overall Relationship", values = "red", 
+  scale_fill_manual(values = "red", 
                     labels = "All Genders") + 
   labs(x = "Year of Shark Attack", y = "Age of Victim",
        title = "Age of Victim vs. Year of Shark Attack,\nby Gender of Victim",
-       subtitle = "Female Relationship in Black") + 
+       subtitle = "Female Relationship in Black", 
+       fill = "Overall Relationship",
+       color = "Gender of Victim") + 
   my_theme
 
 cor_1850 <- round(cor(shark_1850$Year, shark_1850$Age), 2)
