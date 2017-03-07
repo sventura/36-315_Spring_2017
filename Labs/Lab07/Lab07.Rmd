@@ -115,6 +115,15 @@ c.  Create a heat map of the two variables you used in your scatterplot from Pro
 ***
 
 
+```{r, warning = FALSE}
+var1 <- rpois(1000, 1)
+var2 <- rpois(1000, 10)
+test_results <- chisq.test(table(var1, var2))
+```
+
+A chi-square test shows that Variable 1 and Variable 2 are independent, as evidenced by the p-value of `r round(test_results$p.value, 3)`.
+
+
 #  Problem 3
 
 (20 points)

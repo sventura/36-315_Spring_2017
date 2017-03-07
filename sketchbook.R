@@ -313,7 +313,7 @@ imdb <- read_csv("/Users/sam/Downloads/movie_metadata.csv") %>%
          movie_title != "Indie Game: The Movie") %>%
   arrange(desc(aspect_ratio))
 imdb
-write.csv(imdb, "/Users/sam/Desktop/CMU-VAP/315/315-code-and-datasets/315-code-and-datasets/data/imdb-pretest.csv")
+write.csv(imdb, "/Users/sam/Desktop/CMU-VAP/315/315-code-and-datasets/315-code-and-datasets/data/imdb_pretest.csv")
 
 ggplot(imdb, aes(x = aspect_ratio)) + geom_histogram()
 ggplot(imdb, aes(x = content_rating)) + geom_bar() + coord_flip()
