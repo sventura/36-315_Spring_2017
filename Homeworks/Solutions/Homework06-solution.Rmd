@@ -48,7 +48,7 @@ Graph:  (10 points)
 
 a.  (4 points)  Characterize the distribution of the `Type` of shark attack.  Describe any interesting features you see.
 ```{r, warning=FALSE, message=FALSE}
-shark_attacks <- mutate(shark, Type2 = ifelse(Type == "Boat","Boating",Type))
+shark_attacks <- mutate(shark, Type2 = ifelse(Type == "Boat", "Boating", Type))
 ggplot(data = shark_attacks, aes(x = Type2, fill = Sex)) + geom_bar() +
     labs(title = "Number of Shark Attacks by Type of Attack",
          x = "Attack Type", y = "Number of Attacks") +
@@ -114,19 +114,20 @@ Graph:  (10 points)
 ```{r}
 shark_1850 <- filter(shark, Year >= 1850, Age >= 0)
 ggplot(data = shark_1850, aes(x = Year, y = SharkLength)) +
-  geom_point(aes(color = Fatal), alpha = 0.66) + xlim(1845, 2016) + 
-  geom_smooth(method = lm, color = "red", aes(fill = factor(1)),
-              size = 2.5) + 
+  geom_point(aes(color = Fatal), alpha = 0.66) + 
+  xlim(1845, 2016) + 
+  geom_smooth(method = lm, color = "red", aes(fill = factor(1)), size = 2.5) + 
   geom_smooth(data = filter(shark_1850, Fatal == "Y"), 
               method = lm, color = "blue", alpha = 0.5) + 
   scale_color_manual(values = my_colors, 
-                     labels = c("N" = "Not Fatal", "Y" = "Fatal", "UNKNOWN" = "Unknown")) +
+                     labels = c("N" = "Not Fatal", "Y" = "Fatal", 
+                                "UNKNOWN" = "Unknown")) +
   scale_fill_manual(values = "red", 
                     labels = "All Fatality Statuses") + 
   labs(x = "Year of Shark Attack", y = "Length of Shark (ft.)",
        title = "Length of Shark vs. Year of Shark Attack,\nby Fatality",
        fill = "Overall Relationship", color = "Fatality of Attack",
-       subtitle = "Fatal Relationship in Black") + 
+       subtitle = "Relationship between Length and Year for Fatal Shark Attacks in Black") + 
   my_theme
 
 cor_length <- round(cor(shark_1850$Year, shark_1850$SharkLength), 2)
@@ -160,7 +161,8 @@ Graph:  (10 points)
 
 ```{r}
 ggplot(data = shark_1850, aes(x = Year, y = Age)) +
-  geom_point(aes(color = Sex), alpha = 0.66) + xlim(1845, 2016) + 
+  geom_point(aes(color = Sex), alpha = 0.66) + 
+  xlim(1845, 2016) + 
   geom_smooth(method = lm, color = "red", aes(fill = factor(1))) + 
   geom_smooth(data = filter(shark_1850, Sex == "F"), 
               method = lm, color = "black") + 
@@ -283,7 +285,8 @@ ggplot(shark, aes(fill = Country, x = month)) + geom_bar(color = "darkgrey") +
   scale_x_discrete(drop = F) + my_theme + 
   scale_fill_manual(name = "Country of Attack", values = my_colors)
 
-#  Adding 0.5 to the contingency table to help with estimation issues for missing months
+#  Adding 0.5 to the contingency table 
+#  to help with estimation issues for missing months
 chi_sq_7 <- chisq.test(table(shark$month, shark$Country) + 0.5)
 ```
 
@@ -327,21 +330,24 @@ There actually are shark attacks in the months of January, February, March, and 
 Graph:  (10 points)
 
 ```{r, fig.height = 7}
-sharks_subset1 <- mutate(shark_attacks, 
-                    day_of_week = weekdays(as.Date(Date)),
-                    day_of_week = factor(day_of_week, levels = c("Sunday", "Monday", 
-                                                                 "Tuesday", "Wednesday", 
-                                                                 "Thursday", "Friday", 
-                                                                 "Saturday")))
+sharks_subset1 <- 
+  mutate(shark_attacks, 
+         day_of_week = weekdays(as.Date(Date)),
+         day_of_week = factor(day_of_week, 
+                              levels = c("Sunday", "Monday", "Tuesday", 
+                                         "Wednesday", "Thursday", "Friday", 
+                                         "Saturday")))
 
 shark_attacks$Fatal <- as.factor(shark_attacks$Fatal)
-fatal_labels <- c("Y" = "Fatal", "N" = "Not Fatal", "UNKNOWN" = "Fatality Unknown", "(all)" = "All")
+fatal_labels <- c("Y" = "Fatal", "N" = "Not Fatal", 
+                  "UNKNOWN" = "Fatality Unknown", "(all)" = "All")
 
 sharks_subset1$Date <- as.Date(sharks_subset1$Date)
 sharks_subset1$Year <- as.numeric(format(sharks_subset1$Date, "%Y"))
 
 ggplot(sharks_subset1[which(sharks_subset1$Year >= 1850),]) + 
-  geom_histogram(aes(y = ..density.., x = Year, fill = day_of_week), binwidth = 10) + 
+  geom_histogram(aes(y = ..density.., x = Year, fill = day_of_week), 
+                 binwidth = 10) + 
   facet_grid(Fatal~., labeller = as_labeller(fatal_labels),
              margins = TRUE) + 
   labs(x = "Year", y = "Density", 
