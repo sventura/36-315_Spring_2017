@@ -1,0 +1,11 @@
+base
+data.table
+ggplot2
+dplyr
+gridExtra
+devtools
+tidyverse
+tibble
+tidyr
+readr
+purrr
