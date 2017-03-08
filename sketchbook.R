@@ -288,12 +288,11 @@ gg_check(my_plot)
 library(tidyverse)
 library(forcats)
 
-
+options(tibble.width = Inf)
 olive <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/olive_oil.csv")
 olive <- mutate(olive, area = as.character(area), region = as.character(region))
 
-
-options(tibble.width = Inf)
+#  IMDB -- Pre-test
 imdb <- read_csv("/Users/sam/Downloads/movie_metadata.csv") %>%
   select(color, num_critic_for_reviews, duration, gross, genres, movie_title, 
          num_voted_users, cast_total_facebook_likes, language, country, 
@@ -315,8 +314,35 @@ imdb <- read_csv("/Users/sam/Downloads/movie_metadata.csv") %>%
 imdb
 write.csv(imdb, "/Users/sam/Desktop/CMU-VAP/315/315-code-and-datasets/315-code-and-datasets/data/imdb_pretest.csv")
 
-ggplot(imdb, aes(x = aspect_ratio)) + geom_histogram()
+
+#  IMDB -- Test
+imdb <- read_csv("/Users/sam/Downloads/movie_metadata.csv") %>%
+  select(color, num_critic_for_reviews, duration, gross, genres, movie_title, 
+         num_voted_users, cast_total_facebook_likes, language, country, 
+         content_rating, budget, title_year, imdb_score, aspect_ratio, 
+         movie_facebook_likes) %>% 
+  mutate(content_rating = ifelse(content_rating %in% c("Unrated", "Not Rated") |
+                                   is.na(content_rating), 
+                                 "N/A or Unrated", content_rating),
+         content_rating = ifelse(content_rating %in% c("Approved", "Passed", 
+                                                       "G", "TV-G", "GP"), 
+                                 "Validated for All Ages (G)", content_rating)) %>%
+  filter(content_rating %in% c("R", "PG-13", "PG", "Validated for All Ages (G)", 
+                               "N/A or Unrated", "NC-17"),
+         country %in% c("USA", "UK", "Germany", "France", "Australia")) %>%
+  mutate(language = ifelse(language != "English" | is.na(language), 
+                           "N/A or Other", "English"),
+         movie_title = gdata::trim(movie_title)) %>%
+  filter(movie_title != "This Is Martin Bonner") %>%
+  arrange(desc(aspect_ratio))
+imdb
+write.csv(imdb, "/Users/sam/Desktop/CMU-VAP/315/315-code-and-datasets/315-code-and-datasets/data/imdb_test.csv")
+
+imdb <- mutate(imdb, is_comedy = grepl(pattern = "Comedy", x = genres),
+               is_action = grepl(pattern = "Action", x = genres))
+ggplot(imdb, aes(x = aspect_ratio)) + geom_histogram() + xlim(1, 4.2)
 ggplot(imdb, aes(x = content_rating)) + geom_bar() + coord_flip()
+ggplot(imdb, aes(x = content_rating, fill = is_action)) + geom_bar() + coord_flip()
 
 ggplot(imdb, aes(x = duration, y = gross)) + geom_point() + 
   geom_smooth(method = lm)
@@ -344,8 +370,14 @@ imdb <- mutate(imdb,
                is_romance = grepl(pattern = "Romance", x = genres))
 ggplot(imdb, aes(x = imdb_score, y = profit, color = is_action)) + 
   geom_point() + geom_smooth()
-ggplot(imdb, aes(x = title_year, y = profit, color = is_action)) + 
-  geom_point() + geom_smooth(method = lm)
+
+ggplot(imdb, aes(x = title_year, y = profit)) + 
+  geom_point(aes(color = country)) + 
+  geom_smooth(method = lm, color = "black", size = 2) + 
+  geom_smooth(data = filter(imdb, country == "France", title_year > 1990), 
+              method = lm, color = "red", size = 2)
+
+
 
 
 
