@@ -378,6 +378,94 @@ ggplot(imdb, aes(x = title_year, y = profit)) +
               method = lm, color = "red", size = 2)
 
 
+table1 <- table(imdb$country, imdb$is_action)
+chisq.test(table1)
+
+
+#  Mid-Semester Grades
+#  Multiple Choice
+library(gsheet)
+mc <- as_data_frame(gsheet2tbl("https://docs.google.com/spreadsheets/d/1PMa30fRKYxaj9I-7wgp4wcEFJqszBhKeMz4eJdfguTI/pub?gid=1929804628&single=true&output=csv"))
+names(mc)
+perfect <- filter(mc, andrew == "perfect")
+answers_b <- unique(unlist(strsplit(mc$b, ", ")))
+answers_c <- unique(unlist(strsplit(mc$c, ", ")))
+answers_d <- unique(unlist(strsplit(mc$d, ", ")))
+answers_e <- unique(unlist(strsplit(mc$e, ", ")))
+
+correct_b <- unique(unlist(strsplit(perfect$b, ", ")))
+correct_c <- unique(unlist(strsplit(perfect$c, ", ")))
+correct_d <- unique(unlist(strsplit(perfect$d, ", ")))
+correct_e <- unique(unlist(strsplit(perfect$e, ", ")))
+
+wrong_b <- setdiff(answers_b, correct_b)
+wrong_c <- setdiff(answers_c, correct_c)
+wrong_d <- setdiff(answers_d, correct_d)
+wrong_e <- setdiff(answers_e, correct_e)
+
+
+mc <- mutate(mc, 
+  score_a = 5 * (a == perfect$a),
+  
+  student_b = strsplit(b, ", "),
+  good_b = sapply(student_b, intersect, correct_b),
+  good_b = sapply(good_b, length),
+  bad_b = sapply(student_b, intersect, wrong_b),
+  bad_b = sapply(bad_b, length),
+  score_b = good_b + (5 - length(correct_b) - bad_b),
+  
+  student_c = strsplit(c, ", "),
+  good_c = sapply(student_c, intersect, correct_c),
+  good_c = sapply(good_c, length),
+  bad_c = sapply(student_c, intersect, wrong_c),
+  bad_c = sapply(bad_c, length),
+  score_c = good_c + (5 - length(correct_c) - bad_c),
+  
+  student_d = strsplit(d, ", "),
+  good_d = sapply(student_d, intersect, correct_d),
+  good_d = sapply(good_d, length),
+  bad_d = sapply(student_d, intersect, wrong_d),
+  bad_d = sapply(bad_d, length),
+  score_d = good_d + (5 - length(correct_d) - bad_d),
+  
+  student_e = strsplit(e, ", "),
+  good_e = sapply(student_e, intersect, correct_e),
+  good_e = sapply(good_e, length),
+  bad_e = sapply(student_e, intersect, wrong_e),
+  bad_e = sapply(bad_e, length),
+  score_e = good_e + (5 - length(correct_e) - bad_e),
+  
+  missed_a = 5 - score_a,
+  missed_b = 5 - score_b, 
+  missed_c = 5 - score_c, 
+  missed_d = 5 - score_d, 
+  missed_e = 5 - score_e, 
+  
+  total = score_a + score_b + score_c + score_d + score_e,
+  missed = 25 - total,
+  andrew = gdata::trim(andrew)) %>% 
+  select(name, andrew, total, missed) %>%
+  arrange(andrew)
+
+write.csv(mc, file = "/Users/sam/Desktop/CMU-VAP/315/36-315 Spring 2017 Lab Exam Multiple Choice Grades.csv")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
