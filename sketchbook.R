@@ -367,7 +367,9 @@ ggplot(imdb, aes(x = duration, color = language)) + geom_density()
 imdb <- mutate(imdb, 
                profit = gross - budget, 
                is_action = grepl(pattern = "Action", x = genres),
-               is_romance = grepl(pattern = "Romance", x = genres))
+               is_romance = grepl(pattern = "Romance", x = genres),
+               is_comedy = grepl(pattern = "Comedy", x = genres))
+
 ggplot(imdb, aes(x = imdb_score, y = profit, color = is_action)) + 
   geom_point() + geom_smooth()
 
@@ -378,9 +380,9 @@ ggplot(imdb, aes(x = title_year, y = profit)) +
               method = lm, color = "red", size = 2)
 
 
-table1 <- table(imdb$country, imdb$is_action)
+table1 <- table(imdb$content_rating, imdb$is_comedy)
 chisq.test(table1)
-
+chisq.test(imdb$content_rating, imdb$is_comedy)
 
 #  Mid-Semester Grades
 #  Multiple Choice
