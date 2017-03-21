@@ -1,0 +1,262 @@
+\documentclass{beamer} %[12pt]
+\usepackage{xcolor}
+%\usetheme{boadilla}
+%\usetheme{malmoe}
+%\usetheme{copenhagen}
+%\usecolortheme{rose}
+\usecolortheme{beaver}
+\usepackage{pgf, graphics}
+\usepackage{graphicx}
+%\usepackage[left=3cm,top=3cm,right=3cm,nohead,nofoot]{geometry}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage[square]{natbib}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{verbatim}
+\usepackage{color}
+\usepackage{fancyvrb}
+\usepackage{bbm}
+
+\begin{filecontents}{ref.bib}
+\end{filecontents}
+
+%\usetheme{EastLansing}
+%\usepackage{natbib}
+\bibliographystyle{apalike}
+% make bibliography entries smaller
+%\renewcommand\bibfont{\scriptsize}
+% If you have more than one page of references, you want to tell beamer
+% to put the continuation section label from the second slide onwards
+\setbeamertemplate{frametitle continuation}[from second]
+% Now get rid of all the colours
+\setbeamercolor*{bibliography entry title}{fg=black}
+\setbeamercolor*{bibliography entry author}{fg=black}
+\setbeamercolor*{bibliography entry location}{fg=black}
+\setbeamercolor*{bibliography entry note}{fg=black}
+% and kill the abominable icon
+\setbeamertemplate{bibliography item}{}
+
+
+\newcommand{\hl}[1]{\colorbox{yellow}{#1}}
+\newcommand{\hlblue}[1]{\colorbox{green}{#1}}
+\newcommand{\hlblu}[1]{\colorbox{cyan}{#1}}
+\newcommand{\hlred}[1]{\colorbox{cyan}{#1}}
+\newcommand{\hlre}[1]{\colorbox{pink}{#1}}
+\newcommand{\hlgreen}[1]{\colorbox{pink}{#1}}
+\newcommand{\hlgree}[1]{\colorbox{green}{#1}}
+
+
+
+\DeclareMathOperator*{\argmax}{\arg\!\max}
+
+\DeclareMathOperator*{\argmin}{\arg\!\min}
+
+
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+
+
+%\setbeamersize{text margin left=.5cm,text margin right=.5cm}
+\newenvironment{changemargin}[2]{%
+  \begin{list}{}{%
+    \setlength{\topsep}{0pt}%
+    \setlength{\leftmargin}{#1}%
+    \setlength{\rightmargin}{#2}%
+    \setlength{\listparindent}{\parindent}%
+    \setlength{\itemindent}{\parindent}%
+    \setlength{\parsep}{\parskip}%
+  }%
+  \item[]}{\end{list}}
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+\usepackage{color}
+\newcommand{\hilight}[1]{\colorbox{yellow}{#1}}
+\setbeamertemplate{footline}[page number]
+
+\begin{document}
+
+
+\title[]{Today:  2-D KDE, Contour Plots, Heat Maps, \\Distance Matrices, Dendrograms}
+
+
+\author[Samuel L. Ventura]{\\
+  \large{Sam Ventura\\36-315\\Wednesday:  Colors (guest speaker)}}
+\institute[CMU Statistics]{Department of Statistics\\Carnegie Mellon University}
+\date{\today}
+
+
+\begin{frame}
+	\maketitle
+
+	
+\end{frame}
+
+
+
+
+\begin{frame}\frametitle{2-D Kernel Density Estimation}
+	\small
+	
+	Goal:  Estimate the joint distribution of $X_1, X_2$:
+	
+	\vskip 0.25 cm
+	
+	Assuming $X_1$ and $X_2$ are independent:
+	
+	\vskip 3.75 cm
+	
+	Assuming $X_1$ and $X_2$ are dependent:
+	
+	\vskip 10 cm
+	
+\end{frame}
+
+
+\begin{frame}\frametitle{Contour Plots}
+	\small
+	
+	Level Sets:
+	
+	\vskip 3.5 cm
+	
+	Contour Plots:
+	
+	\vskip 10 cm
+	
+\end{frame}
+
+
+\begin{frame}\frametitle{Heat Maps}
+	\small
+	
+	
+	\vskip 10 cm
+	
+\end{frame}
+
+
+\begin{frame}\frametitle{Visualizing High-D Structure / Projections}
+	\small
+	
+	What do we do when we have \textbf{many} continuous variables?
+	
+	\vskip 1.75 cm
+	
+	Example situations when we have many continuous variables:
+	
+	\vskip 1.75 cm
+	
+	\textbf{Projections}:  Sometimes we want to project the high dimensional data into a smaller subspace without losing ``important structure".
+	
+	\vskip 2.25 cm
+	
+	
+	As we will see on the upcoming lab and HW, we can project the data into lower-dim space and visualize the results.  Why might this be a bad idea?
+	
+	\vskip 10 cm
+	
+\end{frame}
+
+
+
+
+\begin{frame}\frametitle{Distance = Metric = Distance Metric = Distance Function}
+	\small
+	
+	Function that defines distance between pairs of observations in a dataset
+	
+	\vskip 0.35 cm
+	
+	\textbf{Properties}:
+	
+	\vskip 6 cm
+	
+	Examples:  
+	
+\end{frame}
+
+
+\begin{frame}\frametitle{Distance Matrices}
+	\small
+	
+	A \textbf{distance matrix} is a data structure that efficiently organizes the pairwise distances between all observations in a dataset.
+	
+	\vskip 0.25 cm
+	
+	Pairwise distances are organized into the lower-triangle of a matrix, $D$
+	
+	\vskip 0.25 cm
+	
+	The $(i,j)^{th}$ element of the matrix contains the distance between $x_i$ and $x_j$:
+	
+	\vskip 0.25 cm
+	
+	$D[i,j] = d(x_i, x_j)$
+	
+	\vskip 0.5 cm
+	
+	Examples:
+	
+	
+	
+	\vskip 10 cm
+	
+	
+
+	
+\end{frame}
+
+
+\begin{frame}\frametitle{Projections:  MDS and PCA}
+	\small
+	
+	\textbf{Multi-dimensional scaling}:  looks for a configuration in a $k$-dimensional subspace such that the distances between observations in the subspace best match the distances in the original $p$-dimensional space.
+	
+	\vskip 3 cm
+	
+	\textbf{Principal Components Analysis}:  tries to represent large number of correlated continuous variables with a (usually) smaller number of uncorrelated "principal components" (new variables)
+	
+	\vskip 10 cm
+	
+	
+\end{frame}
+
+
+
+\begin{frame}\frametitle{Visualizing High Dimensional Structure with Dendrograms}
+	\small
+	\centering
+	
+	There is no easy way to visualize how far apart observations are in high-dimensional space.  One option we do have:  \textbf{Dendrograms}
+	
+	\vskip 10 cm
+	
+	
+\end{frame}
+
+
+
+
+\begin{frame}\frametitle{Hierarchical Clustering to Obtain Dendrograms}
+	\small
+	
+	We can get different dendrograms via \textbf{hierarchical linkage clustering}.
+	
+	\vskip 5 cm
+	
+	\textbf{Single linkage}:  the distance between two groups is the shortest possible distance between two points, one from each group
+	
+	\vskip 1 cm
+	
+	\textbf{Complete linkage}:  the distance between two groups is the largest possible distance between two points, one from each group
+	
+	\vskip 10 cm
+	
+\end{frame}
+
+
+
+
+
+\end{document}
