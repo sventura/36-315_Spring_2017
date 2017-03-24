@@ -454,12 +454,45 @@ write.csv(mc, file = "/Users/sam/Desktop/CMU-VAP/315/36-315 Spring 2017 Lab Exam
 
 
 
+imdb <- mutate(imdb, 
+               content_rating = factor(content_rating, 
+                                       levels = c("Validated for All Ages (G)", 
+                                                  "PG","PG-13", "R", "NC-17", 
+                                                  "N/A or Unrated"),
+                                       labels=c("Validated for All Ages (G)", 
+                                                "Parental Guidance (PG)", 
+                                                "Parental Guidance under 13 (PG-13)", 
+                                                "Restricted under 17 (R)", 
+                                                "No Children under 17 (NC-17)", 
+                                                "Rating Not Available")))
+
+
+imdb <- mutate(imdb, 
+               content_rating = factor(content_rating, 
+                                       levels = c("Validated for All Ages (G)", 
+                                                  "PG","PG-13", "R", "NC-17", 
+                                                  "N/A or Unrated"),
+                                       labels=c("Validated for All Ages (G)", 
+                                                "Parental Guidance (PG)", 
+                                                "Parental Guidance under 13 (PG-13)", 
+                                                "Restricted under 17 (R)", 
+                                                "No Children under 17 (NC-17)", 
+                                                "Rating Not Available")))
+ggplot(imdb, aes(x = budget, title_year)) + geom_point() + 
+  facet_grid(. ~ content_rating, margins = TRUE)
+
+
+ggplot(imdb, aes(x = budget, title_year)) + geom_point(aes(shape = color))
+
+ggplot(imdb, aes(x = budget, title_year)) + geom_point(aes(shape = color)) + 
+  scale_shape_manual(values = c("Black and White" = "BW", 
+                                "Color" = "C")) + 
+  scale_shape_manual(values = c("Above-7" = "A", 
+                               "Under-7" = "U"))
 
 
 
-
-
-
+student <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/students.csv")
 
 
 
