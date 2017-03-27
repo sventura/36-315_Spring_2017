@@ -1,0 +1,205 @@
+---
+title: "36-315 Homework 07, Spring 2017"
+author: "Solutions"
+date: "Due Thursday, March 23rd, 2017 (11:59pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+##  Homework 07:  Do The Other Lab Exam Problems
+
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW07.Rmd -- e.g. "sventura-HW07.Rmd") to the Homework 07 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+
+#  Problem 0
+
+**Style Guide and Table of Contents**
+
+a.  What style guide are you using on this assignment?  (Up to 10 points will be deducted if you do not adhere to a specific style guide.)
+
+** The solutions are written using the Hadley Wickham style guide. **
+
+b.  Remember to include a floating table of contents in your submission.
+
+c.  Use your theme for all problems.
+
+
+***
+***
+
+
+#  Instructions:  Lab Exam
+
++  For all lab exam questions, be sure to answer the question(s) asked.
++  In addition to answering the questions, **write 1-3 sentences describing why you made certain choices in your graphic.**  For example, why did you choose a histogram vs. density plot?  Pie chart vs. rose diagram vs. bar chart vs. spine chart?  Stacked vs. side-by-side bar chart?  Why did you choose the bin width / number of bins in your histogram?  Why did you choose the bandwidth and kernel that you picked in your density plot?  Why did you decide to arrange the graphs the way you did (e.g. in a grid, horizontally, vertically).  Etc.
++  Remember, whenever you can supplement your answer with information from a statistical test, this is very beneficial!  Feel free to run statistical tests and include this information as part of your answer.
+
+
+###  For all problems below, you should justify your answer with a single graph.
+
+Using `facet_wrap()` or `facet_grid()` counts as one graph, while using `grid.arrange()` does not.
+
+
+###  Reminder:  On the day of the lab exam, you'll have a slightly different version of the data and problems.  Additionally, there may be 1-2 short answer questions for you to answer beyond those listed here.
+
+
+***
+***
+
+
+
+#  Data:  IMDB Movies
+
+```{r, message = F, warning = F}
+library(tidyverse)
+movies <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/imdb_test.csv")
+
+#  Simple theme with white background, legend at the bottom
+my_theme <-  theme_bw() +
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+
+#  Colorblind-friendly color palette
+my_colors <- c("#000000", "#56B4E9", "#E69F00", "#F0E442", "#009E73", "#0072B2", 
+               "#D55E00", "#CC7947")
+
+```
+
+
+***
+***
+
+
+#  Problem 2
+
+**Mo' Money Mo' Profit**
+
+(For our purposes, a film's profit is defined to be the `gross` minus the `budget`.)
+
+```{r, message = F, warning = F}
+movies <- mutate(movies, profit = gross - budget)
+
+plot2 <- ggplot(data = movies) +
+  geom_histogram(aes(x = profit, y = ..density..), color = "black",
+                 bins = 40) +
+  labs(title = "Distribution of Movie Profits",
+       subtitle = "IMDB movie data",
+       x = "Profit (USD)",
+       y = "Density") + 
+  scale_x_continuous(labels = scales::comma) +
+  my_theme
+plot2 + stat_function(fun = dnorm, color = "red", 
+                      args = list(mean = mean(movies$profit, na.rm = TRUE),
+                                  sd = sd(movies$profit, na.rm = TRUE)))
+```
+
+
+Graph:  10 points
+
+a.  (5 points)   
+The distribution of profits of movies in the IMDB dataset is unimodal, with its peak at around 0 USD profit. It has relatively long but thin tails, as most of the movies range between profits of -100 million and 100 million USD. The distribution seems to be slightly skewed right, and there are potential outliers on either end of the distribution at above 500 million USD and below -400 million USD profit.
+
+b.  (5 points) 
+
+The distribution of the profit of movies is not quite normally distributed. The density of the distribution is much larger than expected near the mean and much smaller than expected around $\pm$ 2 standard deviations from the mean than expected if the distribution were actually normal. The distribution is also slightly skewed right, and not symmetrical like the normal distribution.
+
+```{r, message = F, warning = F, comment = NA}
+ks.test(movies$profit, dnorm, mean(movies$profit, na.rm = TRUE), 
+        sd(movies$profit, na.rm = TRUE))
+```
+
+Using the Kolmogorov-Smirnov test, we test the null hypothesis that the normal distribution and the distribution of profits are the same. The test returns a p-value near 0, meaning that there is evidence to reject the null hypothesis and say that the distribution of profits is not normally distributed.
+
+c.  (5 points) 
+
+I chose to plot a histogram rather than a density plot because the density plot would show support at profit values that do not appear in the data set, where there are gaps in the distribution. I decided to use a histogram at the density scale so that I could overlay a normal distribution with the mean and standard deviation of the movie profits in the data set in order to compare the two and determine if profits were normally distributed, which I could not do at the count scale.
+
+***
+***
+
+#  Problem 3
+
+**Lights, Camera, ...**
+
+Graph:  10 points
+
+a.  (5 points)  Is there any association between the `country` of the film and whether or not it was an action film?  Are action films more or less commonly created in particular countries compared to others?   
+
+(Aside:  See the `genre` variable.  You may need to do some data manipulation to determine if a film is an action film.  `grepl(pattern = "[string to search for]", x = [column to search]))` may help.)
+
+b.  (3 points)  Is the `country` of the film independent of whether or not it was an action film?  Provide visual or statistical evidence, and explain how the evidence leads you to your answer.
+
+c.  (2 points)  Which country has the highest proportion of action films?
+
+d.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+
+***
+***
+
+
+#  Problem 4
+
+**Buying Good Reviews**
+
+Graph:  10 points
+
+a.  (5 points)  Do movies with larger budgets typically receive higher IMDB rating scores?  Provide visual or statistical evidence, and explain how this evidence leads you to your answer.
+
+b.  (5 points)  Does the relationship between budget and IMDB rating/score depend on the content rating of the film?  Provide visual or statistical evidence, and explain how this evidence leads you to your answer.
+
+c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+
+
+***
+***
+
+
+#  Problem 5
+
+**Consider Certain Aspects**
+
+Graph:  10 points
+
+a.  (4 points)  Characterize the distribution of the `aspect_ratio` of films.  Would you consider any films to be outliers based on their aspect ratio?  Which ones?  Why?
+
+b.  (3 points)  Would you consider the aspect ratio of films to be a categorical or a continuous variable?  Why?  (Note:  There is not necessarily a right or wrong answer here.  Be sure to justify your answer!)
+
+c.  (3 points)  How many modes are in the distribution of `aspect_ratio`?  Provide **visual** evidence, and explain how this evidence leads you to your answer.
+
+d.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+
+***
+***
+
+
+#  Problem 8
+
+(BONUS:  2 points each)
+
+**Read Your Feedback**
+
+Read your Lab Exam feedback on Blackboard.
+
+a.  Write 1-3 sentences about what you did well on the lab exam.
+
+b.  Write 1-3 sentences about what you did wrong on the lab exam.
+
+
