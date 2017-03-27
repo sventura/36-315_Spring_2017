@@ -159,11 +159,11 @@ Repeat part (a), but this time, overlay the points, color by `Grade`, and change
 
 ##  Part C
 
-Repeat part (b), but this time, use a smaller bandwidth in each direction with `+ geom_density2d(h = c(10, 10))`.
+Repeat part (b), but this time, use a smaller bandwidth in each direction with `+ geom_density2d(h = c(1/2, 1/2))`.
 
 ##  Part D
 
-Repeat part (c), but this time, use a larger bandwidth in each direction with `+ geom_density2d(h = c(87, 87))`.
+Repeat part (c), but this time, use a larger bandwidth in each direction with `+ geom_density2d(h = c(3, 3))`.
 
 ##  Part E
 
