@@ -6,7 +6,7 @@ output:
   html_document:
     toc:  true
     toc_float:  true
-    code_folding:  show
+    code_folding:  hide
 ---
 
 ##  Homework 07:  Do The Other Lab Exam Problems
@@ -160,13 +160,59 @@ d.  (5 points)  Write 1-3 sentences describing why you made certain choices in y
 
 Graph:  10 points
 
-a.  (5 points)  Do movies with larger budgets typically receive higher IMDB rating scores?  Provide visual or statistical evidence, and explain how this evidence leads you to your answer.
+```{r warning = FALSE, message = FALSE, fig.height= 15,fig.width = 8}
+movies = mutate(
+  movies,
+  content_rating = factor(content_rating,
+                          levels = c("N/A or Unrated", 
+                                     "Validated for All Ages (G)", "PG", "PG-13",       
+                                     "R","NC-17"),
+                          labels = c("N/A or Unrated", "G", "PG", "PG-13" ,
+                                     "R" ,"NC-17") ) 
+)
 
-b.  (5 points)  Does the relationship between budget and IMDB rating/score depend on the content rating of the film?  Provide visual or statistical evidence, and explain how this evidence leads you to your answer.
+ggplot(movies,aes(x = budget/10^8, y = imdb_score)) + 
+  geom_point(alpha = .1) +
+  geom_smooth(method = "lm",color = "red")  + 
+  facet_grid(content_rating~., margin = T) +
+  labs(color = "Content Rating", x = "Film / TV Budget (in 100 Million Dollars)",
+       y = "Imdb Score", 
+       title = "IMDB Score vs. Movie Budget, \nConditional on Movie Content Rating") +
+  scale_color_manual(values =colour) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) + my_theme
+```
 
-c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+```{r}
+lin_all <- lm(imdb_score~I(budget/10^8),data= movies)
+lin_ind <- lm(imdb_score~I(budget/10^8) + content_rating,data= movies)
+
+lin_ind_int <- lm(imdb_score~I(budget/10^8)*content_rating,data= movies)
+
+p_all <-summary(lin_all)$coef[2,4]
+anova_all_plus<-anova(lin_ind,lin_ind_int)
+
+f_test <-anova_all_plus$`Pr(>F)`[2]
+```
 
 
+a.  (5 points)  
+
+The final plot in the graph suggests that there is a slight, but significant positive relationship between the size of a movie's budget and their IMDB score. The confidence band, includes only positive sloping regressions, especially for movies with budgets less 200 million dollars (which is the vast majority of the films).
+
+A basic linear regression, regressing `Imdb score` on `budget` (in $100$ million dollar units) has a positive coefficient for `budget` of $`r round(lin_all$coef[2],4)`$, that is for every 15 million dollars of budget we'd expect an increase of the `Imdb` score by 1 unit. 
+
+This positive relationship is significant, with a p-value of $`r round(10^4*summary(lin_all)$coef[2,4],5)` \cdot 10^{-4}$, which is much much smaller than any standard threshold.
+
+
+b.  (5 points)  
+
+It is hard to tell if the relationship between `budget` and `imdb score` depends on the `content rating`. The regression lines relating `Imbd score` on `budget` conditional on film `content rating` are different than the slightly positive slope for all movies, with some having almost no slope and `NC-17` having negative slopes. These trends different than the slightly positive regression have large confidence bands, which suggest the true regression could be very different.
+
+Additionally,we can examining the strength of a linear model that allows for interactions between the `content rating` and `budget` slope, allowing each subset (based on `content rating`) to have different splots. Compared to a model that doesn't allow each `content rating` group to have it's ovwer `budget` slope, we obtain a p-value of $`r round(f_test,4)`$. This is slightly over a standard threshold level of $\alpha = .05$, so we conclude that allowing each `content rating` group to have their own slopes is not statically signification.
+
+c.  (5 points)  
+
+We decided to use a scatter plot of `budget` vs `imdb score` faceted on `content rating` adding red regression lines and confidence bands for the regression to look at linear trends. We used a scatter plot because both variables `budget` and `imdb score` are continuous and included regression lines to examine the overall relationships. 354 NA's we removed.
 
 ***
 ***
@@ -178,13 +224,47 @@ c.  (5 points)  Write 1-3 sentences describing why you made certain choices in y
 
 Graph:  10 points
 
-a.  (4 points)  Characterize the distribution of the `aspect_ratio` of films.  Would you consider any films to be outliers based on their aspect ratio?  Which ones?  Why?
+```{r}
+aspect_ratio_new = movies$aspect_ratio
+aspect_ratio_new[movies$aspect_ratio == 16] = round(16/9,2)
+aspect_ratio_new[movies$aspect_ratio == 4] = round(4/3,2)
+aspect_ratio_new[movies$aspect_ratio == 2.24] = 2.35 # Frozen
+aspect_ratio_new[movies$aspect_ratio == 1.77] = 1.89 # Space Jam
 
-b.  (3 points)  Would you consider the aspect ratio of films to be a categorical or a continuous variable?  Why?  (Note:  There is not necessarily a right or wrong answer here.  Be sure to justify your answer!)
+movies_update <- mutate(movies,
+                      aspect_ratio_new = aspect_ratio_new)
 
-c.  (3 points)  How many modes are in the distribution of `aspect_ratio`?  Provide **visual** evidence, and explain how this evidence leads you to your answer.
 
-d.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+df_label_max <- data.frame(y = c(1756,2135),x = c(1.85,2.39))
+
+ggplot(movies_update, aes(x = aspect_ratio_new)) + 
+  geom_histogram(bins = 20,color = "black") + 
+  geom_text(data= df_label_max,
+            aes(y = y + 100, label = x, x = x-c(.02,.06))
+            ) +
+  labs(x = "Aspect Ratio", y = "Number of Films",
+       title = "Aspect Ratio Distribution")  + my_theme
+
+```
+
+
+a.  (4 points)  
+
+This question slightly depends upon the answer to **part b**, as extreme values would tend to be outliers if we saw `aspect ratio` as continuous and `aspect ratio` values that have very number of observations (say 1) could be considered an outlier if we considered `aspect ratio` continuous. The `aspect ratio`s 16 and 4 are outliers in the first sense, and both groups are all errors in recording. The first should have been 16:9 or 1.78 and the second was actually 4:3 or 1.33. The `aspect ratio`s, `1.18`, `1.2`, `1.44`, `1.77`, `1.89`, `2.24` have a single film associated with them and two of these are errrored recording, `2.24` and `1.77`. 
+
+
+b.  (3 points)  
+
+There are two competing structure of `aspect ratios`, first any film maker can be experimental and vary the `aspect ratio` in a continuous manner, and there is the 2-4 common ratios that act like discrete structure/categorial variables as mentioned [here](http://www.red.com/learn/red-101/video-aspect-ratios). As such, it really should be viewed as I'm going to conclude that it is a continuous variable with discontinuities is the CDF, i.e. the density structure is a sum of a continuous function and point masses.
+
+c.  (3 points)  
+
+There are 2 modes of the `aspect ratio` distribution, at `1.85` and `2.39`, as we have very large numbers of observations with these exact numbers (more than 80\% of the data), and the continuous structure also seems to cluster around these points, with a posssible additional model lower around 1.33/1.37.
+
+
+d.  (5 points) 
+
+I used a histogram to capture the continuous structure of the `aspect ratio`, but also allowed the histogram to express the non-zero probablility associated with some ratios. In this plot we removed errors mentioned above included corrections of 16 to 16:9 and 4 to 4:3. 
 
 ***
 ***
