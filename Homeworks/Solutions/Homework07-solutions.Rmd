@@ -156,9 +156,12 @@ d.  (5 points)  Write 1-3 sentences describing why you made certain choices in y
 
 #  Problem 4
 
-**Buying Good Reviews**
 
 Graph:  10 points
+
+*I've included 2 plots that display the same information to give you an example of how to use `facet_wrap`, but have an "(all)" group. It's slightly hacky, but if you really love `facet_wrap` but want the "(all)" group, this is a hack to do it.*
+
+
 
 ```{r warning = FALSE, message = FALSE, fig.height= 15,fig.width = 8}
 movies = mutate(
@@ -178,6 +181,26 @@ ggplot(movies,aes(x = budget/10^8, y = imdb_score)) +
   labs(color = "Content Rating", x = "Film / TV Budget (in 100 Million Dollars)",
        y = "Imdb Score", 
        title = "IMDB Score vs. Movie Budget, \nConditional on Movie Content Rating") +
+  scale_color_manual(values =colour) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) + my_theme
+```
+
+```{r message = FALSE, warning = F, fig.height=12, fig.width = 10}
+
+movies2 = rbind(movies,movies) #duplicate the movies 
+movies2$content_rating = factor(movies2$content_rating, 
+                                levels =c( levels(movies$content_rating),
+                                           "(all)")) #include a new factor level
+movies2$content_rating[(nrow(movies)+1):nrow(movies2)] = "(all)" 
+#^ assign duplicated observations to group "(all)"
+
+ggplot(movies2,aes(x = budget/10^8, y = imdb_score,)) + 
+  geom_point(alpha = .1) +
+  facet_wrap(facets = ~content_rating,ncol = 2) +
+  geom_smooth(method = "lm",color = "red")  + 
+  labs(color = "Content Rating", x = "Film / TV Budget (in 100 Million Dollars)",
+       y = "Imdb Score", 
+       title = "IMDB Score vs. Movie Budget, Conditional on Movie Content Rating") +
   scale_color_manual(values =colour) +
   guides(colour = guide_legend(override.aes = list(alpha = 1))) + my_theme
 ```
