@@ -120,7 +120,7 @@ b.  (5 points)
 The distribution of the profit of movies is not quite normally distributed. The density of the distribution is much larger than expected near the mean and much smaller than expected around $\pm$ 2 standard deviations from the mean than expected if the distribution were actually normal. The distribution is also slightly skewed right, and not symmetrical like the normal distribution.
 
 ```{r, message = F, warning = F, comment = NA}
-ks.test(movies$profit, dnorm, mean(movies$profit, na.rm = TRUE), 
+ks.test(movies$profit, pnorm, mean(movies$profit, na.rm = TRUE), 
         sd(movies$profit, na.rm = TRUE))
 ```
 
