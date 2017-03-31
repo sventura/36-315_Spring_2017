@@ -492,7 +492,11 @@ ggplot(imdb, aes(x = budget, title_year)) + geom_point(aes(shape = color)) +
 
 
 
-student <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/students.csv")
+student_mds <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/students.csv") %>%
+  dplyr::select(RaisedHands, VisitedResources, AnnouncementsView, Discussion) %>%
+  scale %>% dist %>% cmdscale(k = 2) %>% as_data_frame
+
+ggplot(student_mds, aes(x = V1, y = V2)) + geom_density2d(h = c(1/2, 1/2))
 
 
 
@@ -532,6 +536,13 @@ for(i in 1:length(x$data)){
   }
 }
 
+
+
+student %>% dplyr::select(RaisedHands, VisitedResources, 
+                          AnnouncementsView, Discussion) %>%
+  scale %>% dist %>% hclust %>% as.dendrogram %>%
+  dendextend::set("labels", student$AbsentDays, order_value = TRUE) %>%
+  ggplot(theme = theme_bw(), horiz = T) + labs(title = "Student Similarity", y = "Pairwise Euclidean Distance")
 
 
 
