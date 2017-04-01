@@ -286,7 +286,7 @@ e.  Critique these graphs.  What are the issues with waffle charts?
 
 #  Problem 6
 
-(2 points each)
+(1 point each)
 
 **Arc Pie Charts**
 
@@ -311,7 +311,7 @@ c.  Recreate the graph from (a), but this time, add `explode = focus_var` into y
 
 d.  Recreate the graph from (c), but this time, add focus to the category with the minimum number of observations.
 
-e.  Critique these graphs.  
+e.  (4 points)  Critique these graphs.  
 
 +  What would you use an arc pie chart to visualize?  (I.e. what type of data?  How many dimensions/variables?)
 +  What are the issues with arc pie charts?  
