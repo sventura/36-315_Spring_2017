@@ -139,16 +139,49 @@ I chose to plot a histogram rather than a density plot because the density plot 
 
 Graph:  10 points
 
-a.  (5 points)  Is there any association between the `country` of the film and whether or not it was an action film?  Are action films more or less commonly created in particular countries compared to others?   
+```{r}
+action.movies <- ifelse(grepl("Action", movies$genres), "Action", "Non-Action")
+movies <- mutate(movies, action = action.movies)
 
-(Aside:  See the `genre` variable.  You may need to do some data manipulation to determine if a film is an action film.  `grepl(pattern = "[string to search for]", x = [column to search]))` may help.)
+ggplot(movies, aes(x = country, fill = action)) + 
+  geom_bar(position = "fill") +
+  labs(title = "Proportions of Movies by Country and Genre",
+       x = "Country",
+       y = "Proportion of Action Movies",
+       fill = "Movie Type") +
+  scale_fill_manual(values = c("blue", "red"), 
+                    labels = c("Action", "Non-Action")) +
+  my_theme
+```
 
-b.  (3 points)  Is the `country` of the film independent of whether or not it was an action film?  Provide visual or statistical evidence, and explain how the evidence leads you to your answer.
+a.   
 
-c.  (2 points)  Which country has the highest proportion of action films?
+There appears to be no association between the country of the film and whether or not it was an action film. Based on the mosaic plot above, the proportion of action films is similar between all the countries and within 5% of each other. It does appear that UK and France produce less action films compared to the US, Germany and Australia. 
 
-d.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+b.  
 
+```{r}
+chisq.test(x = movies$country, y = movies$action)
+```
+
+Statistically, we can look at the results of a chi-square test to confirm this. Our chi-square test gives a p-value of 0.3929, which is not significant at any reasonable level of statistical significance. As such, we cannot conclude that there is overwhelming evidence to reject the null hypothesis of independence and conclude that the genre of movie and the country of movie are associated with each other
+
+c. 
+
+```{r}
+country_action_table <- table(movies$country, movies$action)
+country_action_table[,1] / (country_action_table[,1] + country_action_table[,2])
+```
+
+Australia has the higest proportion at 0.291
+ 
+d.
+
+I chose a stacked bar chart here because I really like the way you can clearly see changes in the proportions of attacks corresponding to each country when moving across the x-axis and looking at the individual colors.
+
+The stacked bar chart also gives me a clear view of the marginal distribution of the proportion of Action Films, which is asked about in the problem, so it is an ideal choice in this case compared to a side-by-side bar chart.
+
+A mosaic plot would also be a good choice here, but I think the stacked bar chart supplemented with a chi-square test is better here, since the visual trend of the changes in the proportion of Action Films for each country is so much more clear in the stacked bar chart.
 
 ***
 ***
