@@ -1,0 +1,357 @@
+---
+title: "36-315 Homework 09, Spring 2017"
+author: "Your Group Number, Group Member Names, and Group Member AndrewIDs Here"
+date: "Due Thursday, April 6th, 2017 (11:59pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  hide
+---
+
+##  Homework 09:  Networks, Variable Visualization, and New 1-D Graph Critiques
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW09.Rmd -- e.g. "sventura-HW09.Rmd") to the Homework 09 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+##  Important Note -- This Is A Group Assignment!
+
+You should complete HW09 **as a group**.  Only one submission is needed per group.  Groups that submit multiple assignments may lose points at the instructors' discretion.
+
+
+#  Problem 0
+
+**Organization, Themes, and HTML Output**
+
+(5 points)
+
+a.  For all problems in this assignment, organize your output as follows:
+
++  Use code folding for all code.  See [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/) for how to do this.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
++  Use tabs only if you see it fit to do so -- this is your choice.
+
+
+b.  For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color:
+
++  Do not use the default `ggplot()` color scheme.
++  For any bar chart or histogram, outline the bars (e.g. with `color = "black"`).
++  Do not use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+c.  Treat your submission as a formal report:
+
++  Use complete sentences when answering questions.  
++  Answer in the context of the problem.  
++  Treat your submission more as a formal "report", where you are providing details analyses to answer the research questions asked in the problems.
+
+
+d.  What style guide are you using for this assignment?
+
+
+***
+***
+
+
+#  Problem 1
+
+(2 points each)
+
+**Parallel Coordinates and Radar Charts**
+
+There are no standard `ggplot()` geometries for creating parallel coordinates plots or radar charts, but there is an implementation in the `GGally` package.
+
+a.  Create a parallel coordinates chart displaying the continuous variables in the `Cars93` dataset.  Color the lines by the `Type` of car.  Code is partially completed for you below.  Be sure to rotate the x-axis labels, update the legend, and add titles/axis labels:
+
+```{r, warning = F, message = F}
+library(MASS)
+library(tidyverse)
+library(GGally)
+data(Cars93)
+cont_cols <- which(names(Cars93) %in% 
+                     c("Cars93", "Price", "MPG.city", "MPG.highway", "EngineSize",
+                       "Horsepower", "RPM", "Fuel.tank.capacity", "Passengers",
+                       "Length", "Wheelbase", "Width", "Turn.circle", "Weight"))
+
+ggparcoord(Cars93, columns = cont_cols) + aes(color = as.factor(Type))
+```
+
+b.  Do any of the car types get better mileage than others?  Which car types fit the most passengers?
+
+c.  Repeat part (a), but create a radar chart instead.  To do this, simply add `+ coord_polar()` to your parallel coordinates code.  Which plot is easier to read?
+
+d.  What is the default y-axis in this implementation of parallel coordinates charts?  (Hint:  Look at the `scale` parameter.)  What could you change the scale parameter to in order to mimic the way parallel coordinates charts were introduced in class?  Do this, and create a new graph showing the result.
+
+e.  Are any adjacent pairs of variables in your graph from part (d) positively correlated?  Are any adjacent pairs of variables negatively correlated?  Answer this using your parallel coordinates plot, and explain how you obtained this answer.  (It may help to wait until Monday's lecture to answer this.)
+
+
+
+***
+***
+
+
+
+#  Problem 2
+
+(18 points)
+
+**Correlation Matrices for Examining Variable Relationships**
+
+We've covered a few ways to visualize datasets that have many continuous variables (e.g. dimension reduction via multi-dimensional scaling, dendrograms, parallel coordinates plots, radar/spider/star charts, etc).  Another option here is a correlation heat map.  
+
+A correlation heat map provides a quick visualization of the bivariate correlations between all pairs of continuous variables in the dataset.
+
+a.  (0 points)  Code is provided for you to do the following tasks:
+
++  Load the `Cars93` dataset
++  Create a subset with only the continuous variables
+
+```{r, warning = F, message = F}
+cars_cont <- dplyr::select(Cars93, Price, MPG.city, MPG.highway, EngineSize, 
+                           Horsepower, RPM, Fuel.tank.capacity, Passengers,
+                           Length, Wheelbase, Width, Turn.circle, Weight)
+```
+
+b.  (5 points)  Partial code is provided for you to do the following tasks:
+
++  Follow the example [here](http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization) to create a correlation heap map of the continuous variables in the `Cars93` dataset
++  Adjust the color scheme so that correlations of -1 is shown in dark red, a correlation of 0 is shown in light grey, and a correlation of 1 is shown in dark blue.
++  Rotate the x-axis tickmark label 90 degrees
++  Add a title and adjust all axis and legend labels appropriately.
+
+```{r, warning = F, message = F}
+library(reshape2)
+correlation_matrix <- cor(cars_cont)
+melted_cormat <- melt(correlation_matrix)
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  geom_tile()
+```
+
+c.  (5 points)  Interpret the resulting graph:  
+
++  Which pairs of variables are highly positively correlated?  
++  Which are highly negatively correlated?  
++  Which have approximately no correlation?
+
+d.  (2 points)  Explain the connection between this plot and a heat map.
+
+e.  (1 point)  Even though they are very different, what plot for examining the associations between categories of two categorical variables does this remind you of?
+
+f.  (5 points)  Recreate the graph in (b), making the following additional adjustments to the correlation matrix:
+
++  Reorder the variables as you see fit
++  Add the rounded correlation to the plot via `geom_text()`
++  Only display the upper or lower triangle of the graph
+
+
+***
+***
+
+
+
+#  Problem 3
+
+(20 points)
+
+**Variable Dendrograms**
+
+Another way to visually explore potential associations between continuous variables in our dataset is with dendrograms.  
+
+a.  (15 points)  Create a "variable dendrogram" of the continuous variables in the `Cars93` dataset.  To do this:
+
++  Select the continuous variables from the dataset
++  Compute the correlation matrix for these variables
++  Correlations measure similarity and can be negative, while distances measure dissimilarity and cannot be negative.  As such, convert your correlations to instead be one minus the absolute value of the correlations, so that correlations near 1 or -1 will have distances of 0, and correlations near 0 will have distances of 1, e.g.:  `cormat <- 1 - abs(cormat)`
++  Convert your transformed correlation matrix to a distance matrix with the `as.dist()` function.
++  Submit this distance matrix to hierarchical clustering (`hclust()`), convert the result to a dendrogram (`as.dendrogram()`), then plot with `ggplot()`.
++  Color the branches by the four-cluster solution.  See the link in HW08 for how to do this.
++  Be sure to adjust your axis labels, add a title, etc.
++  The resulting dendrogram should plot highly correlated variables (positively or negatively correlated) in the same branches / clusters in the dendrogram, while uncorrelated variables will be linked at higher "distances" on the dendrogram.
+
+b.  (5 points)  Examine the four-cluster solution.  Which variables are in the same cluster?  Does it make sense that these are in the same cluster, given both your common-sense understanding of these variables and given the correlation plot you created in Problem 2?
+
+c.  (1 point)  What other measures (other than correlation) could you use to measure similarity / dissimilarity between continuous variables for the purposes of a variable dendrogram?  (There is not necessarily a right or wrong answer here -- just brainstorm ideas.)
+
+
+***
+***
+
+
+
+
+
+#  Problem 4
+
+(2 points each)
+
+**_Love Actually_ Character Network**
+
+a.  Read [this article from FiveThirtyEight](https://fivethirtyeight.com/features/the-definitive-analysis-of-love-actually-the-greatest-christmas-movie-of-our-time/).  Write 2-3 sentences summarizing any methods of analysis that they used.
+
+b.  Load the _Love Actually_ adjacency matrix from [FiveThirtyEight's GitHub Page](https://raw.githubusercontent.com/fivethirtyeight/data/master/love-actually/love_actually_adjacencies.csv).  Store this in an object called `love_adjacency`.  Convert this into a distance matrix, using $1/(1+x)$ as a conversion function between the adjacencies and the distances.  Use hierarchical clustering with average linkage (`method = "average"` in `hclust()`) and convert the result to a dendrogram.  Visualize this with `ggplot()`, add appropriate titles/labels/themes/etc.  (Code is partially provided to do this.)
+
+```{r, warning = FALSE, message = FALSE}
+library(dendextend)
+love_adjacency <- read_csv("https://raw.githubusercontent.com/fivethirtyeight/data/master/love-actually/love_actually_adjacencies.csv")
+love_dist <- 1 / (1 + as.dist(love_adjacency[,-1]))
+```
+
+c. Interpret the resulting dendrogram.  Which chacacters are connected in the movie?
+
+d.  Read about the `ggraph` package [here](http://www.data-imaginist.com/2017/Announcing-ggraph/).  What does it do?  When was it released?  What `ggplot()` like function can you do with `ggraph`?  
+
+e.  Read [this post](http://www.data-imaginist.com/2017/ggraph-introduction-edges/) on adjusting the edges in `ggraph`.  How would you create a dendrogram with the `ggraph` package?  Use the example code at this link to create a dendrogram with this dataset using `ggraph` (NOT the same way that you created it in part (b)).
+
+f.  Create a basic network diagram of the _Love Actually_ data using the `ggraph` package.  Code is partially started for you below.
+
+```{r, warning = FALSE, message = FALSE}
+library(igraph)
+library(ggraph)
+
+names <- love_adjacency[,1]
+graph <- graph_from_adjacency_matrix(as.dist(love_adjacency[,-1]))
+```
+
+g.  (2 points each)  Using the documentation at the link in parts (d), (e), and the `ggraph` [GitHub page](https://github.com/thomasp85/ggraph), make at least three adaptations to your graph from (f).  For example, you might size the points, size the edges, use arcs (curved edges), use `geom_edge_density`, etc.
+
+h.  (BONUS:  3 points)  Color the nodes of the graph by the gender of the actor/actress.  Facet on the gender of the actor/actress.
+
+
+***
+***
+
+
+#  Problem 5
+
+(4 points each)
+
+**Waffle Charts**
+
+a.  Use the code below creates a "Waffle Chart" with `ggplot()`.  What is the purpose of a waffle chart?   What would you use a waffle chart to visualize?  (I.e. what type of data?  How many dimensions/variables?)
+
+```{r, warning = FALSE, message = FALSE}
+#  Set up data to create the waffle chart
+library(MASS)
+data(Cars93)
+var <- Cars93$Type  # the categorical variable you want to plot 
+nrows <- 9  #  the number of rows in the resulting waffle chart
+categ_table <- floor(table(var) / length(var) * (nrows*nrows))
+temp <- rep(names(categ_table), categ_table)
+df <- expand.grid(y = 1:nrows, x = 1:nrows) %>%
+  mutate(category = sort(c(temp, sample(names(categ_table), 
+                                        nrows^2 - length(temp), 
+                                        prob = categ_table))))
+# NOTE: if sum(categ_table) is not nrows^2, it will need adjustment to make the sum = nrows^2.
+
+#  Make the Waffle Chart
+ggplot(df, aes(x = x, y = y, fill = category)) + 
+  geom_tile(color = "black", size = 0.5) +
+  scale_x_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  scale_fill_brewer(palette = "Set3") +
+  labs(title = "Waffle Chart of Car Type",
+       caption = "Source:  Cars93 Dataset", 
+       fill = "Car Type",
+       x = NULL, y = NULL) + 
+  theme_bw()  #  Use your theme
+```
+
+
+b.  Create a waffle chart for the `content_rating` variable in the `imdb` data from the lab exam.  Use 25 rows.  Then recreate the same graph, but use 50 rows.  Which version of the chart do you prefer?
+
+e.  Critique these graphs.  What are the issues with waffle charts?  
+
+
+***
+***
+
+
+
+#  Problem 6
+
+(2 points each)
+
+**Arc Pie Charts**
+
+Install and load the `ggforce` package.  This package implements several updates and improvements to `ggplot2`.
+
+a.  Create an "arc pie chart" of the `Type` variable in the `Cars93` dataset.  (Code provided.)
+
+```{r, warning = FALSE, message = FALSE, height = 6, width = 7}
+library(ggforce)
+Cars93 %>% group_by(Type) %>% 
+  summarize(count = n()) %>% 
+  mutate(max = max(count),
+         focus_var = 0.2 * (count == max(count))) %>%
+  ggplot() + geom_arc_bar(aes(x0 = 0, y0 = 0, r0 = 0.8, r = 1, 
+                              fill = Type, amount = count), 
+                          stat = 'pie')
+```
+
+b.  Adjust the `r0` parameter to lower and higher values.  What does this control?  What is the minimum and maximum value?
+
+c.  Recreate the graph from (a), but this time, add `explode = focus_var` into your call to `aes()`.  What does this do?
+
+d.  Recreate the graph from (c), but this time, add focus to the category with the minimum number of observations.
+
+e.  Critique these graphs.  
+
++  What would you use an arc pie chart to visualize?  (I.e. what type of data?  How many dimensions/variables?)
++  What are the issues with arc pie charts?  
++  What are the issues with using `explode` to focus on a particular variable?
+
+
+
+
+***
+***
+
+
+
+#  Problem 7
+
+(5 points each)
+
+**Zoom Zoom**
+
+See the Lab Exam solutions for how to use `facet_zoom()`, or [here](https://www.r-bloggers.com/announcing-ggforce-accelerating-ggplot2/), or [here](https://cran.r-project.org/web/packages/ggforce/vignettes/Visual_Guide.html#b-splines).
+
+a.  Recreate any scatterplot that we created throughout the year, and zoom in on a section of the graph via the `facet_zoom()` feature in the newest version of the `ggplot2` package.  Include a title, subtitle, and caption in the resulting graph.  The caption should just state the data source, and the subtitle should explain what area of the plot is being enhanced via zooming.
+
+b.  Interpret the resulting graph:  Describe some feature of the new version of the graph that you may not have been able to see very well in the previous version of the same graph (without zooming).
+
+
+***
+***
+
+
+#  Problem 8
+
+(2 points each)
+
+**Read Your HW07 and Lab08 Feedback On Blackboard**
+
+a.  Write at least one sentence about what you did well on in the assignments.
+
+b.  Write at least one sentence about what you did wrong on the assignments.
+
+
+***
+***
