@@ -344,13 +344,11 @@ b.  Interpret the resulting graph:  Describe some feature of the new version of 
 
 #  Problem 8
 
-(2 points each)
+(Free 4 points)
 
 **Read Your HW07 and Lab08 Feedback On Blackboard**
 
-a.  Write at least one sentence about what you did well on in the assignments.
-
-b.  Write at least one sentence about what you did wrong on the assignments.
+You don't have to turn anything in for this problem.  Just be sure to not make the same mistakes as you made in previous assignments!
 
 
 ***
