@@ -492,8 +492,57 @@ ggplot(imdb, aes(x = budget, title_year)) + geom_point(aes(shape = color)) +
 
 
 
-student <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/students.csv")
+student_mds <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/students.csv") %>%
+  dplyr::select(RaisedHands, VisitedResources, AnnouncementsView, Discussion) %>%
+  scale %>% dist %>% cmdscale(k = 2) %>% as_data_frame
 
+ggplot(student_mds, aes(x = V1, y = V2)) + geom_density2d(h = c(1/2, 1/2))
+
+
+
+
+# comparisons are the comparisons
+x <- comparisons %>% nest(-c(passid, blockid))
+# x is a tibble, but we can think of it like a list of three elements, a block id, a pass id and a dataset for each unique block/pass combo
+
+x$passid[1] might be first3last3
+x$blockid[1] might be kayfri
+x$data[1] might be id1 id2 first-jaro last-jaro etc.
+
+# raw records
+id.records <- read.csv("Robin-Syria-Data/records-id-2014.csv", stringsAsFactors = FALSE)
+# i initialize all of the quid_kaylas with NA… this is important
+id.records$uid_kayla <- NA
+length(x$data)
+
+for(i in 1:length(x$data)){
+  
+  z <- HclustCutGLM(x$data[[i]], x$blockid[i], x$passid[i], glm.mod, .5)
+  # if(any(is.na(z$uids))) print(z$uids)
+  
+  nas <- is.na(id.records$uid_kayla[as.numeric(z$record.ids)])
+  # print(non.nas)
+  
+  if(all(nas)){
+    id.records$uid_kayla[as.numeric(z$record.ids)] <- z$uids
+  }else{
+    old.ids <- id.records$uid_kayla[as.numeric(z$record.ids)][which(!nas)]
+    
+    for(j in 1:length(old.ids)){
+      id.records$uid_kayla[which(id.records$uid_kayla == old.ids[j])] <- z$uids[which(!nas)][j]
+      old.ids <- id.records$uid_kayla[as.numeric(z$record.ids)][which(!nas)]
+    }
+    id.records$uid_kayla[as.numeric(z$record.ids)] <- z$uids
+  }
+}
+
+
+
+student %>% dplyr::select(RaisedHands, VisitedResources, 
+                          AnnouncementsView, Discussion) %>%
+  scale %>% dist %>% hclust %>% as.dendrogram %>%
+  dendextend::set("labels", student$AbsentDays, order_value = TRUE) %>%
+  ggplot(theme = theme_bw(), horiz = T) + labs(title = "Student Similarity", y = "Pairwise Euclidean Distance")
 
 
 

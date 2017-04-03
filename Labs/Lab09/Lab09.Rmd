@@ -1,0 +1,228 @@
+---
+title: "36-315 Lab 09"
+author: "Your Name Here"
+date: "Due Saturday, April 1, 2017 (6:30pm)"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  Lab 08:  Networks + Static Graphics Group Project
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-Lab09.Rmd -- e.g. "sventura-Lab09.Rmd") to the Lab 09 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computer.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used at the top of the assignment
+
+
+
+***
+***
+
+
+#  Oral Evaluation Graphic
+
+This week's oral evaluation graphic:  [Star Wars Character Network](http://evelinag.com/blog/2015/12-15-star-wars-social-network/#.WN2igBLyuHo)
+
+<div style="width:500px">
+![](http://evelinag.com/blog/2015/12-15-star-wars-social-network/starwars.png)
+</div>
+
+(See the link above for details on how this was created.)
+
+***
+
+**Sam Says**:  It's important to avoid inserting your own commentary when discussing graphics  Your job, as a statistician / data scientist / quantitative analyst, is to interpret the graph for the viewer.  Discuss the facts presented via the data/graphic; avoid overstepping your boundaries by inserting your own opinions into what should be a presentation of facts.
+
+Reminder, the following strategy is ideal when presenting graphs orally:
+
++  First, explain what is being shown in the graph.  What is being plotted on each axis?  What do the colors correspond to?  What are the units (if applicable)?  What are the ranges of different variables (if applicable)?  Where does the data come from (if applicable)?
+
++  Next, explain the main takeaway of the graph.  What do you want the viewer to understand after having seen this graph?
+
++  If applicable, explain any secondary takeaways or other interesting findings.
+
++  Finally, for this class, but not necessarily in general:  Critique the graph.  What do you like/dislike?  What would you keep/change?  Etc.
+
+
+***
+***
+
+
+
+<div style="width:600px">
+![](https://upload.wikimedia.org/wikipedia/commons/9/9b/Social_Network_Analysis_Visualization.png)
+</div>
+
+
+***
+***
+
+
+#  Problem 0
+
+(5 points)
+
+a.  Use your theme.  Do not directly copy the instructors' theme.
+
+b.  For all graphs, do not use the default color scheme.
+
+c.  Set the options in the header of your .Rmd file so that all code is hidden.  To do this, change `code_folding:  show` to `code_folding:  hide` at the top of your file.
+
+
+***
+***
+
+
+#  Problem 1
+
+(8 points each)
+
+**Networks, `igraph`, and `ggnetwork`**
+
+The `igraph` package makes network analysis easy!  Install and load the `igraph` and `igraphdata` packages.  Load the `UKfaculty` network into `R`:
+
+```{r, warning = FALSE, message = FALSE}
+#install.packages("igraph")
+#install.packages("igraphdata")
+library(igraph)
+library(igraphdata)
+data(UKfaculty)
+```
+
+
+a.  Try out some of the built-in functions in the `igraph` package in order to summarize the UK faculty network.  How many nodes ("vertices") are in the network?  (Use `vcount()`.)  How many edges ("links") are in the network?  (Use `ecount()`.)  
+
+b.  The `igraph` package has some built-in functions for analyzing specific nodes/vertices in the network.  Use the `neighbors()` function to find both the in-degree and out-degree of the 11th UK faculty member.  How many friends does faculty #11 claim to have?  How many other faculty members claim that #11 is their friend?  (See Professor Rodu's notes for how to use the `neighbors()` function.)
+
+c.  Write a function, called `get_degree`, that calculates the in-degree or out-degree (number of neighbors) that a given node in a network has.  Your function should take three inputs:  the node index/number, the network itself, and the degree type (in or out).  The code is started for you below.
+
+```{r}
+#  node:  The node index in the network
+#  network:  The network to use in the degree calculations
+#  type:  The degree type; must be either "in" or "out"
+get_degree <- function(node, network, type) {
+  #  Your code here
+}
+```
+
+d.  Write a new function, called `get_all_degrees`, that calculates the in- or out-degree of an entire network.  Your function should call the function you wrote in part (c).
+
+```{r}
+#  network:  The network to use in the degree calculations
+#  type:  The degree type; must be either "in" or "out"
+get_all_degrees <- function(network, type) {
+  #  Your code here
+}
+```
+
+e.  Apply your function to the UK faculty network dataset twice -- once for each degree type (in or out).  Create a new, three-column data frame that contains the results.  One column should contain the in-degrees, one should contain the out-degrees, and a third column should contain the node index/number.  
+
+f.  Create a scatterplot of the in-degrees vs. the out-degrees, and change the point type to be their node index/number.  Describe the graph.  Which nodes are "overconfident" in their popularity (i.e. they claim to have many friends, but not as many others claim that they are friends with this person)?  Which nodes are "underconfident" (i.e. many others claim that they are friends with this person, but this person does not claim to have many friends)?  
+
+g.  Finally, let's actually visualize the network itself!  Install and load the `ggnetwork` package.  This package is very new -- it was just released on March 28th, 2016.  You can read more about how to use it [in this article on the package](http://www.r-bloggers.com/ggnetwork-network-geometries-for-ggplot2/).  Visualize the UK faculty network.  The code below should get you started (be sure to add a title, remove the x- and y-axis labels and tick marks, and adjust the legend as necessary).
+
+Note that you'll also need to install and load the `intergraph` package.  Finally, depending on which version of `ggplot2`, `R`, and RStudio you're running (new versions of all three were just released), you may need to update your packages to the latest versions that are on GitHub (see the first commented line of code below):
+
+```{r, warning = FALSE, message = FALSE}
+#devtools::install_github("briatte/ggnetwork")
+#devtools::install_github("mbojan/intergraph")
+library(ggnetwork)
+
+uk_data <- fortify(UKfaculty)
+node_degrees <- igraph::degree(UKfaculty, mode = "in")
+uk_degrees <- node_degrees[match(uk_data$vertex.names, 1:length(node_degrees))]
+uk_data$degree <- uk_degrees
+ggplot(uk_data, 
+       aes(x, y, xend = xend, yend = yend)) +
+  geom_edges(arrow = arrow(length = unit(0.3, "lines")), 
+             aes(color = as.factor(Group)), alpha = 0.5) +
+  geom_nodetext(aes(label = vertex.names, size = degree * 1.5), 
+                color = "blue", fontface = "bold")
+```
+
+h.  Describe the network.  How many groups ("cliques") do there appear to be?  In the initial graph from part (g), to what does the size of the nodes correspond?  To what does the color of the edges correspond?  Is the graph a directed or an undirected graph?
+
+i.  Further adjust the graph as you see fit in at least two more ways.  See the article at the link above for ideas here.  Describe what changes you made.
+
+
+***
+***
+
+#  Problem 2
+
+**Identify Potential Datasets for Static Graphics Group Project**
+
+For the static graphics group project / poster presentation, you get to pick your own dataset!  
+
+##  Sources
+
+Here are some repositories with many, many datasets to choose from:
+
++  [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets.html)
++  [Kaggle](https://www.kaggle.com/datasets)
++  [Dream To Learn](https://dreamtolearn.com/ryan/1001_datasets)
++  [Google Public Data Explorer](https://www.google.com/publicdata/directory)
++  [The US Government](https://www.data.gov/)
++  [Stanford Statistics](http://statweb.stanford.edu/~sabatti/data.html)
++  [American Psychological Asosciation](http://www.apa.org/research/responsible/data-links.aspx)
++  [GitHub](https://github.com/caesar0301/awesome-public-datasets)
++  [FiveThirtyEight](https://github.com/fivethirtyeight/data)
+
+You do not have to pick a dataset from one of these places.  These are just suggestions.
+
+
+##  Requirements
+
+1.  Your data must be contain a mix of categorical and continuous variables and be complex enough that you can create 8 interesting graphs (so datasets with only a few variables will not work).
+
+2.  You CANNOT use any of the datasets that were used in any previous assignments in this course or any other course you have taken.  You must use a dataset that everyone in your group has never worked with before.
+
+3.  I'm strongly encouraging groups to pick different datasets, so that no group is using the same dataset.  If you choose a dataset that another group has already chosen, I may ask you to switch.
+
+4.  Be sure to read the guidelines on the graphics below.  These will certainly influence what datasets you choose.
+
+
+##  Graph Restrictions
+
+In the group project itself, you will have some restrictions on the graphs you are allowed to use, which will certainly influence your choice of dataset.  The restrictions are below:
+
+1.  Each group is required to make at least three of the following types of graphs:  
+
++  Choropleth maps
++  Other maps
++  Network diagrams
++  Time series plots
++  Dendrograms
++  Graphs relating to text analysis
+
+(Note:  We will be covering maps, time series, and text analysis in the next two weeks.)
+
+
+2.  Each group can have no more than two graphs that show a single variable (e.g. one-variable bar charts, histograms, density estimates).
+
+There may be additional restrictions as well.
+
+
+##  What You Have To Turn In Now
+
+(28 points)
+
+List at least four potential datasets that you can use for your group project.  Include the name of the dataset, the source (e.g. UCI Machine Learning Repository), and a link.
+
+You are not bound to using one of these datsets for your group project.  Your group will finalize this choice next week.
+
+**The lab is due on Saturday at 6:30pm, not Friday.  You should use this extra time to coordinate with your group members and find four potential datasets that you all agree on!**
+
+***
+***
+***
+***

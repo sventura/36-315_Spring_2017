@@ -6,7 +6,7 @@ output:
   html_document:
     toc:  true
     toc_float:  true
-    code_folding:  show
+    code_folding:  hide
 ---
 
 ##  Homework 07:  Do The Other Lab Exam Problems
@@ -120,7 +120,7 @@ b.  (5 points)
 The distribution of the profit of movies is not quite normally distributed. The density of the distribution is much larger than expected near the mean and much smaller than expected around $\pm$ 2 standard deviations from the mean than expected if the distribution were actually normal. The distribution is also slightly skewed right, and not symmetrical like the normal distribution.
 
 ```{r, message = F, warning = F, comment = NA}
-ks.test(movies$profit, dnorm, mean(movies$profit, na.rm = TRUE), 
+ks.test(movies$profit, pnorm, mean(movies$profit, na.rm = TRUE), 
         sd(movies$profit, na.rm = TRUE))
 ```
 
@@ -139,16 +139,49 @@ I chose to plot a histogram rather than a density plot because the density plot 
 
 Graph:  10 points
 
-a.  (5 points)  Is there any association between the `country` of the film and whether or not it was an action film?  Are action films more or less commonly created in particular countries compared to others?   
+```{r}
+action.movies <- ifelse(grepl("Action", movies$genres), "Action", "Non-Action")
+movies <- mutate(movies, action = action.movies)
 
-(Aside:  See the `genre` variable.  You may need to do some data manipulation to determine if a film is an action film.  `grepl(pattern = "[string to search for]", x = [column to search]))` may help.)
+ggplot(movies, aes(x = country, fill = action)) + 
+  geom_bar(position = "fill") +
+  labs(title = "Proportions of Movies by Country and Genre",
+       x = "Country",
+       y = "Proportion of Action Movies",
+       fill = "Movie Type") +
+  scale_fill_manual(values = c("blue", "red"), 
+                    labels = c("Action", "Non-Action")) +
+  my_theme
+```
 
-b.  (3 points)  Is the `country` of the film independent of whether or not it was an action film?  Provide visual or statistical evidence, and explain how the evidence leads you to your answer.
+a.   
 
-c.  (2 points)  Which country has the highest proportion of action films?
+There appears to be no association between the country of the film and whether or not it was an action film. Based on the mosaic plot above, the proportion of action films is similar between all the countries and within 5% of each other. It does appear that UK and France produce less action films compared to the US, Germany and Australia. 
 
-d.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+b.  
 
+```{r}
+chisq.test(x = movies$country, y = movies$action)
+```
+
+Statistically, we can look at the results of a chi-square test to confirm this. Our chi-square test gives a p-value of 0.3929, which is not significant at any reasonable level of statistical significance. As such, we cannot conclude that there is overwhelming evidence to reject the null hypothesis of independence and conclude that the genre of movie and the country of movie are associated with each other
+
+c. 
+
+```{r}
+country_action_table <- table(movies$country, movies$action)
+country_action_table[,1] / (country_action_table[,1] + country_action_table[,2])
+```
+
+Australia has the higest proportion at 0.291
+ 
+d.
+
+I chose a stacked bar chart here because I really like the way you can clearly see changes in the proportions of attacks corresponding to each country when moving across the x-axis and looking at the individual colors.
+
+The stacked bar chart also gives me a clear view of the marginal distribution of the proportion of Action Films, which is asked about in the problem, so it is an ideal choice in this case compared to a side-by-side bar chart.
+
+A mosaic plot would also be a good choice here, but I think the stacked bar chart supplemented with a chi-square test is better here, since the visual trend of the changes in the proportion of Action Films for each country is so much more clear in the stacked bar chart.
 
 ***
 ***
@@ -156,17 +189,86 @@ d.  (5 points)  Write 1-3 sentences describing why you made certain choices in y
 
 #  Problem 4
 
-**Buying Good Reviews**
 
 Graph:  10 points
 
-a.  (5 points)  Do movies with larger budgets typically receive higher IMDB rating scores?  Provide visual or statistical evidence, and explain how this evidence leads you to your answer.
-
-b.  (5 points)  Does the relationship between budget and IMDB rating/score depend on the content rating of the film?  Provide visual or statistical evidence, and explain how this evidence leads you to your answer.
-
-c.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+*I've included 2 plots that display the same information to give you an example of how to use `facet_wrap`, but have an "(all)" group. It's slightly hacky, but if you really love `facet_wrap` but want the "(all)" group, this is a hack to do it.*
 
 
+
+```{r warning = FALSE, message = FALSE, fig.height= 15,fig.width = 8}
+movies = mutate(
+  movies,
+  content_rating = factor(content_rating,
+                          levels = c("N/A or Unrated", 
+                                     "Validated for All Ages (G)", "PG", "PG-13",       
+                                     "R","NC-17"),
+                          labels = c("N/A or Unrated", "G", "PG", "PG-13" ,
+                                     "R" ,"NC-17") ) 
+)
+
+ggplot(movies,aes(x = budget/10^8, y = imdb_score)) + 
+  geom_point(alpha = .1) +
+  geom_smooth(method = "lm",color = "red")  + 
+  facet_grid(content_rating~., margin = T) +
+  labs(color = "Content Rating", x = "Film / TV Budget (in 100 Million Dollars)",
+       y = "Imdb Score", 
+       title = "IMDB Score vs. Movie Budget, \nConditional on Movie Content Rating") +
+  scale_color_manual(values =colour) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) + my_theme
+```
+
+```{r message = FALSE, warning = F, fig.height=12, fig.width = 10}
+
+movies2 = rbind(movies,movies) #duplicate the movies 
+movies2$content_rating = factor(movies2$content_rating, 
+                                levels =c( levels(movies$content_rating),
+                                           "(all)")) #include a new factor level
+movies2$content_rating[(nrow(movies)+1):nrow(movies2)] = "(all)" 
+#^ assign duplicated observations to group "(all)"
+
+ggplot(movies2,aes(x = budget/10^8, y = imdb_score,)) + 
+  geom_point(alpha = .1) +
+  facet_wrap(facets = ~content_rating,ncol = 2) +
+  geom_smooth(method = "lm",color = "red")  + 
+  labs(color = "Content Rating", x = "Film / TV Budget (in 100 Million Dollars)",
+       y = "Imdb Score", 
+       title = "IMDB Score vs. Movie Budget, Conditional on Movie Content Rating") +
+  scale_color_manual(values =colour) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1))) + my_theme
+```
+
+```{r}
+lin_all <- lm(imdb_score~I(budget/10^8),data= movies)
+lin_ind <- lm(imdb_score~I(budget/10^8) + content_rating,data= movies)
+
+lin_ind_int <- lm(imdb_score~I(budget/10^8)*content_rating,data= movies)
+
+p_all <-summary(lin_all)$coef[2,4]
+anova_all_plus<-anova(lin_ind,lin_ind_int)
+
+f_test <-anova_all_plus$`Pr(>F)`[2]
+```
+
+
+a.  (5 points)  
+
+The final plot in the graph suggests that there is a slight, but significant positive relationship between the size of a movie's budget and their IMDB score. The confidence band, includes only positive sloping regressions, especially for movies with budgets less 200 million dollars (which is the vast majority of the films).
+
+A basic linear regression, regressing `Imdb score` on `budget` (in $100$ million dollar units) has a positive coefficient for `budget` of $`r round(lin_all$coef[2],4)`$, that is for every additional 15 million dollars of budget we'd expect an increase of the `imdb score` by 1 unit. 
+
+This positive relationship is significant, with a p-value of $`r round(10^4*summary(lin_all)$coef[2,4],5)` \cdot 10^{-4}$, which is much much smaller than any standard cutoff.
+
+
+b.  (5 points)  
+
+It is hard to tell if the relationship between `budget` and `imdb score` depends on the `content rating`. The regression lines relating `imbd score` on `budget` conditional on film `content rating` are different than the slightly positive slope for all movies, with some having almost no slope and `NC-17` having negative slopes. These trends different than the slightly positive regression have large confidence bands, which suggest the true regression could be very different.
+
+Additionally,we can examining the strength of a linear model that allows for interactions between the `content rating` and `budget` slope, allowing each subset (based on `content rating`) to have different splots. Compared to a model that doesn't allow each `content rating` group to have it's own `budget` slope, we obtain a p-value of $`r round(f_test,4)`$. This is slightly over a standard threshold level of $\alpha = .05$, so we conclude that allowing each `content rating` group to have their own slopes, compared with all sharing the same slope is not statistically justified.
+
+c.  (5 points)  
+
+We decided to use a scatter plot of `budget` vs `imdb score` faceted on `content rating` adding red regression lines and confidence bands for the regression to look at linear trends. We used a scatter plot because both variables `budget` and `imdb score` are continuous and included regression lines to examine the overall relationships. 354 films with budgets listed as NA were removed.
 
 ***
 ***
@@ -178,13 +280,47 @@ c.  (5 points)  Write 1-3 sentences describing why you made certain choices in y
 
 Graph:  10 points
 
-a.  (4 points)  Characterize the distribution of the `aspect_ratio` of films.  Would you consider any films to be outliers based on their aspect ratio?  Which ones?  Why?
+```{r warning=F, message = F}
+aspect_ratio_new = movies$aspect_ratio
+aspect_ratio_new[movies$aspect_ratio == 16] = round(16/9,2)
+aspect_ratio_new[movies$aspect_ratio == 4] = round(4/3,2)
+aspect_ratio_new[movies$aspect_ratio == 2.24] = 2.35 # Frozen
+aspect_ratio_new[movies$aspect_ratio == 1.77] = 1.89 # Space Jam
 
-b.  (3 points)  Would you consider the aspect ratio of films to be a categorical or a continuous variable?  Why?  (Note:  There is not necessarily a right or wrong answer here.  Be sure to justify your answer!)
+movies_update <- mutate(movies,
+                      aspect_ratio_new = aspect_ratio_new)
 
-c.  (3 points)  How many modes are in the distribution of `aspect_ratio`?  Provide **visual** evidence, and explain how this evidence leads you to your answer.
 
-d.  (5 points)  Write 1-3 sentences describing why you made certain choices in your graphic.
+df_label_max <- data.frame(y = c(1756,2135),x = c(1.85,2.39))
+
+ggplot(movies_update, aes(x = aspect_ratio_new)) + 
+  geom_histogram(bins = 20,color = "black") + 
+  geom_text(data= df_label_max,
+            aes(y = y + 100, label = x, x = x-c(.02,.06))
+            ) +
+  labs(x = "Aspect Ratio", y = "Number of Films",
+       title = "Aspect Ratio Distribution")  + my_theme
+
+```
+
+
+a.  (4 points)  
+
+This question slightly depends upon the answer to **part b**, as extreme values would tend to be outliers if we saw `aspect ratio` as continuous and `aspect ratio` values that have very number of observations (say 1) could be considered an outlier if we considered `aspect ratio` continuous. The `aspect ratio`s 16 and 4 are outliers in the first sense, and both groups are all errors in recording. The first should have been 16:9 or 1.78 and the second was actually 4:3 or 1.33. The `aspect ratio`s, `1.18`, `1.2`, `1.44`, `1.77`, `1.89`, `2.24` have a single film associated with them and two of these are errrored recording, `2.24` and `1.77`. 
+
+
+b.  (3 points)  
+
+There are two competing structure of `aspect ratios`, first any film maker can be experimental and vary the `aspect ratio` in a continuous manner, and there is the 2-4 common ratios that act like discrete structure/categorial variables as mentioned [here](http://www.red.com/learn/red-101/video-aspect-ratios). As such, it really should be viewed as I'm going to conclude that it is a continuous variable with discontinuities is the CDF, i.e. the density structure is a sum of a continuous function and point masses.
+
+c.  (3 points)  
+
+There are 2 modes of the `aspect ratio` distribution, at `1.85` and `2.39`, as we have very large numbers of observations with these exact numbers (more than 80\% of the data), and the continuous structure also seems to cluster around these points, with a posssible additional model lower around `1.33`/`1.37`.
+
+
+d.  (5 points) 
+
+I used a histogram to capture the continuous structure of the `aspect ratio`, but also allowed the histogram to express the non-zero probablility associated with some ratios. In this plot we removed errors mentioned above included corrections of 16 to 16:9 and 4 to 4:3. 
 
 ***
 ***

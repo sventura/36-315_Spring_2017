@@ -159,11 +159,11 @@ Repeat part (a), but this time, overlay the points, color by `Grade`, and change
 
 ##  Part C
 
-Repeat part (b), but this time, use a smaller bandwidth in each direction with `+ geom_density2d(h = c(10, 10))`.
+Repeat part (b), but this time, use a smaller bandwidth in each direction with `+ geom_density2d(h = c(1/2, 1/2))`.
 
 ##  Part D
 
-Repeat part (c), but this time, use a larger bandwidth in each direction with `+ geom_density2d(h = c(87, 87))`.
+Repeat part (c), but this time, use a larger bandwidth in each direction with `+ geom_density2d(h = c(3, 3))`.
 
 ##  Part E
 
@@ -218,7 +218,7 @@ e.  (2 points)  Dendrograms are tree-like structures.  Starting at the top of a 
 
 f.  (2 points)  With hierarchical clustering, remember:  We actually have a _hierarchy_ of clustering results.  So, how do we actually get the clustering results?   There are two approaches with hierarchical clustering.  The first approach involves selecting the number of clusters that you want, and then "cutting" the tree an an appropriate height.  All observations linked below that height are considered to be in the same cluster.  All observations linked above that height are considered to be in different clusters.  To do this in `R`, use the `cutree()` function ("cut tree").  Return the cluster labels corresponding to the two-cluster solution by using `cutree(hc_student_complete, k = 2)`, and store this in an object called `labels_complete_2`.  What type of object is `labels_complete_2`?  How many elements are contained in `labels_complete_2`?
 
-g.  (2 points)  Now, let's get the exact answer for the question from part (e).  Type `table(labels_complete_2) / nrow(student)`.  What proportion of the observations are in the three groups being linked at the final iteration of hierarchical clustering?
+g.  (2 points)  Now, let's get the exact answer for the question from part (e).  Type `table(labels_complete_2) / nrow(student)`.  What proportion of the observations are in the two groups being linked at the final iteration of hierarchical clustering?
 
 h.  (8 points)  Okay, now let's visualize how good the clustering results are.  Let's try this for the three-cluster solution:  Create a new vector, called `labels_complete_3`, that corresponds to the three-cluster solution.  Create the 2-dimensional projection of `dist_student` via multi-dimensional scaling.  Convert the MDS results to a data frame (`student_mds`), and add the `Grade` and `AbsentDays` variables to the `student_mds` data.frame, as you did in a previous assignment.  Now, add the `labels_complete_3` variable (make sure this is converted to **a factor**) to the `student_mds` data.frame as well.  Finally, create a scatterplot with:
 
