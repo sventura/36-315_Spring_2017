@@ -1,0 +1,463 @@
+---
+title: "36-315 Homework 08, Spring 2017"
+author: "Your Name Here"
+date: "Due Thursday, March 30th, 2017 (11:59pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Homework 08:  Higher Dimensional Continuous Data
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW08.Rmd -- e.g. "sventura-HW08.Rmd") to the Homework 08 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+
+
+
+#  Problem 0
+
+**Organization, Themes, and HTML Output**
+
+(5 points)
+
+a.  For all problems in this assignment, organize your output as follows:
+
++  Organize each part of each problem into its own tab.  For Problems 2 and 3, the organization into tabs is already completed for you, giving you a template that you can use for the subsequent problems.
++  Use code folding for all code.  See [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/) for how to do this.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
+
+
+b.  For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color:
+
++  Do not use the default `ggplot()` color scheme.
++  For any bar chart or histogram, outline the bars (e.g. with `color = "black"`).
++  Do not use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+c.  Treat your submission as a formal report:
+
++  Use complete sentences when answering questions.  
++  Answer in the context of the problem.  
++  Treat your submission more as a formal "report", where you are providing details analyses to answer the research questions asked in the problems.
+
+
+d.  What style guide are you using for this assignment?
+
+
+```{r, message = F, warning = F}
+library(tidyverse)
+
+#  Simple theme with white background, legend at the bottom
+my_theme <-  theme_bw() +
+  theme(axis.text = element_text(size = 12, color="indianred4"),
+        text = element_text(size = 14, face="bold", color="darkslategrey"))
+
+#  Colorblind-friendly color palette
+my_colors <- c("#000000", "#56B4E9", "#E69F00", "#F0E442", "#009E73", "#0072B2", 
+               "#D55E00", "#CC7947")
+
+```
+
+***
+***
+
+
+#  Problem 1
+
+(3 points each)
+
+**Text Annotations on Graphs**
+
+a. Repeat the process outlined in Lab 08:
+
++  Load the Student Performance dataset into R.  
++  Ensure that `Grade` and `AbsentDays` are stored as factors.
++  Create the subset of continuous variables.
++  Scale the continuous variables so that they have equal variance (and standard deviation).
++  Create the distance matrix corresponding to the scaled continuous variables in the dataset.
++  Create a 2-dimensional projection (`student_mds`) of the scaled student dataset (using the distance matrix you created) via multi-dimensional scaling.
++  Rename the columns as you did in Lab 08.
++  Add the `Grade` and `AbsentDays` variables to `student_mds`.
+
+```{r, message = FALSE, warning = FALSE}
+student <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/students.csv")
+student$Grade <- factor(student$Grade)
+student$AbsentDays <- factor(student$AbsentDays)
+
+student_mds <- student %>% 
+  dplyr::select(RaisedHands, VisitedResources, 
+                AnnouncementsView, Discussion) %>% 
+  scale() %>% 
+  dist() %>% 
+  cmdscale(k = 2) %>% 
+  as.data.frame() %>%
+  mutate(Grade = student$Grade, 
+         AbsentDays = student$AbsentDays)
+
+colnames(student_mds)[1:2] <- c("mds_coordinate_1", "mds_coordinate_2")
+```
+
+
+b.   Plot `mds_coordinate_2` (y-axis) vs. `mds_coordinate_1` (x-axis).  This time, use the `geom_text()` function to label each point's shape by the `AbsentDays` variable, instead of the combination of `geom_point()` and `scale_shape_manual()`. 
+
+c.  Recreate the graph from (b), but this time, display the text at a 30 degree angle, and color the text according to the `Grade` of the student.  Don't forget to use a non-default color scheme!
+
+d.  Recreate the graph from (c), but this time, size the text according to the `StageID`, and use a non-default font family. To do this, you will have to add `StageID` to your `student_mds` data frame. 
+
+e.  Interpret your graph from (d).  How many variables are included in this graph?  What can you say about the relationships between any of the variables used in this graph?  Summarize the main findings / takeaways from this graph in 2-4 sentences.
+
+
+***
+***
+
+
+#  Problem 2 {.tabset}
+
+(3 points each)
+
+**More Text Annotations on Graphs**
+
+
+##  Part (a)
+
+Create a bar chart of the `GradeID` variable (representing what grade each of the stduents is in).  Use the `geom_text()` function to add the counts in each bar **above** each bar in the bar chart.  E.g., `ggplot(...) + ... + geom_text(stat = "count", aes(y = ..count.., label = ..count..))`.  Adjust the `vjust` parameter in `geom_text()` in order to place the numbers in a more appropriate place.  Use a single non-default color for the bars.
+
+```{r, warning = F, message = F}
+#  Your code for part (a) here
+```
+
+##  Part (b)
+
+Create a bar chart of the `StageID` variable.  Use the `geom_text()` function to add the counts in each bar **in the middle** of each bar (i.e. halfway up each bar) in the bar chart.  Use a larger-than-default font size for the text.  Use a single non-default color for the bars, and change the color of the text so that it contrasts well with the color of the bars.  (Hint:  If `y = ..count..` works for making the text appear at the appropriate heights on the y-axis for part (a), how can you adjust this so that the text appears halfway up for each bar in this problem?)
+
+```{r, warning = F, message = F}
+#  Your code for part (b) here
+```
+
+##  Part (c)
+
+Repeat part (b), but use `label = scales::percent((..count..) / sum(..count..)))` to put percentages on the plot instead of the raw count scale.  This is nice, since it allows you to quickly see both the percentages and the counts (height of the bars) in each category.
+
+```{r, warning = F, message = F}
+#  Your code for part (c) here
+```
+
+***
+***
+
+
+
+#  Problem 3  {.tabset}
+
+(3 points each; 18 points total)
+
+**2D-KDEs with Contour Plots and Adjusted Bandwidths**
+
+
+##  Part A
+
+Visualize the 2D Kernel Density Estimate of `mds_coordinate_1` and `mds_coordinate_2` with a contour plot.  See the Lecture 12 R Demo on Blackboard for how to do this.  Use the default bandwidth.
+
+##  Part B
+
+Repeat part (a), but this time, overlay the points, color by `Grade`, and change the point type according to `AbsentDays`, as you did in Lab 08, Problem 2, part (e).  Consider doing the following to enhance the viewer's understanding of your graph:
+
++  adjusting the `alpha` parameter so that the points don't prevent you from seeing the contour lines
++  plotting the points first and the contour lines second, so that you can see both
++  both of the above
+
+##  Part C
+
+Repeat part (b), but this time, use a smaller bandwidth in each direction with `+ geom_density2d(h = c(10, 10))`.
+
+##  Part D
+
+Repeat part (c), but this time, use a larger bandwidth in each direction with `+ geom_density2d(h = c(87, 87))`.
+
+##  Part E
+
+Which bandwidth do you prefer for this problem?  The default (parts (a) and (b)), the the smaller bandwidth (part (c)), or the larger bandwidth (part (d))?  Why?
+
+##  Part F
+
+Repeat part (d), but this time, adjust the bandwidths in each direction as you see fit.  In particular, choose a different, non-default bandwidth for each direction.  Comment on why you chose these bandwidths.
+
+***
+***
+
+
+#  Problem 4
+
+(10 points)
+
+**2D-KDEs with Heat Maps and Three-Color Gradients**
+
+a.  (6 points)  Create a heat map (`... + stat_density2d(aes(fill = ..density..), geom = "tile", contour = F)`) of the MDS coordinates from the previous problem.
+
++  Use a non-default bandwidth in both directions, as you did in the previous problem.  Try a few different bandwidths in both directions.  Choose bandwidths that you think properly show where the high-density and low-density areas of the graph are.
++  Use a custom color gradient that uses three colors:  one as the "low density" color, one as the "high density" color, and one as the "medium density" color.  
++  To do this, use `scale_fill_gradient2()` and be sure to specify the `mid` parameter in addition to the `low` and `high` parameters.  See [the help file](http://docs.ggplot2.org/current/scale_gradient.html) for how to do this.
++  Note that you'll have to manually pick an appropriate `midpoint` parameter as well.  This parameter specifies the value of the density to which the `mid` color should correspond.  The default value is zero, which will not work for this problem (since zero is the minimum possible density).  Try a few different values and pick one that you think is appropriate.
+
+b.  (2 points)  Comment on your choice of colors.  Also, comment on your choice for the `midpoint` parameter -- why did you choose it?  What happens when you increase or decrease it?  
+
+c.  (2 points)  Do you prefer the graph you created here to the contour plots in the previous problem?  Explain why or why not.  (There's not necessarily a right or wrong answer here.  Just explain your reasoning.)
+
+
+***
+***
+
+
+
+#  Problem 5 {.tabset}
+
+**Hierarchical Clustering and Dendrograms**
+
+There are several ways to create dendrograms in `R`.  Regardless of which dendrogram package you use, you'll first need to create the distance matrix corresponding to your dataset, and submit that distance matrix to hierarchical clustering.
+
+## a. 
+
+```{r, warning = F, message = F}
+dist_student <- student %>% 
+  dplyr::select(RaisedHands, VisitedResources, 
+                AnnouncementsView, Discussion) %>%  
+  scale() %>% 
+  dist()
+```
+
+## b. 
+
+```{r, warning = F, message = F}
+hc_student_complete <- hclust(dist_student, method = "complete")
+hc_student_complete$method
+```
+
+The object ``hc_student_complete`` contains information on the merging of clusters at each iteration, the height of each link, the order of observations for plotting, the label of the observations, the function call, the clustering method, and the distance metric. `hc_olive_complete$method` contains the cluster method that has been used in constructing the hierarchical clusters. In this case it is set to the `complete` method.
+
+## c.  
+
+```{r, warning = F, message = F}
+plot(hc_student_complete, xlab = "Student", 
+     ylab = "Cluster Merge Distance",
+     sub = "", 
+     main = "Hierarchical Clustesr of\n Students using Complete Linkage")
+```
+
+`plot()` uses a dendrogram to visualize the hierarchical clustering results.
+
+
+## d. 
+
+The maximum distance at which two observations are linked can be see in the dendrogram by the highest horizontal bar.  This occurs at a height of roughly 6.
+
+## e.  
+
+Of the two groups linked in the final iterations of hierarchical clustering, both clusters seem to have about 50% of the observations.
+
+## f.  
+
+```{r, warning = F, message = F}
+labels_complete_2 <- cutree(hc_student_complete, k = 2)
+```
+
+`labels_complete_2` is a vector of integers containing 480 elements.  Note that this is the same as the number of students in the data set.
+
+
+## g.  
+
+```{r, warning = F, message = F}
+table(labels_complete_2) / nrow(student)
+```
+
+Exactly 50% of the observations are in each of the clusters at the highest split.
+
+## h.  
+
+```{r, warning = F, message = F}
+library(forcats)
+labels_complete_3 <- cutree(hc_student_complete, k = 3)
+
+student_mds <- dist_student %>% 
+  cmdscale(k = 2) %>%
+  as.data.frame() %>%
+  mutate(Grade = student$Grade, 
+         AbsentDays = student$AbsentDays,
+         Labels = labels_complete_3)
+
+colnames(student_mds)[1:2] <- c("mds_coordinate_1", "mds_coordinate_2")
+student_mds$Grade <- student_mds$Grade %>%
+  fct_recode(Low = "L",
+             Medium = "M",
+             High = "H") %>% 
+  fct_relevel("Low", "Medium", "High")
+
+ggplot(data = student_mds,
+       aes(x = mds_coordinate_1, y = mds_coordinate_2,
+           color = Grade, label = Labels)) +
+  geom_text() +
+  labs(title = "2-D MDS Coordinates for Continuous Variables",
+       subtitle = "Student Academic Performace Dataset",
+       x = "MDS Coordinate 1", 
+       y = "MDS Coordinate 2") +
+  my_theme
+```
+
+Most of the low grade students are in cluster 1, although the reverse is not true. The medium grade students seem to be split relatively evenly amongst all the clusters, while most of the high grade students are in clusters 2 and 3. 
+
+## i.  
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 20}
+library(dendextend)
+
+get_colors <- function(x, palette = my_colors) palette[match(x, unique(x))]
+
+student %>% 
+  dplyr::select(RaisedHands, VisitedResources, 
+                AnnouncementsView, Discussion) %>%  
+  scale() %>% 
+  dist() %>%
+  hclust(method = "complete") %>%
+  as.dendrogram %>%
+  set("labels", student_mds$AbsentDays, 
+      order_value = TRUE) %>% 
+  set("labels_col", get_colors(student_mds$Labels), 
+      order_value = TRUE) %>% 
+  ggplot(horiz = T) +
+  my_theme +
+  labs(title = "Hierarchical Clusters of Students vs. Days Absent",
+       subtitle = "Student Academic Performace Dataset",
+       y = "Height",
+       x = "") +
+  scale_x_continuous(breaks = NULL)
+```
+
+## j.
+
+```{r, warning = F, message = F, fig.width = 9, fig.height = 20}
+library(dendextend)
+
+get_colors <- function(x, palette = my_colors) palette[match(x, unique(x))]
+
+student %>% 
+  dplyr::select(RaisedHands, VisitedResources, 
+                AnnouncementsView, Discussion) %>%  
+  scale() %>% 
+  dist() %>%
+  hclust(method = "complete") %>%
+  as.dendrogram %>%
+  set("labels", student_mds$AbsentDays, 
+      order_value = TRUE) %>% 
+  set("labels_col", get_colors(student_mds$Labels), 
+      order_value = TRUE) %>% 
+  set("labels_cex", 0.5) %>%
+  set("branches_lwd", 0.5) %>%
+  ggplot(horiz = T) +
+  my_theme +
+  labs(title = "Hierarchical Clusters of Students vs. Days Absent",
+       subtitle = "Student Academic Performace Dataset",
+       y = "Height",
+       x = "") +
+  scale_x_continuous(breaks = NULL)
+```
+
+
+***
+***
+
+
+#  Problem 6
+
+**Hexagonal Bin Plots**
+
+(1 point each)
+
+Look up at the [documentation on hexagonal bin plots](http://docs.ggplot2.org/current/geom_hex.html).
+
+a.  (1 point)  What kind of plot is a hex-bin plot very similar to?
+
+b.  Create a hex-bin plot with the student performance data, with `RaisedHands` on the x-axis and `AnnouncementsView` on the y-axis.  Use a non-default color scheme.  Try at 2-3 different values of the `bins` parameter (e.g. 8, 12, 20).  What does this specify?  What happens when you increase or decrease the `bins` parameter?
+
+c.  Where are the highest-density areas of the joint distribution of `RaisedHands` and `AnnouncementsView`?
+
+d.  Find one example of the use of hexagonal bin plots online.  (Hint:  Search "hex bin plots basketball" or "hex bin plots hockey", or "hex bin plots baseball".)  Describe the example you found and provide a link.
+
+###  Sam Says
+
++  Hex-bin plots can be extended so that you can specify both the size of the hexagons (proportional to the frequency of observations in that area) and the color of hexagons (proportional to some other continuous variable for observations in that area).  This idea was championed by Kirk Goldsberry, a cartographer who now works applies statistical analysis and data visualization to basketball.  These are awesome plots.
+
++  Unfortunately, there is no `ggplot()` implementation for this already.  If anyone wants to design one for course credit or academic credit, please contact Sam!  (Note:  This will not be easy.)
+
++  Hex-bin plots are nice when you have a very large number of observations.  For smaller datasets like the `student` dataset, they are typically not as useful as contour plots and heat maps, since they require a small number of large bins to get a good picture of the density of observations.
+
+
+***
+***
+
+
+#  Problem 7
+
+(2 points each)
+
+**Criticize the Lab 08 Oral Evaluation Graphic**
+
+On Lab 08, the Oral Evaluation Graphic was something called a "Spider Chart" or "Radar Chart" or "Star Plot".  You can read more about this type of chart [here](http://www.datavizcatalogue.com/methods/radar_chart.html).
+
+Critique the chart from the Lab 08 Oral Evaluation:
+
+a.  Describe at least two good qualities of the chart.
+
+b.  Describe at least two bad qualities of the chart.
+
+c.  Is there any distortion in radar charts?  If so, explain how.
+
+
+***
+***
+
+
+
+
+#  BONUS
+
+(BONUS:  10 points)
+
+**Beyond Default Pairs Plots**
+
+```{r, warning = FALSE, message = FALSE}
+library(GGally)
+
+student_sub <- student %>%
+  dplyr::select(Grade, AbsentDays, RaisedHands, 
+                VisitedResources, AnnouncementsView) %>%
+  mutate(Grade = factor(Grade), AbsentDays = factor(AbsentDays)) 
+
+student_sub %>%
+  ggpairs(upper = list(continuous = "density",
+                               discrete = "ratio",
+                               combo = "facetdensity"),
+                  title = "Variables in Student Data")
+```
+
+
+***
+***
