@@ -30,13 +30,6 @@ output:
 +  When turning in bonus problems individually, please turn them in in the Bonus Problems section on Blackboard.
 
 
-***
-***
-
-<div style="width:600px">
-![alt text](http://indiemapper.com/app/images/classed_choropleth.jpg)
-</div>
-
 
 ***
 ***

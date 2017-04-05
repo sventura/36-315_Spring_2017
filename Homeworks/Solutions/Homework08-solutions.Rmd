@@ -260,7 +260,7 @@ The object ``hc_student_complete`` contains information on the merging of cluste
 plot(hc_student_complete, xlab = "Student", 
      ylab = "Cluster Merge Distance",
      sub = "", 
-     main = "Hierarchical Clustesr of\n Students using Complete Linkage")
+     main = "Hierarchical Clustering of\n Students using Complete Linkage")
 ```
 
 `plot()` uses a dendrogram to visualize the hierarchical clustering results.
