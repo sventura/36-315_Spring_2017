@@ -346,7 +346,7 @@ student %>%
   my_theme +
   labs(title = "Hierarchical Clusters of Students vs. Days Absent",
        subtitle = "Student Academic Performace Dataset",
-       y = "Height",
+       y = "Pairwise Euclidean Distance",
        x = "") +
   scale_x_continuous(breaks = NULL)
 ```
