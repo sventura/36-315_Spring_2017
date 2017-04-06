@@ -205,6 +205,81 @@ ggplot(df, aes(x = x, y = y, fill = category)) +
   theme_bw()
 
 
+#  Set up data to create the waffle chart
+library(MASS)
+data(Cars93)
+var <- Cars93$Type  # the categorical variable you want to plot 
+nrows <- 9  #  the number of rows in the resulting waffle chart
+categ_table <- floor(table(var) / length(var) * (nrows*nrows))
+temp <- rep(names(categ_table), categ_table)
+df <- expand.grid(y = 1:nrows, x = 1:nrows) %>%
+  mutate(category = sort(c(temp, sample(names(categ_table), 
+                                        nrows^2 - length(temp), 
+                                        prob = categ_table))))
+# NOTE: if sum(categ_table) is not nrows^2, it will need adjustment to make the sum = nrows^2.
+
+#  Make the Waffle Chart
+ggplot(df, aes(x = x, y = y, fill = category)) + 
+  geom_tile(color = "black", size = 0.5) +
+  scale_x_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  scale_fill_brewer(palette = "Set3") +
+  labs(title="Waffle Chart of Car Type",
+       caption="Source:  Cars93 Dataset", 
+       fill = "Car Type",
+       x = NULL, y = NULL) + 
+  theme_bw()
+
+
+
+#  Set up data to create the waffle chart
+var <- imdb$content_rating  # the categorical data 
+nrows <- 25  #  the number of rows in the resulting waffle chart
+categ_table <- floor(table(var) / length(var) * (nrows*nrows))
+temp <- rep(names(categ_table), categ_table)
+df <- expand.grid(y = 1:nrows, x = 1:nrows) %>%
+  mutate(category = sort(c(temp, sample(names(categ_table), 
+                                        nrows^2 - length(temp), 
+                                        prob = categ_table))))
+# NOTE: if sum(categ_table) is not nrows^2, it will need adjustment to make the sum = nrows^2.
+
+#  Make the Waffle Chart
+ggplot(df, aes(x = x, y = y, fill = category)) + 
+  geom_tile(color = "black", size = 0.5) +
+  scale_x_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  scale_fill_brewer(palette = "Set3") +
+  labs(title="Waffle Chart of Car Type",
+       caption="Source:  Cars93 Dataset", 
+       fill = "Car Type",
+       x = NULL, y = NULL) + 
+  theme_bw()
+
+
+
+#  Waffle charts
+var <- imdb$content_rating  # the categorical data 
+nrows <- 20
+df <- expand.grid(y = 1:nrows, x = 1:nrows)
+categ_table <- floor(table(var) / length(var) * (nrows*nrows))
+temp <- rep(names(categ_table), categ_table)
+df$category <- sort(c(temp, sample(names(categ_table), nrows^2 - length(temp), prob = categ_table)))
+# NOTE: if sum(categ_table) is not nrows^2, it will need adjustment to make the sum = nrows^2.
+
+## Plot
+ggplot(df, aes(x = x, y = y, fill = category)) + 
+  geom_tile(color = "black", size = 0.5) +
+  scale_x_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  scale_fill_brewer(palette = "Set3") +
+  labs(title="Waffle Chart of Day of Week",
+       caption="Source:  NYC Citi Bike Dataset", 
+       x = NULL, y = NULL) + 
+  theme_bw()
+
+
+
+
 
 
 
@@ -317,7 +392,7 @@ write.csv(imdb, "/Users/sam/Desktop/CMU-VAP/315/315-code-and-datasets/315-code-a
 
 #  IMDB -- Test
 imdb <- read_csv("/Users/sam/Downloads/movie_metadata.csv") %>%
-  select(color, num_critic_for_reviews, duration, gross, genres, movie_title, 
+  dplyr::select(color, num_critic_for_reviews, duration, gross, genres, movie_title, 
          num_voted_users, cast_total_facebook_likes, language, country, 
          content_rating, budget, title_year, imdb_score, aspect_ratio, 
          movie_facebook_likes) %>% 
@@ -543,6 +618,48 @@ student %>% dplyr::select(RaisedHands, VisitedResources,
   scale %>% dist %>% hclust %>% as.dendrogram %>%
   dendextend::set("labels", student$AbsentDays, order_value = TRUE) %>%
   ggplot(theme = theme_bw(), horiz = T) + labs(title = "Student Similarity", y = "Pairwise Euclidean Distance")
+
+
+colorblind_palette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", 
+                        "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
+get_colors <- function(x, palette = colorblind_palette) palette[match(x, unique(x))]
+
+dend <- student %>% dplyr::select(RaisedHands, VisitedResources, 
+                                  AnnouncementsView, Discussion) %>% 
+  scale %>% dist %>% hclust %>% as.dendrogram %>% 
+  dendextend::set("labels", student$AbsentDays, order_value = TRUE) %>% 
+  dendextend::set("labels_col", get_colors(student$AbsentDays), order_value = TRUE) %>%
+  dendextend::set("labels_cex", .5) %>%
+  dendextend::set("branches_lwd",.7)
+
+ggplot(dend, theme = theme_bw(), horiz = TRUE) + 
+  labs(x = "") +
+  theme(axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank())
+
+
+
+Cars93 %>% group_by(Type, Origin, Passengers) %>%
+  summarize(count = n())
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
