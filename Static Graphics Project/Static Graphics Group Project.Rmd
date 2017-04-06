@@ -1,0 +1,168 @@
+---
+title: "36-315 Static Grahpics Group Project, Spring 2017"
+author: "See Below for Your Group Members"
+date: "See Due Dates Below"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Static Graphics Group Project
+
+
+#  Data
+
+You get to pick your own dataset!  
+
+##  Sources
+
+Here are some repositories with many, many datasets to choose from:
+
++  [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets.html)
++  [Kaggle](https://www.kaggle.com/datasets)
++  [Dream To Learn](https://dreamtolearn.com/ryan/1001_datasets)
++  [Google Public Data Explorer](https://www.google.com/publicdata/directory)
++  [The US Government](https://www.data.gov/)
++  [Stanford Statistics](http://statweb.stanford.edu/~sabatti/data.html)
++  [American Psychological Asosciation](http://www.apa.org/research/responsible/data-links.aspx)
++  [GitHub](https://github.com/caesar0301/awesome-public-datasets)
++  [FiveThirtyEight](https://github.com/fivethirtyeight/data)
+
+You do not have to pick a dataset from one of these places.  These are just suggestions.
+
+##  Requirements
+
+1.  Your data must be contain a mix of categorical and continuous variables and be complex enough that you can create 8 interesting graphs (so datasets with only a few variables will not work).
+
+2.  You CANNOT use any of the datasets that were used in any previous assignments in this course or any other course you have taken.  You must use a dataset that everyone in your group has never worked with before.
+
+3.  I'm strongly encouraging groups to pick different datasets, so that no group is using the same dataset.  If you know that another group has already chosen your dataset, you should consider switching.
+
+4.  Be sure to read the guidelines on the graphics below.  These will certainly influence what datasets you choose.
+
+
+
+#  Timeline
+
+##  Friday, 3/31:  Groups Assigned
+
+Each student will work with a group of 4 people.  You can find your group members [here.](https://docs.google.com/spreadsheets/d/10UX2UdPKMilmLJnYAxuMLiVkY87aNdC-rxw-Pd1nieU/edit?usp=sharing)
+
+
+##  Friday, 4/7:  Collaborative Lab 10
+
+On Friday, 4/7 in Lab, you will work with your groups to submit the lab assignment.  Each group should designate one person to submit the assignment.  
+
+If you cannot make Lab on Friday, coordinate with your group to ensure that your group members are turning in the assignment, and make plans to make up for the work you missed.  In general, be a good group member.
+
+
+##  Monday, 4/10:  Group Check-In and Critique
+
+On Monday, 4/10, the first draft of your poster should be complete.  Each group member should review the work of all other group members, give feedback on others' graphics, and help solve any issues that arise.
+
+
+##  Tuesday, 4/11:  Meet with Sam (HW 10)
+
+Sam will hold office hours on Tuesday, 4/10 at the following times:
+
++  10am to noon
++  1:30pm to 3pm
++  4pm to 8pm
+
+**Each group is required to**:
+
++  Have a draft of their poster completed by Tuesday (including all graphs, all text, and all explanations of the dataset)
++  Have at least one group member (but preferably all group members) bring the poster draft to Sam's office hours for feedback
++  Have at least one group member communicate the feedback to all group members
+
+When bringing the poster to Sam's office, just bring a small printed copy (on a 8.5x11 sheet of paper) and a computer copy (.pdf).  The printed copy does not need to be in color.
+
+
+##  Thursday, 4/13, 8am:  Submit Your Posters
+
+Each group should submit a single file, named Group[X].pdf, containing their final poster.  Sam and the TAs will handle poster printing.  Late posters will be deducted a substantial portion of the project grade and may not be printed in time for the presentations.
+
+
+##  Friday, 11/18, 12:30pm to 1:20pm, CUC Connan Room:  Poster Presentations
+
+Each group will present their posters to Sam, the TAs, other professors, Statistics graduate students, and others in a public poster presentation.
+
+Each group member is required to speak about two graphs when presenting the posters.
+
+**Please have at least one group member (but preferably, all group members) arrive 15 minutes early to set up your poster!**
+
+
+#  Poster Guidelines
+
+##  Templates
+
+See Blackboard / Assignments / Static Graphics Group Project / Powerpoint Poster Teamplate for a PowerPoint template.
+
+See Blackboard / Assignments / Static Graphics Group Project / LaTeX Poster Teamplate for a LaTeX template.
+
+You are also welcome to use your own template/design.  Last year, one group used Illustrator and created a poster that was very aesthetically pleasing.  
+
+Keep in mind that your posters will be printed on a 3-feet tall, 4-feet wide poster.  As such, ensure that your graphs are high-resolution!
+
+
+##  Graphs
+
+Each group member is required to create two graphics.
+
+If your group has 4 members, you are required to have 8 graphs on your poster.
+
+(If your group has 3 members, you are required to have 6 graphs on your poster.)
+
+It's the end of the semester, so the graphs you make should be perfect.  Take care to create excellent graphs that are informative and easy to understand.  All graphs should be properly labeled, titled, etc.  
+
+Additional restrictions (these will certainly influence your choice of dataset):
+
+1.  Each group is required to make at least three of the following types of graphs:  
+
++  Choropleth maps
++  Other maps
++  Network diagrams
++  Time series plots
++  Dendrograms
++  Graphs relating to text analysis
+
+(Note:  We will be covering time series and text analysis next week.)
+
+
+2.  Each group can have no more than two graphs that show a single variable (e.g. one-variable bar charts, histograms, density estimates).
+
+3.  Don't have more than 2-3 of the same type of graph.  For example, if five of your graphs are stacked histograms, that's bad; use some density plots instead.  If five of your graphs are scatterplots, that's bad; use heat maps, contour plots, regression plots, etc instead.
+
+4.  Your graphs should tell a somewhat cohesive story.  Come up with some general questions you want to answer with your dataset, and use your graphs to walk the viewer through a comprehensive analysis of those questions.  Use your graphs to demonstrate your findings and conclusions.
+
+
+##  Writing
+
+Below each graph, you can have up to three bullet-points, each of which is no more than the length of a single tweet (140 characters), describing the graph, takeaways, etc.
+
+Each group should also designate a section of their poster to give a brief overview of the dataset.
+
+You are also permitted to have Introduction, Conclusions, Discussion, and/or Acknowledgements sections that contain additional text.  That said, **written text should be kept to a minimum**.
+
+
+##  Presentation
+
+Each group member is required to speak about two graphics.  These do not have to be the graphics they created, but it probably makes sense to do so.
+
+Be professional and courteous to anyone visiting your poster.  Assume that they do not know anything about your dataset, and be sure to explain the dataset / questions you're trying to answer in a clear and concise way.
+
+It should take about 5 minutes to go over your entire poster.  Aim to summarize each graph and its main takeaways in less than a minute, if possible.
+
+
+#  Grades
+
+The Static Graphics Group Project is worth 12.5% of your final grade.  This will be divded as follows:
+
++  Poster:  5%
++  Presentation:  6.25%
++  Group Member Evaluation:  1.25%
+
+More information about the group member evaluation will be available next week.  For now, just be nice to your group members and be sure to do your part when completing HW09, Lab10, and the poster, and when preparing for the oral presentation!
+
