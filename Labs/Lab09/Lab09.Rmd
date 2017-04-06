@@ -10,7 +10,7 @@ output:
 ---
 
 
-##  Lab 08:  Networks + Static Graphics Group Project
+##  Lab 09:  Networks + Static Graphics Group Project
 
 ***General instructions for all assignments***: 
 
@@ -114,7 +114,7 @@ get_degree <- function(node, network, type) {
 }
 ```
 
-d.  Write a new function, called `get_all_degrees`, that calculates the in- or out-degree of an entire network.  Your function should call the function you wrote in part (c).
+d.  Write a new function, called `get_all_degrees`, that calculates the in- or out-degree of an entire network.  Your function should call the function you wrote in part (c).  It should return a vector with length equal to the number of nodes in the `network` object specifying the degree (with `type = "in"` or `"out"`) of each node.
 
 ```{r}
 #  network:  The network to use in the degree calculations
