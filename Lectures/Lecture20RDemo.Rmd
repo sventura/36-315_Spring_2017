@@ -1,0 +1,230 @@
+---
+title: "Lecture 21 R Demo -- Maps"
+author: "Sam Ventura"
+date: "April 5th, 2017"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+The graphs below don't have proper titles, axis labels, legends, etc.  Please take care to do this on your own graphs.
+
+***
+
+
+#  Adding to Static Maps
+
+We can create static maps (road maps, satellite view maps, hybrid maps) with the `ggmap` package:
+
+```{r}
+library(tidyverse)
+library(ggmap)
+map_base <- get_map(location = c(lon = -79.944248, lat = 40.4415861),
+                    color = "color",
+                    source = "google",
+                    maptype = "road",
+                    zoom = 6)
+
+map_object <- ggmap(map_base,
+                    extent = "device",
+                    ylab = "Latitude",
+                    xlab = "Longitude")
+map_object
+```
+
+
+Here, we'll work with airline data from [this GitHub repository](https://github.com/jpatokal/openflights).
+
+Max Marchi wrote a great summary of using maps in R with ggmap [here](http://www.milanor.net/blog/maps-in-r-plotting-data-points-on-a-map/).  We'll follow this example closely in today's lecture.  Thanks, Max!
+
+Before we begin, note that this is just one example of how you can add interesting information to maps with `ggmap`.  As long as you have latitude and longitude information, you should be able to add data to maps.  For more interesting examples and for an in-depth description of `ggmap`, see the short paper by David Kahle and Hadley Wickham [here](http://stat405.had.co.nz/ggmap.pdf).
+
+
+##  Load flight data from GitHub
+
+To load data from GitHub, you should navigate to the raw file, copy the URL, and use `read.csv()`.
+
+```{r}
+#  Load and format airports data
+airports <- read_csv("https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat",
+                     col_names = c("ID", "name", "city", "country", "IATA_FAA", 
+                                   "ICAO", "lat", "lon", "altitude", "timezone", "DST"))
+airports
+
+#  Load and format routes data
+routes <- read_csv("https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat",
+                   col_names = c("airline", "airlineID", "sourceAirport", 
+                                 "sourceAirportID", "destinationAirport", 
+                                 "destinationAirportID", "codeshare", "stops",
+                                 "equipment"))
+routes
+```
+
+
+##  Manipulating the data to get some custom data.frames
+
+Here, we'll do some data manipulation to obtain the number of arrivals/departures per airport.
+
+```{r}
+#  Manipulate the routes data to create two new data.frames
+#    one for arrivals, one for departures.  
+#  Each counts the number of flights arriving/departing from each airport.
+departures <- routes %>%
+  group_by(sourceAirportID) %>%
+  summarize(flights = n()) %>%
+  mutate(sourceAirportID = as.integer(as.vector(sourceAirportID)))
+
+arrivals <- routes %>%
+  group_by(destinationAirportID) %>%
+  summarize(flights = n()) %>%
+  mutate(destinationAirportID = as.integer(as.vector(destinationAirportID)))
+
+#  Merge each of the arrivals/departures data.frames with the airports data.frame above
+airportD <- left_join(airports, departures, by = c("ID" = "sourceAirportID"))
+airportA <- left_join(airports, arrivals, by = c("ID" = "destinationAirportID"))
+
+#  Create data.frame of routes to/from a specific city
+my_airport_code <- "PIT"
+my_routes <- filter(routes, 
+                    sourceAirport == my_airport_code | 
+                      destinationAirport == my_airport_code)
+
+#  Add in relevant information from the airports data.frame
+#  Do this in two steps, so that you first pull in the source airport information
+#  and then pull in the destination airport information
+#  This can be done easily with two calls to left_join()
+#  The rest of the code is just formatting
+my_airport_data <- my_routes %>%
+  left_join(airports, by = c("sourceAirport" = "IATA_FAA")) %>%
+  select(destinationAirport, lat, lon, timezone) %>%
+  rename(source_lat = lat, source_lon = lon, source_timezone = timezone) %>%
+  left_join(airports, by = c("destinationAirport" = "IATA_FAA")) %>%
+  select(source_lat, source_lon, source_timezone, lat, lon, timezone) %>%
+  rename(dest_lat = lat, dest_lon = lon, dest_timezone = timezone)
+```
+
+
+##  Mapping the data we created
+
+We'll use `ggmap` to create a base map of the data.  Now, we'll add layers of points onto the map.
+
+```{r}
+#  Use ggmap to visualize the European flights
+library(ggmap)
+map <- get_map(location = 'Europe', zoom = 4)
+map <- get_map(location = 'United States', zoom = 4)
+
+#  Visualize the basic map
+ggmap(map)
+
+#  Add points to the map of departures
+#  Each point will be located at the lat/long of the airport
+#  The size of the points is proportional to the square root of the number of flights at that airport
+mapPoints <- ggmap(map) +
+  geom_point(aes(x = lon, y = lat, size = sqrt(flights), color = DST), 
+             data = airportD, alpha = .5)
+
+#  Add a custom legend to the plot
+mapPointsLegend <- mapPoints +
+  scale_size_area(breaks = sqrt(c(1, 5, 10, 50, 100, 500)), 
+                  labels = c(1, 5, 10, 50, 100, 500), 
+                  name = "departing routes")
+mapPointsLegend
+```
+
+
+##  Further Data Manipulation and Facetting
+
+Below, we create a new variable (flight type -- arrival or departure) and use it to create a single data.frame of all arrivals and departures.
+
+We'll then facet on this variable so we can simultaneously visualize both arriving and departing flights.
+
+```{r}
+#  Create a data.frame containing both departures and arrivals
+#  Do this by creating a "type" variable and then combining the two data.frames
+#  We will later be able to use the type variable for facetting
+airportD$type <- "departures"
+airportA$type <- "arrivals"
+airportDA <- bind_rows(airportD, airportA)
+
+#  Create our base plot and add the custom legend
+mapPointsDA <- ggmap(map) +
+  geom_point(aes(x = lon, y = lat, size = sqrt(flights)), 
+             data = airportDA, alpha = .5) +
+  scale_size_area(breaks = sqrt(c(1, 5, 10, 50, 100, 500)), 
+                  labels = c(1, 5, 10, 50, 100, 500), 
+                  name = "routes")
+
+#  Facet on flight type (arrival/departure)
+mapPointsDA + facet_grid(. ~ type)
+```
+
+
+
+***
+***
+
+
+#  Geocoding with `ggmap`
+
+```{r}
+gc <- geocode("carnegie mellon university")
+map <- get_map(gc, zoom = 6)
+ggmap(map) + 
+  geom_point(aes(x = lon, y = lat), 
+             data = gc, size = 5, color = "red")
+```
+
+
+***
+***
+
+
+#  Using Spatial Polygons
+
+What is a polygon?
+
+
+##  Plotting spatial objects with `geom_polygon()`
+
+In `ggplot()`, polygons are just another geometry, making it really easy to add geographic shapes (e.g. corresponding to countries, states, counties, etc.) to maps.
+
+```{r}
+#  Note:  The sp package can be really fussy at installation
+#  If prompted, do not restart R when installing the package
+#  If prompted with "Do you want to install from sources the packages which need compilation?", type 'n'
+#install.packages("sp", dependencies = T)
+library(sp)
+library(ggmap)
+us_data <- map_data("state")
+county_data <- map_data("county")
+
+us_county_map <- ggplot() + 
+  geom_polygon(aes(long, lat, group=group), fill = "blue", size = 4, 
+               data = county_data) + 
+  geom_polygon(aes(long, lat, group=group), color = 'white',
+               fill = NA, data = us_data) + 
+  theme_bw() + theme(axis.text = element_blank(), 
+                     axis.title = element_blank())
+us_county_map
+```
+
+
+#  Map Projections
+
+##  Use `coord_map()` to specify your map projection
+
+Way back at the beginning of the semester, we learned about using `coord_cartesian()` and `coord_polar()` to specify the coordinates of our plots.  We're (finally) revisiting this idea in the context of geographic mapping.
+
+Using the `coord_map()` function, we can specify what kind of map projection we want to use.
+
+```{r}
+us_county_map + coord_map("mercator") 
+us_county_map + coord_map("polyconic") 
+us_county_map + coord_map("sinusoidal") 
+```
+
+
