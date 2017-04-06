@@ -82,22 +82,16 @@ my_colors <- c("#000000", "#56B4E9", "#E69F00", "#F0E442", "#009E73", "#0072B2",
 ***
 
 
-#  Problem 1
+
+#  Problem 1 {.tabset}
 
 (3 points each)
 
 **Text Annotations on Graphs**
 
-a. Repeat the process outlined in Lab 08:
+## a. 
 
-+  Load the Student Performance dataset into R.  
-+  Ensure that `Grade` and `AbsentDays` are stored as factors.
-+  Create the subset of continuous variables.
-+  Scale the continuous variables so that they have equal variance (and standard deviation).
-+  Create the distance matrix corresponding to the scaled continuous variables in the dataset.
-+  Create a 2-dimensional projection (`student_mds`) of the scaled student dataset (using the distance matrix you created) via multi-dimensional scaling.
-+  Rename the columns as you did in Lab 08.
-+  Add the `Grade` and `AbsentDays` variables to `student_mds`.
+**Loading Data.** 
 
 ```{r, message = FALSE, warning = FALSE}
 student <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/students.csv")
@@ -111,22 +105,93 @@ student_mds <- student %>%
   dist() %>% 
   cmdscale(k = 2) %>% 
   as.data.frame() %>%
-  mutate(Grade = student$Grade, 
-         AbsentDays = student$AbsentDays)
+  mutate(Grade = factor(student$Grade, 
+                        levels = c("H","M","L"),
+                        labels = c("High","Middle","Low")),
+         AbsentDays = student$AbsentDays,
+         StageID = factor(student$StageID,
+                          levels = c("lowerlevel","MiddleSchool","HighSchool"),
+                          labels = c("Elementary","Middle","High"))
+  )
 
 colnames(student_mds)[1:2] <- c("mds_coordinate_1", "mds_coordinate_2")
+
 ```
 
 
-b.   Plot `mds_coordinate_2` (y-axis) vs. `mds_coordinate_1` (x-axis).  This time, use the `geom_text()` function to label each point's shape by the `AbsentDays` variable, instead of the combination of `geom_point()` and `scale_shape_manual()`. 
+## b.   
 
-c.  Recreate the graph from (b), but this time, display the text at a 30 degree angle, and color the text according to the `Grade` of the student.  Don't forget to use a non-default color scheme!
+```{r}
+basic_labs =   labs(title = "First 2 MDS Coordinates",
+       x = "MDS First Coordinate",
+       y = "MDS Second Coordinate") 
 
-d.  Recreate the graph from (c), but this time, size the text according to the `StageID`, and use a non-default font family. To do this, you will have to add `StageID` to your `student_mds` data frame. 
+ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
+                                   y = mds_coordinate_2,
+                                   label = factor(AbsentDays,
+                                                  levels = c("Above-7",
+                                                             "Under-7"),
+                                                  labels= c("A","U") )
+                                   )
+        ) + 
+  geom_text() + basic_labs + my_theme
 
-e.  Interpret your graph from (d).  How many variables are included in this graph?  What can you say about the relationships between any of the variables used in this graph?  Summarize the main findings / takeaways from this graph in 2-4 sentences.
+```
 
 
+## c.  
+
+```{r message = F, warning = F}
+ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
+                                   y = mds_coordinate_2,
+                                   label = factor(AbsentDays,
+                                                  levels = c("Above-7",
+                                                             "Under-7"),
+                                                  labels= c("A","U") )
+                                   )
+        ) + 
+  geom_text(aes(label = factor(AbsentDays,
+                               levels = c("Above-7","Under-7"),
+                               labels= c("A","U")),
+                               color = Grade),angle = 30)+ 
+  scale_color_manual(values = my_colors,
+                     labels = levels(student_mds$Grade)) +
+  basic_labs +
+  labs(color = "Student Grade / Mark",
+       label = "Number of Days Absent") +
+  my_theme
+```
+
+## d.  
+
+```{r warning= F, message = F}
+ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
+                                   y = mds_coordinate_2,
+                                   label = factor(AbsentDays,
+                                                  levels = c("Above-7",
+                                                             "Under-7"),
+                                                  labels= c("A","U") )
+                                   )
+        ) + 
+  geom_text(aes(color = Grade,
+                size = factor(StageID),
+            angle = 30)) +
+  basic_labs +
+  labs(color = "Student Grade / Mark",
+       label = "Number of Days Absent",
+       size = "School Level") +
+  scale_color_manual(values = my_colors) +
+  my_theme
+```
+
+
+## e.  
+
+5 variables were included in this model if we consider the MDS coordinates as only 2 variables. Since each is some combination of the 4 continuous variables we could also say 7. We include the first 2 MDS coordinates, what school level they are in (`StageID`),  their grade/ mark in the class (`Grade`), and a binary variable if their absents were above 7 (`AbsentDays`).
+
+**Takeaway**
+We can think about the 2 MDS components as some combination of the number of times the student raised their Hands (`RaisedHands`), times utilized student class resources (`VisitedResources`), number of times they checked new anoucements for the class (`AnnouncementsView`), and number of times the student participated in discussion groups (`Discussion`). Althought MDS is slightly different than PCA, and in both cases it's not wise to over interpret the components, we see that there is strong clustering of students with similar class grades/marks .Especially in the first MDS component direction we see low preformers tend to have smaller values of this coordinate than those average students and much lower than high preformers. This might lead us to assume that this coordinate contains information that we associated with success or ability to do well in classes. Additionally first dimension also allows us to nicely cluster those with more than 7 absences and those with fewer, indicated by the text `A` and `U`. This structure allows us to see the positive correlation between number of absences and performance of students. These two MDS coordinates didn't seem distiguish much between the School levels of the student,  this is more obvious if you facet by the `StageID`.
+                
 ***
 ***
 
@@ -167,7 +232,7 @@ Repeat part (b), but use `label = scales::percent((..count..) / sum(..count..)))
 
 
 
-#  Problem 3  {.tabset}
+#  Problem 3 {.tabset}
 
 (3 points each; 18 points total)
 
@@ -176,56 +241,129 @@ Repeat part (b), but use `label = scales::percent((..count..) / sum(..count..)))
 
 ##  Part A
 
-Visualize the 2D Kernel Density Estimate of `mds_coordinate_1` and `mds_coordinate_2` with a contour plot.  See the Lecture 12 R Demo on Blackboard for how to do this.  Use the default bandwidth.
+```{r}
+ggplot(student_mds,aes(x = mds_coordinate_1,
+                       y = mds_coordinate_2)) + 
+  geom_density2d() + basic_labs + my_theme
+```
+
 
 ##  Part B
 
-Repeat part (a), but this time, overlay the points, color by `Grade`, and change the point type according to `AbsentDays`, as you did in Lab 08, Problem 2, part (e).  Consider doing the following to enhance the viewer's understanding of your graph:
+```{r}
+ggplot(student_mds,aes(x = mds_coordinate_1,
+                       y = mds_coordinate_2)) +
+  geom_point(aes(color = Grade,shape = AbsentDays),size = 5,alpha = .4) +
+  scale_shape_manual(values = c("Above-7" = "A", "Under-7" = "U"),
+                     labels = c("Above 7","Under 7")) +
+  scale_color_manual(values = my_colors) +
+  geom_density2d() + basic_labs +
+  labs(shape = "Number of Days Absent",
+       color = "Student Grade / Mark") +
+  my_theme
+```
 
-+  adjusting the `alpha` parameter so that the points don't prevent you from seeing the contour lines
-+  plotting the points first and the contour lines second, so that you can see both
-+  both of the above
 
 ##  Part C
 
-Repeat part (b), but this time, use a smaller bandwidth in each direction with `+ geom_density2d(h = c(10, 10))`.
+```{r}
+ggplot(student_mds,aes(x = mds_coordinate_1,
+                       y = mds_coordinate_2)) +
+  geom_point(aes(color = Grade,shape = AbsentDays),size = 5,alpha = .7) +
+  scale_shape_manual(values = c("Above-7" = "A", "Under-7" = "U"),
+                     labels = c("Above 7","Under 7")) +
+  scale_color_manual(values = my_colors) +
+  geom_density2d(h=c(1/2,1/2),alpha = .7) + basic_labs +
+  labs(shape = "Number of Days Absent",
+       color = "Student Grade / Mark") +
+  my_theme
+```
+
 
 ##  Part D
 
-Repeat part (c), but this time, use a larger bandwidth in each direction with `+ geom_density2d(h = c(87, 87))`.
+```{r}
+ggplot(student_mds,aes(x = mds_coordinate_1,
+                       y = mds_coordinate_2)) +
+  geom_point(aes(color = Grade,shape = AbsentDays),size = 5,alpha = .7) +
+  scale_shape_manual(values = c("Above-7" = "A", "Under-7" = "U"),
+                     labels = c("Above 7","Under 7")) +
+  scale_color_manual(values = my_colors) +
+  geom_density2d(h=c(3,3),alpha = .7) + basic_labs +
+  labs(shape = "Number of Days Absent",
+       color = "Student Grade / Mark") +
+  my_theme
+```
+
 
 ##  Part E
 
-Which bandwidth do you prefer for this problem?  The default (parts (a) and (b)), the the smaller bandwidth (part (c)), or the larger bandwidth (part (d))?  Why?
+
+I prefer the default bandwidth. The larger bandwidth returns an extremely smooth density estimate that doesn’t provide any useful information about the underlying empirical distribution in this problem. Specifically we are missing the peak/ mode associated with the heavy cluster of High preforming individuals with under 7 days of absences (black `U`s). Generally we see that the clustering of points near to the edges are less likely to given modes, which we want if we have dense group of points in those regions. In general, the peaks of the density estimates should correspond to the actual locations of the points (ideally in areas where there are lots of points), and the valleys in the density estimate should correspond to areas of the feature space where there are few observations. The large bandwidth prevents this from happening.
+
+For the smaller bandwidth, we have too much fluctuation and it is hard to see any true distributional structure. The small bandwidth seems to overfit our data. (If you haven’t learned about overfitting yet, no big deal! You’ll learn this in 36-401 and 36-402.)
 
 ##  Part F
 
-Repeat part (d), but this time, adjust the bandwidths in each direction as you see fit.  In particular, choose a different, non-default bandwidth for each direction.  Comment on why you chose these bandwidths.
 
+
+```{r}
+ggplot(student_mds,aes(x = mds_coordinate_1,
+                       y = mds_coordinate_2)) +
+  geom_point(aes(color = Grade,shape = AbsentDays),size = 5,alpha = .7) +
+  scale_shape_manual(values = c("Above-7" = "A", "Under-7" = "U"),
+                     labels = c("Above 7","Under 7")) +
+  scale_color_manual(values = my_colors) +
+  geom_density2d(h=c(1.25,1.5),alpha = .7) + basic_labs +
+  labs(subtitle = "bandwidth (1.5,1.25)",
+       shape = "Number of Days Absent",
+       color = "Student Grade / Mark") +
+  my_theme
+```
+
+Although I really default setting for this data set, I explored a slightly smaller first coordinate bandwidth as much the observable structure came for the first dimension. This seems to provide contours that made slighly more sense.
 ***
 ***
 
 
-#  Problem 4
+#  Problem 4 {.tabset}
 
 (10 points)
 
 **2D-KDEs with Heat Maps and Three-Color Gradients**
 
-a.  (6 points)  Create a heat map (`... + stat_density2d(aes(fill = ..density..), geom = "tile", contour = F)`) of the MDS coordinates from the previous problem.
+## a.  
+(6 points)  
 
-+  Use a non-default bandwidth in both directions, as you did in the previous problem.  Try a few different bandwidths in both directions.  Choose bandwidths that you think properly show where the high-density and low-density areas of the graph are.
-+  Use a custom color gradient that uses three colors:  one as the "low density" color, one as the "high density" color, and one as the "medium density" color.  
-+  To do this, use `scale_fill_gradient2()` and be sure to specify the `mid` parameter in addition to the `low` and `high` parameters.  See [the help file](http://docs.ggplot2.org/current/scale_gradient.html) for how to do this.
-+  Note that you'll have to manually pick an appropriate `midpoint` parameter as well.  This parameter specifies the value of the density to which the `mid` color should correspond.  The default value is zero, which will not work for this problem (since zero is the minimum possible density).  Try a few different values and pick one that you think is appropriate.
+```{r}
+ ggplot(student_mds,aes(x = mds_coordinate_1,
+                       y = mds_coordinate_2)) +
+  stat_density2d(aes(fill = ..density..),
+                 h = c(1.25,1.5), geom = "tile", contour = F) +
+  scale_fill_gradient2(low = "black",mid = "white",high = "red",midpoint= .03) +
+  basic_labs + my_theme
+  
+```
 
-b.  (2 points)  Comment on your choice of colors.  Also, comment on your choice for the `midpoint` parameter -- why did you choose it?  What happens when you increase or decrease it?  
 
-c.  (2 points)  Do you prefer the graph you created here to the contour plots in the previous problem?  Explain why or why not.  (There's not necessarily a right or wrong answer here.  Just explain your reasoning.)
+## b.  
+(2 points) 
 
 
+I chose these colors to highly the areas of low density vs the areas of high density. Additionally, the white threshold gives a nice cutoff the emphasis the low density and high density regions. Additionally, this color contrast highlights the high density regions.
+
+I chose the midpoint parameter to be 0.03. This value is smaller than middle distance between the highest value and lowest value, but it allows the observer to clearly see 4 modes on the red and to understand that there is some density mass around 0 of the first coordinate and between -1 and -2 of the second coordinate.
+
+## c.  
+(2 points)  
+
+
+I prefer the contour plot over the heat map because it provides more details that we can use to interpret the data. The heat map is a more general display of areas of higher and lower density, but lacks extensive detail about the underlying empirical distribution. (Note: There’s no “right” answer here, in the sense that a contour plot isn’t always better than a heat map. They just represent the data in different ways.)
+
+(Of course, you can always layer everything onto one plot – a heat map, a contour plot, the points themselves, a regression line, etc – if you think this adds value to the plot.)
 ***
 ***
+
 
 
 
