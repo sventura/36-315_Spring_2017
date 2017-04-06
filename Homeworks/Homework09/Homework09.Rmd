@@ -257,8 +257,8 @@ temp <- rep(names(categ_table), categ_table)
 df <- expand.grid(y = 1:nrows, x = 1:nrows) %>%
   mutate(category = sort(c(temp, sample(names(categ_table), 
                                         nrows^2 - length(temp), 
-                                        prob = categ_table))))
-# NOTE: if sum(categ_table) is not nrows^2, it will need adjustment to make the sum = nrows^2.
+                                        prob = categ_table, 
+                                        replace = T))))
 
 #  Make the Waffle Chart
 ggplot(df, aes(x = x, y = y, fill = category)) + 
