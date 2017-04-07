@@ -66,6 +66,7 @@ d.  What style guide are you using for this assignment?
 
 ```{r, message = F, warning = F}
 library(tidyverse)
+library(data.table)
 
 #  Simple theme with white background, legend at the bottom
 my_theme <-  theme_bw() +
@@ -190,10 +191,11 @@ ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
 5 variables were included in this model if we consider the MDS coordinates as only 2 variables. Since each is some combination of the 4 continuous variables we could also say 7. We include the first 2 MDS coordinates, what school level they are in (`StageID`),  their grade/ mark in the class (`Grade`), and a binary variable if their absents were above 7 (`AbsentDays`).
 
 **Takeaway**
-We can think about the 2 MDS components as some combination of the number of times the student raised their Hands (`RaisedHands`), times utilized student class resources (`VisitedResources`), number of times they checked new anoucements for the class (`AnnouncementsView`), and number of times the student participated in discussion groups (`Discussion`). Althought MDS is slightly different than PCA, and in both cases it's not wise to over interpret the components, we see that there is strong clustering of students with similar class grades/marks .Especially in the first MDS component direction we see low preformers tend to have smaller values of this coordinate than those average students and much lower than high preformers. This might lead us to assume that this coordinate contains information that we associated with success or ability to do well in classes. Additionally first dimension also allows us to nicely cluster those with more than 7 absences and those with fewer, indicated by the text `A` and `U`. This structure allows us to see the positive correlation between number of absences and performance of students. These two MDS coordinates didn't seem distiguish much between the School levels of the student,  this is more obvious if you facet by the `StageID`.
+We can think about the 2 MDS components as some combination of the number of times the student raised their Hands (`RaisedHands`), times utilized student class resources (`VisitedResources`), number of times they checked new announcements for the class (`AnnouncementsView`), and number of times the student participated in discussion groups (`Discussion`). Although MDS is slightly different than PCA, and in both cases it's not wise to over interpret the components, we see that there is strong clustering of students with similar class grades/marks .Especially in the first MDS component direction we see low performers tend to have smaller values of this coordinate than those average students and much lower than high performers. This might lead us to assume that this coordinate contains information that we associated with success or ability to do well in classes. Additionally first dimension also allows us to nicely cluster those with more than 7 absences and those with fewer, indicated by the text `A` and `U`. This structure allows us to see the positive correlation between number of absences and performance of students. These two MDS coordinates didn't seem distinguish much between the School levels of the student,  this is more obvious if you facet by the `StageID`.
                 
 ***
 ***
+
 
 
 #  Problem 2 {.tabset}
@@ -202,29 +204,65 @@ We can think about the 2 MDS components as some combination of the number of tim
 
 **More Text Annotations on Graphs**
 
+Load the Olive Oil data from Lab 08.
+```{r, warning=FALSE, message=FALSE, cache=TRUE}
+olive <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/olive_oil.csv")
+```
+
 
 ##  Part (a)
 
-Create a bar chart of the `GradeID` variable (representing what grade each of the stduents is in).  Use the `geom_text()` function to add the counts in each bar **above** each bar in the bar chart.  E.g., `ggplot(...) + ... + geom_text(stat = "count", aes(y = ..count.., label = ..count..))`.  Adjust the `vjust` parameter in `geom_text()` in order to place the numbers in a more appropriate place.  Use a single non-default color for the bars.
+Create a bar chart of the `region` variable.  Use the `geom_text()` function to add the counts in each bar **above** each bar in the bar chart.  E.g., `ggplot(...) + ... + geom_text(stat = "count", aes(y = ..count.., label = ..count..))`.  Adjust the `vjust` parameter in `geom_text()` in order to place the numbers in a more appropriate place.  Use a single non-default color for the bars.
 
 ```{r, warning = F, message = F}
-#  Your code for part (a) here
+region.labels <- c("Northern Apulia", "Southern Apulia", "Calabria", "Sicily",
+                   "Inland Sardinia", "Coastal Sardinia", "Eastern Liguria",
+                   "Western Liguria", "Umbria")
+area.labels <- c("South", "Sardinia", "Centre-North")
+
+olive <- olive %>% mutate(region = as.factor(region), area = as.factor(area)) 
+levels(olive$region) <- region.labels
+levels(olive$area) <- area.labels
+olive %>%
+  ggplot(aes(x = region)) + 
+  geom_bar(fill = "#cc002b") +
+  ggtitle("Number of Olive Oils per Region") +
+  labs(x = "Region", y = "Count") + 
+  geom_text(stat = "count", aes(y = ..count.., label = ..count.., vjust = -0.4)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ##  Part (b)
 
-Create a bar chart of the `StageID` variable.  Use the `geom_text()` function to add the counts in each bar **in the middle** of each bar (i.e. halfway up each bar) in the bar chart.  Use a larger-than-default font size for the text.  Use a single non-default color for the bars, and change the color of the text so that it contrasts well with the color of the bars.  (Hint:  If `y = ..count..` works for making the text appear at the appropriate heights on the y-axis for part (a), how can you adjust this so that the text appears halfway up for each bar in this problem?)
+Create a bar chart of the `area` variable.  Use the `geom_text()` function to add the counts in each bar **in the middle** of each bar (i..e halfway up each bar) in the bar chart.  Use a larger-than-default font size for the text.  Use a single non-default color for the bars, and change the color of the text so that it contrasts well with the color of the bars.  
 
 ```{r, warning = F, message = F}
-#  Your code for part (b) here
+olive %>%
+  ggplot(aes(x = area)) + 
+  geom_bar(fill = "#cc002b") +
+  ggtitle("Number of Olive Oils per Area") +
+  labs(x = "Area", y = "Count") + 
+  geom_text(stat = "count",
+            aes(y = ..count.. / 2, label = ..count..),
+            size = 10, colour = "#4d565b") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ##  Part (c)
 
-Repeat part (b), but use `label = scales::percent((..count..) / sum(..count..)))` to put percentages on the plot instead of the raw count scale.  This is nice, since it allows you to quickly see both the percentages and the counts (height of the bars) in each category.
+Repeat part (b), but use `label = scales::percent((..count..)/sum(..count..)))` to put percentages on the plot instead of the raw count scale.  This is nice, since it allows you to quickly see both the percentages and the counts (height of the bars) in each category.
 
 ```{r, warning = F, message = F}
-#  Your code for part (c) here
+olive %>%
+  ggplot(aes(x = area)) + 
+  geom_bar(fill = "#cc002b") +
+  ggtitle("Number of Olive Oils per Area") +
+  labs(x = "Area", y = "Count") + 
+  geom_text(stat = "count",
+            aes(y = ..count.. / 2, 
+                label = scales::percent((..count..)/sum(..count..))),
+            size = 10, colour = "#4d565b") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 ***
@@ -321,7 +359,7 @@ ggplot(student_mds,aes(x = mds_coordinate_1,
   my_theme
 ```
 
-Although I really default setting for this data set, I explored a slightly smaller first coordinate bandwidth as much the observable structure came for the first dimension. This seems to provide contours that made slighly more sense.
+Although I really default setting for this data set, I explored a slightly smaller first coordinate bandwidth as much the observable structure came for the first dimension. This seems to provide contours that made slightly more sense.
 ***
 ***
 
@@ -531,13 +569,42 @@ student %>%
 
 Look up at the [documentation on hexagonal bin plots](http://docs.ggplot2.org/current/geom_hex.html).
 
-a.  (1 point)  What kind of plot is a hex-bin plot very similar to?
+a.  
 
-b.  Create a hex-bin plot with the student performance data, with `RaisedHands` on the x-axis and `AnnouncementsView` on the y-axis.  Use a non-default color scheme.  Try at 2-3 different values of the `bins` parameter (e.g. 8, 12, 20).  What does this specify?  What happens when you increase or decrease the `bins` parameter?
+A Hex-bin plot is very similar to a Heat-map since the frequencies of both plots are expressed by a color coded gradient. 
 
-c.  Where are the highest-density areas of the joint distribution of `RaisedHands` and `AnnouncementsView`?
 
-d.  Find one example of the use of hexagonal bin plots online.  (Hint:  Search "hex bin plots basketball" or "hex bin plots hockey", or "hex bin plots baseball".)  Describe the example you found and provide a link.
+b.  
+
+```{r, message = F, warning = F}
+ggplot(data = student, aes(x = RaisedHands, y = AnnouncementsView)) + 
+  geom_hex(bins = 20) + 
+  scale_fill_gradient2("Density", 
+                       low = "blue", 
+                       mid = "yellow", 
+                       high = "red", 
+                       midpoint = 6) +
+  labs(title = "Joint Relationship between Raised Hands \nand Checked Announcements", 
+       x = "Frequency of Raised Hands", 
+       y = "Frequency of Checked Announcements") 
+```
+
+
+The `bins` parameter specifies the number of hexagons across the y and x-axis in the graph. Note: there are 20 hexagons across the x-axis and the y-axis since I set `bins=20`. When the `bins` parameter is increased, the size of the bins becomes smaller and the number of bins increases. When the `bins` parameter is decreased, the size of the bins becomes larger and the number of bins decreases. 
+
+c.  
+
+In our graph, the bottom left has the highest density of the joint distribution of `RaisedHands` and `AnnouncementsView`. Higher-density areas of the joint distribution should correspond with red-colored hexagons while lower-density areas of the joint distribution should correspond with blue-colored hexagons, according to our color gradient defined in part b. 
+
+d.  
+
+
+<div style="width:300px">
+![](http://chance.amstat.org/files/2015/02/hockeyfig1big.jpg)
+</div>
+
+
+The following plot shows the success rate of taking shots in the NHL from each position on the ice, binned by general shooting region. Note that the ‘home plate’ area in the middle shows a dramatically higher success probability; this is an area that many analysts describe as the ‘scoring chance’ area.
 
 ###  Sam Says
 
@@ -564,9 +631,17 @@ Critique the chart from the Lab 08 Oral Evaluation:
 
 a.  Describe at least two good qualities of the chart.
 
+We can visualize many continuous variables at once since the circular arrangement allows us to put more information in less space. It is also very easy to compare small number of variables since the variables would be more spread out along its individual axis. 
+
 b.  Describe at least two bad qualities of the chart.
 
+Having multiple polygons in one Radar Chart makes it hard to read, confusing and too cluttered. Especially if the polygons are filled in, as the top polygon covers all the other polygons underneath it. Also, having too many variables creates too many axes and can also make the chart hard to read and complicated. So it's good practice to keep Radar Charts simple and limit the number of variables used.
+
 c.  Is there any distortion in radar charts?  If so, explain how.
+
+All axes are arranged radially, with equal distances between each other, while maintaining the same scale between all axes. Therefore, it is unclear to discern the actual quantity of each variable and compare variables with each other. 
+
+Arranging the variables in a different order may affect the size/area of the radar chart. Since each variable value is plotted along its individual axis and all the variables in a dataset and connected together to form a polygon, connecting two larger quantities would produce a much larger area than connecting one large quanitity and one smaller quanitity.Therefore if we re-arrange the variables of a radar chart to assign large quantities together, we would get a chart with larger area, even though they essentially show the same data. 
 
 
 ***
