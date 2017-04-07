@@ -645,8 +645,15 @@ Cars93 %>% group_by(Type, Origin, Passengers) %>%
   summarize(count = n())
 
 
+cars_cont <- dplyr::select(Cars93, Price, MPG.city, MPG.highway, EngineSize, 
+                           Horsepower, RPM, Fuel.tank.capacity, Passengers,
+                           Length, Wheelbase, Width, Turn.circle, Weight)
 
+test1 <- cars_cont %>% scale %>% cor %>% abs * -1 + 1
+test1 %>% as.dist %>% hclust %>% as.dendrogram %>% ggplot(horiz = T)
 
+test2 <- cars_cont %>% cor %>% abs * -1 + 1
+test2 %>% as.dist %>% hclust %>% as.dendrogram %>% ggplot(horiz = T)
 
 
 
