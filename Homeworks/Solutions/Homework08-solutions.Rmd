@@ -641,7 +641,7 @@ c.  Is there any distortion in radar charts?  If so, explain how.
 
 All axes are arranged radially, with equal distances between each other, while maintaining the same scale between all axes. Therefore, it is unclear to discern the actual quantity of each variable and compare variables with each other. 
 
-Arranging the variables in a different order may affect the size/area of the radar chart. Since each variable value is plotted along its individual axis and all the variables in a dataset and connected together to form a polygon, connecting two larger quantities would produce a much larger area than connecting one large quanitity and one smaller quanitity.Therefore if we re-arrange the variables of a radar chart to assign large quantities together, we would get a chart with larger area, even though they essentially show the same data. 
+Arranging the variables in a different order may affect the size/area of the radar chart. Since each variable value is plotted along its individual axis and all the variables in a dataset and connected together to form a polygon, connecting two variables of larger quantities would produce a much larger area than connecting one variable of large quanitity and one variable of smaller quanitity. Therefore if we re-arrange the variables of a radar chart to assign variables of large quantities together (or smaller quantities), we would get a chart with larger area, even though they essentially show the same data. 
 
 
 ***
