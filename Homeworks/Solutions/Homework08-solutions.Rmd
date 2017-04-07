@@ -70,8 +70,8 @@ library(data.table)
 
 #  Simple theme with white background, legend at the bottom
 my_theme <-  theme_bw() +
-  theme(axis.text = element_text(size = 12, color="indianred4"),
-        text = element_text(size = 14, face="bold", color="darkslategrey"))
+  theme(axis.text = element_text(size = 12, color = "indianred4"),
+        text = element_text(size = 14, face = "bold", color = "darkslategrey"))
 
 #  Colorblind-friendly color palette
 my_colors <- c("#000000", "#56B4E9", "#E69F00", "#F0E442", "#009E73", "#0072B2", 
@@ -107,15 +107,16 @@ student_mds <- student %>%
   cmdscale(k = 2) %>% 
   as.data.frame() %>%
   mutate(Grade = factor(student$Grade, 
-                        levels = c("H","M","L"),
-                        labels = c("High","Middle","Low")),
+                        levels = c("H", "M", "L"),
+                        labels = c("High", "Middle", "Low")),
          AbsentDays = student$AbsentDays,
          StageID = factor(student$StageID,
-                          levels = c("lowerlevel","MiddleSchool","HighSchool"),
-                          labels = c("Elementary","Middle","High"))
+                          levels = c("lowerlevel", "MiddleSchool", "HighSchool"),
+                          labels = c("Elementary", "Middle", "High"))
   )
 
 colnames(student_mds)[1:2] <- c("mds_coordinate_1", "mds_coordinate_2")
+student_mds <- as.data.frame(student_mds)
 
 ```
 
@@ -123,18 +124,17 @@ colnames(student_mds)[1:2] <- c("mds_coordinate_1", "mds_coordinate_2")
 ## b.   
 
 ```{r}
-basic_labs =   labs(title = "First 2 MDS Coordinates",
-       x = "MDS First Coordinate",
-       y = "MDS Second Coordinate") 
+basic_labs = labs(title = "First 2 MDS Coordinates",
+                  x = "MDS First Coordinate",
+                  y = "MDS Second Coordinate") 
 
-ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
-                                   y = mds_coordinate_2,
-                                   label = factor(AbsentDays,
-                                                  levels = c("Above-7",
-                                                             "Under-7"),
-                                                  labels= c("A","U") )
-                                   )
-        ) + 
+ggplot(student_mds,
+       aes(x = mds_coordinate_1,
+           y = mds_coordinate_2,
+           label = factor(AbsentDays, levels = c("Above-7", "Under-7"), 
+                          labels = c("A","U"))
+           )
+       ) + 
   geom_text() + basic_labs + my_theme
 
 ```
@@ -143,18 +143,16 @@ ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
 ## c.  
 
 ```{r message = F, warning = F}
-ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
-                                   y = mds_coordinate_2,
-                                   label = factor(AbsentDays,
-                                                  levels = c("Above-7",
-                                                             "Under-7"),
-                                                  labels= c("A","U") )
-                                   )
-        ) + 
-  geom_text(aes(label = factor(AbsentDays,
-                               levels = c("Above-7","Under-7"),
-                               labels= c("A","U")),
-                               color = Grade),angle = 30)+ 
+ggplot(student_mds,
+       aes(x = mds_coordinate_1,
+           y = mds_coordinate_2,
+           label = factor(AbsentDays,
+                          levels = c("Above-7",
+                                     "Under-7"),
+                          labels= c("A","U"))
+           )
+       ) + 
+  geom_text(aes(color = Grade), angle = 30)+ 
   scale_color_manual(values = my_colors,
                      labels = levels(student_mds$Grade)) +
   basic_labs +
@@ -166,17 +164,17 @@ ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
 ## d.  
 
 ```{r warning= F, message = F}
-ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
-                                   y = mds_coordinate_2,
-                                   label = factor(AbsentDays,
-                                                  levels = c("Above-7",
-                                                             "Under-7"),
-                                                  labels= c("A","U") )
-                                   )
-        ) + 
+ggplot(student_mds,
+       aes(x = mds_coordinate_1,
+           y = mds_coordinate_2,
+           label = factor(AbsentDays,
+                          levels = c("Above-7", "Under-7"),
+                          labels = c("A", "U"))
+           )
+       ) + 
   geom_text(aes(color = Grade,
                 size = factor(StageID),
-            angle = 30)) +
+                angle = 30)) +
   basic_labs +
   labs(color = "Student Grade / Mark",
        label = "Number of Days Absent",
@@ -188,10 +186,10 @@ ggplot(data.frame(student_mds),aes(x = mds_coordinate_1,
 
 ## e.  
 
-5 variables were included in this model if we consider the MDS coordinates as only 2 variables. Since each is some combination of the 4 continuous variables we could also say 7. We include the first 2 MDS coordinates, what school level they are in (`StageID`),  their grade/ mark in the class (`Grade`), and a binary variable if their absents were above 7 (`AbsentDays`).
+Five variables are included in this graph (if we consider the MDS coordinates as only 2 variables; since each MDS coordinate is some combination of the 4 continuous variables, we could also say 7).  We include the first 2 MDS coordinates, what school level they are in (`StageID`),  their grade/ mark in the class (`Grade`), and a binary variable if their absents were above 7 (`AbsentDays`).
 
 **Takeaway**
-We can think about the 2 MDS components as some combination of the number of times the student raised their Hands (`RaisedHands`), times utilized student class resources (`VisitedResources`), number of times they checked new announcements for the class (`AnnouncementsView`), and number of times the student participated in discussion groups (`Discussion`). Although MDS is slightly different than PCA, and in both cases it's not wise to over interpret the components, we see that there is strong clustering of students with similar class grades/marks .Especially in the first MDS component direction we see low performers tend to have smaller values of this coordinate than those average students and much lower than high performers. This might lead us to assume that this coordinate contains information that we associated with success or ability to do well in classes. Additionally first dimension also allows us to nicely cluster those with more than 7 absences and those with fewer, indicated by the text `A` and `U`. This structure allows us to see the positive correlation between number of absences and performance of students. These two MDS coordinates didn't seem distinguish much between the School levels of the student,  this is more obvious if you facet by the `StageID`.
+We can think about the 2 MDS components as some combination of the number of times the student raised their Hands (`RaisedHands`), times utilized student class resources (`VisitedResources`), number of times they checked new announcements for the class (`AnnouncementsView`), and number of times the student participated in discussion groups (`Discussion`). When visualizing projections of variables with MDS or PCA, we can't really interpret the axes themselves, but we can observe group structure in the data.  With this in mind, we see that there is strong clustering of students with similar class grades/marks.  Especially in the first MDS component direction, we see that low performers tend to have smaller values of this coordinate than average students and much lower than high performing students. This might lead us to assume that this coordinate contains information that is associated with success or ability to do well in classes. Additionally first dimension also allows us to nicely cluster those with more than 7 absences and those with fewer, indicated by the text `A` and `U`.  That is, there are many "A"s on the left-hand side of the graph, and more "U"s on the right-hand side.  These two MDS coordinates didn't seem distinguish much between the School levels of the student,  though it is not easy to see this in the current graph (this is more obvious if you facet by the `StageID`).
                 
 ***
 ***
@@ -348,18 +346,19 @@ For the smaller bandwidth, we have too much fluctuation and it is hard to see an
 ```{r}
 ggplot(student_mds,aes(x = mds_coordinate_1,
                        y = mds_coordinate_2)) +
-  geom_point(aes(color = Grade,shape = AbsentDays),size = 5,alpha = .7) +
+  geom_point(aes(color = Grade, shape = AbsentDays), size = 5, alpha = .7) +
   scale_shape_manual(values = c("Above-7" = "A", "Under-7" = "U"),
                      labels = c("Above 7","Under 7")) +
   scale_color_manual(values = my_colors) +
-  geom_density2d(h=c(1.25,1.5),alpha = .7) + basic_labs +
+  geom_density2d(h = c(1.25, 1.5), alpha = .7) + basic_labs +
   labs(subtitle = "bandwidth (1.5,1.25)",
        shape = "Number of Days Absent",
        color = "Student Grade / Mark") +
   my_theme
 ```
 
-Although I really default setting for this data set, I explored a slightly smaller first coordinate bandwidth as much the observable structure came for the first dimension. This seems to provide contours that made slightly more sense.
+Although I really like the default setting for this dataset, I explored a slightly smaller first coordinate bandwidth, as much of the observable group structure seems to come from the first dimension.  This seems to provide contours that made slightly more sense in that they capture the group structure.
+
 ***
 ***
 
@@ -377,8 +376,8 @@ Although I really default setting for this data set, I explored a slightly small
  ggplot(student_mds,aes(x = mds_coordinate_1,
                        y = mds_coordinate_2)) +
   stat_density2d(aes(fill = ..density..),
-                 h = c(1.25,1.5), geom = "tile", contour = F) +
-  scale_fill_gradient2(low = "black",mid = "white",high = "red",midpoint= .03) +
+                 h = c(1.25, 1.5), geom = "tile", contour = F) +
+  scale_fill_gradient2(low = "black", mid = "white", high = "red", midpoint= .03) +
   basic_labs + my_theme
   
 ```
@@ -390,13 +389,13 @@ Although I really default setting for this data set, I explored a slightly small
 
 I chose these colors to highly the areas of low density vs the areas of high density. Additionally, the white threshold gives a nice cutoff the emphasis the low density and high density regions. Additionally, this color contrast highlights the high density regions.
 
-I chose the midpoint parameter to be 0.03. This value is smaller than middle distance between the highest value and lowest value, but it allows the observer to clearly see 4 modes on the red and to understand that there is some density mass around 0 of the first coordinate and between -1 and -2 of the second coordinate.
+I chose the midpoint parameter to be 0.03. This value is smaller than middle distance between the highest value and lowest value, but it allows the observer to clearly see 3-4 modes on the red and to understand that there is some density mass around 0 of the first coordinate and between -1 and -2 of the second coordinate.
 
 ## c.  
 (2 points)  
 
 
-I prefer the contour plot over the heat map because it provides more details that we can use to interpret the data. The heat map is a more general display of areas of higher and lower density, but lacks extensive detail about the underlying empirical distribution. (Note: There’s no “right” answer here, in the sense that a contour plot isn’t always better than a heat map. They just represent the data in different ways.)
+I prefer the contour plot over the heat map because it provides more details that we can use to interpret the data. The heat map is a more general display of areas of higher and lower density, but lacks extensive detail about the underlying empirical distribution. (Note: There’s no “right” answer here, in the sense that a contour plot isn’t always better than a heat map. They just represent the data in different ways.  Our answer here is mostly the personal opinion of the person on the course staff who wrote the solution so this problem.)
 
 (Of course, you can always layer everything onto one plot – a heat map, a contour plot, the points themselves, a regression line, etc – if you think this adds value to the plot.)
 ***
@@ -465,7 +464,7 @@ labels_complete_2 <- cutree(hc_student_complete, k = 2)
 table(labels_complete_2) / nrow(student)
 ```
 
-Exactly 50% of the observations are in each of the clusters at the highest split.
+Exactly 50% of the observations are in each of the clusters at the highest split.  (Note:  This is mostly by chance -- it's rare that you'll see a perfect 50-50 split!)
 
 ## h.  
 
@@ -499,6 +498,8 @@ ggplot(data = student_mds,
 ```
 
 Most of the low grade students are in cluster 1, although the reverse is not true. The medium grade students seem to be split relatively evenly amongst all the clusters, while most of the high grade students are in clusters 2 and 3. 
+
+(Note:  It's difficult to read the leaves on this graph because there are so many observations.  This is a downfall of dendrograms, which are easier to understand when you're visualization fewer observations.)
 
 ## i.  
 
@@ -571,7 +572,7 @@ Look up at the [documentation on hexagonal bin plots](http://docs.ggplot2.org/cu
 
 a.  
 
-A Hex-bin plot is very similar to a Heat-map since the frequencies of both plots are expressed by a color coded gradient. 
+A Hex-bin plot is very similar to a heat map, since the density of observations in specific areas of the graph of both plots are expressed by a location-specific, color-coded gradient.
 
 
 b.  
@@ -635,13 +636,15 @@ We can visualize many continuous variables at once since the circular arrangemen
 
 b.  Describe at least two bad qualities of the chart.
 
-Having multiple polygons in one Radar Chart makes it hard to read, confusing and too cluttered. Especially if the polygons are filled in, as the top polygon covers all the other polygons underneath it. Also, having too many variables creates too many axes and can also make the chart hard to read and complicated. So it's good practice to keep Radar Charts simple and limit the number of variables used.
+Having multiple polygons in one radar chart makes it hard to read, confusing and too cluttered. Especially if the polygons are filled in, as the top polygon covers all the other polygons underneath it. Also, having too many variables creates too many axes and can also make the chart hard to read and complicated. So it's good practice to keep radar charts simple and limit the number of variables used.
 
 c.  Is there any distortion in radar charts?  If so, explain how.
 
 All axes are arranged radially, with equal distances between each other, while maintaining the same scale between all axes. Therefore, it is unclear to discern the actual quantity of each variable and compare variables with each other. 
 
-Arranging the variables in a different order may affect the size/area of the radar chart. Since each variable value is plotted along its individual axis and all the variables in a dataset and connected together to form a polygon, connecting two larger quantities would produce a much larger area than connecting one large quanitity and one smaller quanitity.Therefore if we re-arrange the variables of a radar chart to assign large quantities together, we would get a chart with larger area, even though they essentially show the same data. 
+Arranging the variables in a different order may affect the size/area of the radar chart. Since each variable value is plotted along its individual axis and all the variables in a dataset and connected together to form a polygon, connecting two adjacent larger quantities would produce a much larger area than connecting one large quanitity to an adjacent smaller quanitity.  Therefore if we re-arrange the variables of a radar chart to assign large quantities together, we would get a chart with larger area, even though they essentially show the same data. 
+
+So, yes, there is distortion for the reasons above.
 
 
 ***
@@ -666,9 +669,9 @@ student_sub <- student %>%
 
 student_sub %>%
   ggpairs(upper = list(continuous = "density",
-                               discrete = "ratio",
-                               combo = "facetdensity"),
-                  title = "Variables in Student Data")
+                       discrete = "ratio",
+                       combo = "facetdensity"),
+          title = "Variables in Student Data")
 ```
 
 
