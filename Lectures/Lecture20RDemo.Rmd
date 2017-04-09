@@ -1,5 +1,5 @@
 ---
-title: "Lecture 21 R Demo -- Maps"
+title: "Lecture 20 R Demo -- Maps"
 author: "Sam Ventura"
 date: "April 5th, 2017"
 output: 
@@ -19,7 +19,7 @@ The graphs below don't have proper titles, axis labels, legends, etc.  Please ta
 
 We can create static maps (road maps, satellite view maps, hybrid maps) with the `ggmap` package:
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 library(tidyverse)
 library(ggmap)
 map_base <- get_map(location = c(lon = -79.944248, lat = 40.4415861),
@@ -47,7 +47,7 @@ Before we begin, note that this is just one example of how you can add interesti
 
 To load data from GitHub, you should navigate to the raw file, copy the URL, and use `read.csv()`.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 #  Load and format airports data
 airports <- read_csv("https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat",
                      col_names = c("ID", "name", "city", "country", "IATA_FAA", 
@@ -68,7 +68,7 @@ routes
 
 Here, we'll do some data manipulation to obtain the number of arrivals/departures per airport.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 #  Manipulate the routes data to create two new data.frames
 #    one for arrivals, one for departures.  
 #  Each counts the number of flights arriving/departing from each airport.
@@ -111,7 +111,7 @@ my_airport_data <- my_routes %>%
 
 We'll use `ggmap` to create a base map of the data.  Now, we'll add layers of points onto the map.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 #  Use ggmap to visualize the European flights
 library(ggmap)
 map <- get_map(location = 'Europe', zoom = 4)
@@ -142,7 +142,7 @@ Below, we create a new variable (flight type -- arrival or departure) and use it
 
 We'll then facet on this variable so we can simultaneously visualize both arriving and departing flights.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 #  Create a data.frame containing both departures and arrivals
 #  Do this by creating a "type" variable and then combining the two data.frames
 #  We will later be able to use the type variable for facetting
@@ -170,7 +170,7 @@ mapPointsDA + facet_grid(. ~ type)
 
 #  Geocoding with `ggmap`
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 gc <- geocode("carnegie mellon university")
 map <- get_map(gc, zoom = 6)
 ggmap(map) + 
@@ -192,7 +192,7 @@ What is a polygon?
 
 In `ggplot()`, polygons are just another geometry, making it really easy to add geographic shapes (e.g. corresponding to countries, states, counties, etc.) to maps.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 #  Note:  The sp package can be really fussy at installation
 #  If prompted, do not restart R when installing the package
 #  If prompted with "Do you want to install from sources the packages which need compilation?", type 'n'
@@ -221,7 +221,7 @@ Way back at the beginning of the semester, we learned about using `coord_cartesi
 
 Using the `coord_map()` function, we can specify what kind of map projection we want to use.
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 us_county_map + coord_map("mercator") 
 us_county_map + coord_map("polyconic") 
 us_county_map + coord_map("sinusoidal") 
