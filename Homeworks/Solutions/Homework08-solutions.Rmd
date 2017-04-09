@@ -223,7 +223,7 @@ ggplot(data = student, aes(x = GradeID)) +
 ```{r, warning = F, message = F}
 ggplot(data = student, aes(x = StageID)) + 
   geom_bar(fill = "lightblue", color = "black") +
-  labs(title = "Number of Students per Educational Stage", 
+  labs(title = "Number of Students per Education Level", 
        x = "Educational Level", 
        y = "Number of Students") + 
   geom_text(stat = "count", 
@@ -237,7 +237,7 @@ ggplot(data = student, aes(x = StageID)) +
 ```{r, warning = F, message = F}
 ggplot(data = student, aes(x = StageID)) + 
   geom_bar(fill = "lightblue", color = "black") +
-  labs(title = "Percentage of Students per Educational Stage", 
+  labs(title = "Percentage of Students per Education Level", 
        x = "Educational Level", y = "Number of Students") + 
   geom_text(stat = "count", 
             aes(y = ..count.. / 2, 
