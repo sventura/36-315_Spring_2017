@@ -202,65 +202,48 @@ We can think about the 2 MDS components as some combination of the number of tim
 
 **More Text Annotations on Graphs**
 
-Load the Olive Oil data from Lab 08.
-```{r, warning=FALSE, message=FALSE, cache=TRUE}
-olive <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/olive_oil.csv")
-```
-
 
 ##  Part (a)
 
-Create a bar chart of the `region` variable.  Use the `geom_text()` function to add the counts in each bar **above** each bar in the bar chart.  E.g., `ggplot(...) + ... + geom_text(stat = "count", aes(y = ..count.., label = ..count..))`.  Adjust the `vjust` parameter in `geom_text()` in order to place the numbers in a more appropriate place.  Use a single non-default color for the bars.
-
 ```{r, warning = F, message = F}
-region.labels <- c("Northern Apulia", "Southern Apulia", "Calabria", "Sicily",
-                   "Inland Sardinia", "Coastal Sardinia", "Eastern Liguria",
-                   "Western Liguria", "Umbria")
-area.labels <- c("South", "Sardinia", "Centre-North")
-
-olive <- olive %>% mutate(region = as.factor(region), area = as.factor(area)) 
-levels(olive$region) <- region.labels
-levels(olive$area) <- area.labels
-olive %>%
-  ggplot(aes(x = region)) + 
-  geom_bar(fill = "#cc002b") +
-  ggtitle("Number of Olive Oils per Region") +
-  labs(x = "Region", y = "Count") + 
-  geom_text(stat = "count", aes(y = ..count.., label = ..count.., vjust = -0.4)) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplot(data = student, aes(x = GradeID)) + 
+  geom_bar(fill = "lightblue", color = "black") +
+  scale_x_discrete(drop = FALSE)+
+  labs(title = "Number of Students per Grade Level", 
+       x = "Grade Level", 
+       y = "Number of Students") + 
+  geom_text(stat = "count", 
+            aes(y = ..count.., label = ..count.., vjust = -0.5), 
+            family = "Times") + 
+  my_theme
 ```
 
 ##  Part (b)
 
-Create a bar chart of the `area` variable.  Use the `geom_text()` function to add the counts in each bar **in the middle** of each bar (i..e halfway up each bar) in the bar chart.  Use a larger-than-default font size for the text.  Use a single non-default color for the bars, and change the color of the text so that it contrasts well with the color of the bars.  
-
 ```{r, warning = F, message = F}
-olive %>%
-  ggplot(aes(x = area)) + 
-  geom_bar(fill = "#cc002b") +
-  ggtitle("Number of Olive Oils per Area") +
-  labs(x = "Area", y = "Count") + 
-  geom_text(stat = "count",
-            aes(y = ..count.. / 2, label = ..count..),
-            size = 10, colour = "#4d565b") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggplot(data = student, aes(x = StageID)) + 
+  geom_bar(fill = "lightblue", color = "black") +
+  labs(title = "Number of Students per Educational Stage", 
+       x = "Educational Level", 
+       y = "Number of Students") + 
+  geom_text(stat = "count", 
+            aes(y = ..count.. / 2, label = ..count..), 
+            size = 8, family = "Times", color = "brown1") + 
+  my_theme
 ```
 
 ##  Part (c)
 
-Repeat part (b), but use `label = scales::percent((..count..)/sum(..count..)))` to put percentages on the plot instead of the raw count scale.  This is nice, since it allows you to quickly see both the percentages and the counts (height of the bars) in each category.
-
 ```{r, warning = F, message = F}
-olive %>%
-  ggplot(aes(x = area)) + 
-  geom_bar(fill = "#cc002b") +
-  ggtitle("Number of Olive Oils per Area") +
-  labs(x = "Area", y = "Count") + 
-  geom_text(stat = "count",
+ggplot(data = student, aes(x = StageID)) + 
+  geom_bar(fill = "lightblue", color = "black") +
+  labs(title = "Percentage of Students per Educational Stage", 
+       x = "Educational Level", y = "Number of Students") + 
+  geom_text(stat = "count", 
             aes(y = ..count.. / 2, 
-                label = scales::percent((..count..)/sum(..count..))),
-            size = 10, colour = "#4d565b") +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+            label = scales::percent((..count..) / sum(..count..))), 
+            size = 8, family = "Times", color = "brown1") + 
+  my_theme
 ```
 
 ***
