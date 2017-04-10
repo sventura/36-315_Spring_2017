@@ -131,7 +131,8 @@ mapPoints <- ggmap(map) +
 mapPointsLegend <- mapPoints +
   scale_size_area(breaks = sqrt(c(1, 5, 10, 50, 100, 500)), 
                   labels = c(1, 5, 10, 50, 100, 500), 
-                  name = "departing routes")
+                  name = "departing routes") + 
+  geom_smooth(aes(x = lon, y = lat))
 mapPointsLegend
 ```
 
@@ -171,8 +172,8 @@ mapPointsDA + facet_grid(. ~ type)
 #  Geocoding with `ggmap`
 
 ```{r, warning = FALSE, message = FALSE}
-gc <- geocode("carnegie mellon university")
-map <- get_map(gc, zoom = 6)
+gc <- geocode("area 51")
+map <- get_map(gc, zoom = 8)
 ggmap(map) + 
   geom_point(aes(x = lon, y = lat), 
              data = gc, size = 5, color = "red")
