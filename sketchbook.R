@@ -661,6 +661,19 @@ test2 %>% as.dist %>% hclust %>% as.dendrogram %>% ggplot(horiz = T)
 
 
 
+library(tidyverse)
+library(ggmap)
+world_data <- map_data("world")
+
+as_data_frame(world_data)
+
+world_data <- world_data %>% left_join(adult,)
+ggplot(world_data) + geom_polygon(aes(x = long, y = lat, group = group))
+
+
+
+
+
 
 
 
