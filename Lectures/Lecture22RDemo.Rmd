@@ -1,0 +1,283 @@
+---
+title: "Lecture 22 R Demo -- Text"
+author: "Sam Ventura"
+date: "April 10, 2017"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+#  Introduction to Text Data
+
+The graphs below don't have proper titles, axis labels, legends, etc.  Please take care to do this on your own graphs.
+
+***
+
+#  Terminology
+
+**Corpus** = a collection of written texts, typically stored electronically in some structured way for processing.
+
++  Plural:  corpora
++  Etymology:  Latin "Corpor" = "body"; i.e. "body of texts"
+
+**Documents** are individual texts in the corpus/collection.
+
+
+***
+
+**How do we summarize corpora?**  One common approach is using "document-term matrices":
+
+*  Each row is an individual document in the corpus
+*  Each column represents a unique word that occurs across all documents in the corpus
+*  Cells can be filled in in several different ways, e.g.:
++  `X[i,j] = 1` if word $j$ occurs in document $i$, 0 otherwise
++  `X[i,j] = ` the "term frequency" of word $j$ in document $i$ (how many times does the word occur in the document?)
++  `X[i,j] = ` the TF-IDF score of word $j$ in document $i$
+
+Note:  Some folks transpose the document-term matrix into a term-document matrix, where the rows are terms, and the columns are documents.
+
+***
+
+**TF-IDF = "term frequency / inverse document frequency"**:
+
++  Used to determine how "important" a word is to a document in a corpus.
++  Increases proportionally to the number of times a word appears in the document (the numerator)
++  Decreases proportionally to the number of times the word appears in the entire corpus (the denominator)
++  Adjusts for words that are generally more frequent
++  See also:  The Tidy Text Mining Book [chapter on this topic](http://tidytextmining.com/tfidf.html)
+
+***
+
+**Stop words**:  Extremely common words that are filtered out before text analysis (e.g. of, the, a, in, at, that, it, etc)
+
+***
+
+**Stemming**:  Reducing a word to a word stem, in order to capture the same word in different forms.  E.g.:
+
++  Reducing = reduc
++  Reduce = reduc
++  Reduced = reduc
++  Reducible = reduc
++  Reduction = reduc
+
+
+***
+
+
+**Sentiment**:  A view of or attitude toward a situation or event; an opinion.
+
++  "I love 315" = good sentiment
++  "Professor Ventura is the worst" = bad sentiment
+
+
+***
+
+
+**Sentiment Analysis**:  The process of computationally identifying and categorizing opinions expressed in a piece of text, especially in order to determine whether the writer's attitude towards a particular topic, product, etc., is positive, negative, or neutral.
+
+
+
+***
+***
+
+
+
+
+#  Analyzing and Visualizing Text Data
+
+##  Most common words / phrases
+
++  See below
++  Use the `tidytext` package
++  [Tidy Text Mining with R](http://tidytextmining.com/)
++  [Comparing Music Artists with Lyrics in R](https://www.r-bloggers.com/whats-in-the-words-comparing-artists-and-lyrics-with-r/) -- Dendrograms!
++  [Analyzing David Bowie's Lyrics](https://www.r-bloggers.com/tidy-text-mining-of-david-bowies-lyrics/)
+
+##  Projections of the document-term matrix
+
+See below
+
+
+##  Wordclouds
+
++  [Tidy Text Mining section](http://tidytextmining.com/sentiment.html#wordclouds) on this
++  [R Bloggers / wordcloud package](https://www.r-bloggers.com/text-mining-and-word-cloud-fundamentals-in-r-5-simple-steps-you-should-know/)
+
+
+##  Sentiment Analysis
+
++  See the `tidytext` package and `tidytext::get_sentiments()`
++  See the "Tidy Text Mining in R" book for some examples!
++  [Sentiment Analysis Chapter](http://tidytextmining.com/sentiment.html)
++  [Sentiment Analysis of The Lord Of The Rings](https://www.r-bloggers.com/sentiment-analysis-of-the-lord-of-the-rings-with-tidytext/)
++  [Finding Radiohead's Most Depressing Songs](https://www.r-bloggers.com/finding-radioheads-most-depressing-song-with-r//)
++  [RSentiment Package](https://www.r-bloggers.com/rsentiment/)
+
+##  Word Vectors
+
++  "King - Man + Woman = Queen"
++  [text2vec package on GitHub](https://github.com/dselivanov/text2vec)
+
+##  Word Relationships
+
++  n-grams, correlations, etc
++  See [this chapter](http://tidytextmining.com/ngrams.html) in the Tidy Text Mining book.
+
+##  Latent Semantic Analysis
+
++  "Analyzing relationships between a set of documents and the terms they contain by producint a set of concepts related to the documents and terms"
++  [LSA of subreddits](https://www.r-bloggers.com/comparing-subreddits-with-latent-semantic-analysis-in-r/)
++  The [Topic Modeling chapter](http://tidytextmining.com/topicmodeling.html) of Tidy Text Mining
+
+
+#  Basic Analyses
+
+##  Example Text Analysis -- Reuter's Mergers and Acquisitions Articles
+
+You'll need the `tm` package.
+
+
+```{r}
+library(ggplot2)
+library(tm)
+data(acq)
+#help(acq)
+
+dtm <- DocumentTermMatrix(acq, control = list(weighting = weightTfIdf, 
+                                              stopwords = TRUE))
+class(dtm)
+inspect(dtm[1:5,1:15])
+
+n_mds <- 2
+dtm2 <- as.data.frame((as.matrix(dtm)))
+dtm_mds <- as.data.frame(cmdscale(dist(dtm2), n_mds))
+names(dtm_mds) <- paste0("mds", 1:n_mds)
+dtm_mds$index <- 1:nrow(dtm_mds)
+
+ggplot(dtm_mds, aes(mds1, mds2)) + geom_text(aes(label = index))
+
+acq[[9]]$content
+```
+
+
+***
+***
+
+
+##  Example Text Analysis -- Reuters Crude Oil Articles
+
+You'll need the `tm` package.
+
+
+```{r}
+library(tm)
+data(crude)
+#help(crude)
+
+dtm <- DocumentTermMatrix(crude, control = list(weighting = weightTfIdf, 
+                                                stopwords = TRUE))
+class(dtm)
+inspect(dtm[1:5,1:15])
+
+n_mds <- 2
+dtm2 <- as.data.frame((as.matrix(dtm)))
+dtm_mds <- as.data.frame(cmdscale(dist(dtm2), n_mds))
+names(dtm_mds) <- paste0("mds", 1:n_mds)
+dtm_mds$index <- 1:nrow(dtm_mds)
+
+ggplot(dtm_mds, aes(mds1, mds2)) + geom_text(aes(label = index))
+
+acq[[20]]$content
+```
+
+
+
+
+***
+***
+
+
+
+##  Example Text Analysis -- Reuters Crude Oil Articles vs. Mergers and Acquisitions Articles
+
+You'll need the `tm` package.
+
+
+```{r}
+library(tm)
+data(crude)
+data(acq)
+#help(crude)
+#help(acq)
+
+
+dtm_both <- DocumentTermMatrix(c(crude, acq), 
+                               control = list(weighting = weightTfIdf, 
+                                              stopwords = TRUE))
+
+n_mds <- 20
+dtm2 <- as.data.frame((as.matrix(dtm_both)))
+dtm_mds <- as.data.frame(cmdscale(dist(dtm2), n_mds))
+names(dtm_mds) <- paste0("mds", 1:n_mds)
+dtm_mds$index <- c(paste0("C", 1:20), paste0("A", 1:50))
+dtm_mds$type <- c(rep("C", 20), rep("A", 50))
+
+#  Reorder the rows randomly
+#  so that the "C" points aren't all covered by the "A" points
+dtm_mds <- dtm_mds[sample(1:nrow(dtm_mds), nrow(dtm_mds)),]
+
+ggplot(dtm_mds, aes(mds19, mds20)) + geom_text(aes(label = index, color = type))
+```
+
+
+***
+***
+
+##  Word Clouds -- 315 Mid Semester Feedback
+
+You'll need the `wordcloud` package.
+
+
+
+```{r}
+library(gsheet)
+library(wordcloud)
+feedback <- as.data.frame(gsheet2tbl("https://docs.google.com/spreadsheets/d/17tJCaT-2gyd_bAX1q5MPy5rCVqFzWTksVkD9_l-n4hs/edit?usp=sharing"))
+
+#  Convert the vector in the data.frame into a corpus
+feedback2 <- Corpus(VectorSource(as.character(feedback$text))) 
+
+#  Convert to a plain text document
+feedback_plain <- tm_map(feedback2, PlainTextDocument)
+
+#  Remove punctuation
+feedback_plain <- tm_map(feedback_plain, removePunctuation)
+
+#  Remove stop words
+feedback_plain <- tm_map(feedback_plain, removeWords, stopwords('english'))
+
+#  Create a word cloud!
+wordcloud(feedback_plain, max.words = 100, random.order = FALSE)
+
+
+############################################################################
+
+#  Any group structure?
+dtm_315 <- DocumentTermMatrix(feedback2, 
+                               control = list(weighting = weightTfIdf, 
+                                              stopwords = TRUE))
+
+n_mds <- 20
+dtm2 <- as.data.frame((as.matrix(dtm_315)))
+dtm_mds <- as.data.frame(cmdscale(dist(dtm2), n_mds))
+names(dtm_mds) <- paste0("mds", 1:n_mds)
+dtm_mds$index <- 1:nrow(dtm_mds)
+
+ggplot(dtm_mds, aes(mds9, mds11)) + geom_text(aes(label = index))
+feedback$text[98]
+```
+
+
