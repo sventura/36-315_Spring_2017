@@ -314,7 +314,7 @@ love_dist %>%
 
 ## c. 
 
-The dendrogram shows that the most connected characters are those played by Emma Thompson and Alan Rickman, by Andrew Lincoln and Keira Knightley, and by Abdul Salis and Kris Marshall. Rowan Atkinson's character seems to be the one that is least connected to the rest of the cast. Emma Thompson, Alan Rickman, and Heike Makatsch also seem to be a cluster that is far away from the other characters.
+The dendrogram shows that the most connected characters are those played by Emma Thompson and Alan Rickman, by Andrew Lincoln and Keira Knightley, and by Abdul Salis and Kris Marshall. Rowan Atkinson's character seems to be the one that is least connected to the rest of the cast. The clusters seem to be Emma Thompson, Alan Rickman, and Heike Makatsch, Hugh Grant, Bill Nighly, and Liam Neeson, Colin Firth, Keira Nightley, and Andrew Lincoln, and Martin Freeman, Kris Marshall, and Abdul Salis.
 
 ## d.  
 
