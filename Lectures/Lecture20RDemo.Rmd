@@ -214,6 +214,55 @@ us_county_map
 ```
 
 
+
+```{r}
+library(tidyverse)
+library(ggmap)
+
+#  Get state borders from ggmap package
+#?map_data
+state_borders <- map_data("state") 
+#county_borders <- map_data("county")
+
+#  Load state.x77 data
+library(datasets)
+state_x77 <- as_data_frame(state.x77) %>%
+  mutate(State = rownames(state.x77)) %>%
+  mutate(State = tolower(State))
+
+#  join state_x77 data to state_borders
+state_borders <- state_borders %>%
+  left_join(state_x77, by = c("region" = "State"))
+
+#  Make the plot!  
+#  (Change the fill variable below as you see fit)
+#  (Change the color gradient as you see fit)
+ggplot(state_borders) + 
+  geom_polygon(aes(x = long, y = lat, group = group,
+                   fill = `HS Grad`), color = "black") + 
+  scale_fill_continuous(low = "green", high = "purple") +
+  theme_void() +
+  coord_map("polyconic")
+```
+
+
+##  Dendrogram of States
+
+```{r}
+scaled_state <- state_x77 %>% dplyr::select(-State) %>% scale
+
+library(dendextend)
+scaled_state %>% dist %>% 
+  hclust(method = "average") %>%
+  as.dendrogram %>% 
+  set("labels", state.abb, order_value = T) %>% 
+  set("labels_col", state.region, order_value = T) %>%
+  ggplot() + ylim(-1, 8) + theme_bw() + 
+  labs(x = "hey")
+```
+
+
+
 #  Map Projections
 
 ##  Use `coord_map()` to specify your map projection
