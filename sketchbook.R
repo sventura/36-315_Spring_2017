@@ -656,7 +656,41 @@ test2 <- cars_cont %>% cor %>% abs * -1 + 1
 test2 %>% as.dist %>% hclust %>% as.dendrogram %>% ggplot(horiz = T)
 
 
+library(MASS)
+library(tidyverse)
+data(Cars93)
+cars_cont <- dplyr::select(Cars93, Price, MPG.city, MPG.highway, EngineSize, 
+                           Horsepower, RPM, Fuel.tank.capacity, Passengers,
+                           Length, Wheelbase, Width, Turn.circle, Weight)
+scaled_cars_cont <- scale(cars_cont)
+dist_cars <- dist(scaled_cars_cont, method = "euclidean")
+hc_cars <- hclust(dist_cars, method = "average")
+dend_cars <- as.dendrogram(hc_cars)
+plot_cars <- ggplot(dend_cars, theme = theme_bw())
+plot_cars
 
+library(MASS)
+library(tidyverse)
+data(Cars93)
+cars_cont <- dplyr::select(Cars93, Price, MPG.city, MPG.highway, EngineSize, 
+                           Horsepower, RPM, Fuel.tank.capacity, Passengers,
+                           Length, Wheelbase, Width, Turn.circle, Weight)
+plot_cars <- ggplot(as.dendrogram(hclust(dist(scale(cars_cont), method = "euclidean"), method = "average")), theme = theme_bw())
+plot_cars
+
+
+library(MASS)
+library(tidyverse)
+data(Cars93)
+plot_cars <- Cars93 %>% 
+  dplyr::select(Price, MPG.city, MPG.highway, EngineSize, 
+                Horsepower, RPM, Fuel.tank.capacity, Passengers,
+                Length, Wheelbase, Width, Turn.circle, Weight) %>%
+  scale %>%
+  dist(method = "euclidean") %>%
+  hclust(method = "average") %>%
+  as.dendrogram %>%
+  ggplot(theme = theme_bw())
 
 
 
@@ -671,8 +705,11 @@ world_data <- world_data %>% left_join(adult,)
 ggplot(world_data) + geom_polygon(aes(x = long, y = lat, group = group))
 
 
-
-
+library(tidytext)
+loan <- data.frame(desc = as.character(Cars93$Manufacturer))
+description <- data_frame(desc = as.character(loan$desc))
+loan_words <- description %>%
+  unnest_tokens(word, desc)
 
 
 
