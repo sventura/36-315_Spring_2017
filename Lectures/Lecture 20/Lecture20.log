@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  3 APR 2017 12:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  20 APR 2017 15:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -962,142 +962,144 @@ LaTeX Font Warning: Font shape `OT1/cmss/m/n' in size <4> not available
 {/usr/local/texlive/2016/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2
 
-] <yu2.png, id=27, 549.05125pt x 701.62125pt>
+] [3
+
+] <yu2.png, id=32, 549.05125pt x 701.62125pt>
 File: yu2.png Graphic file (type png)
  <use yu2.png>
-Package pdftex.def Info: yu2.png used on input line 113.
+Package pdftex.def Info: yu2.png used on input line 120.
 (pdftex.def)             Requested size: 184.3758pt x 235.60394pt.
 
-Overfull \vbox (5.86673pt too high) detected at line 113
- []
-
-[3
-
- <./yu2.png>] <yu.png, id=35, 549.05125pt x 597.23125pt>
-File: yu.png Graphic file (type png)
- <use yu.png>
-Package pdftex.def Info: yu.png used on input line 120.
-(pdftex.def)             Requested size: 215.10196pt x 233.97635pt.
-
-Overfull \vbox (4.23914pt too high) detected at line 120
+Overfull \vbox (5.86673pt too high) detected at line 120
  []
 
 [4
 
- <./yu.png>] <longitud.jpg, id=42, 447.92343pt x 113.67468pt>
+ <./yu2.png>] <yu.png, id=40, 549.05125pt x 597.23125pt>
+File: yu.png Graphic file (type png)
+ <use yu.png>
+Package pdftex.def Info: yu.png used on input line 127.
+(pdftex.def)             Requested size: 215.10196pt x 233.97635pt.
+
+Overfull \vbox (4.23914pt too high) detected at line 127
+ []
+
+[5
+
+ <./yu.png>] <longitud.jpg, id=47, 447.92343pt x 113.67468pt>
 File: longitud.jpg Graphic file (type jpg)
 
 <use longitud.jpg>
-Package pdftex.def Info: longitud.jpg used on input line 136.
+Package pdftex.def Info: longitud.jpg used on input line 143.
 (pdftex.def)             Requested size: 307.28987pt x 77.98636pt.
- [5
+ [6
 
  <./longitud.jpg>]
-<trade.jpg, id=48, 1040.688pt x 780.516pt>
+<trade.jpg, id=53, 1040.688pt x 780.516pt>
 File: trade.jpg Graphic file (type jpg)
  <use trade.jpg>
-Package pdftex.def Info: trade.jpg used on input line 143.
+Package pdftex.def Info: trade.jpg used on input line 150.
 (pdftex.def)             Requested size: 307.28987pt x 230.4646pt.
 
-Overfull \vbox (0.72739pt too high) detected at line 143
+Overfull \vbox (0.72739pt too high) detected at line 150
  []
 
-[6
+[7
 
- <./trade.jpg>] <cholera.jpg, id=54, 1003.75pt x 914.41624pt>
+ <./trade.jpg>] <cholera.jpg, id=60, 1003.75pt x 914.41624pt>
 File: cholera.jpg Graphic file (type jpg)
 
 <use cholera.jpg>
-Package pdftex.def Info: cholera.jpg used on input line 149.
+Package pdftex.def Info: cholera.jpg used on input line 156.
 (pdftex.def)             Requested size: 245.83282pt x 223.94324pt.
- [7
-
- <./cholera.jpg>]
-<Minard.png, id=61, 1447.5681pt x 690.1785pt>
-File: Minard.png Graphic file (type png)
- <use Minard.png>
-Package pdftex.def Info: Minard.png used on input line 157.
-(pdftex.def)             Requested size: 307.28987pt x 146.51091pt.
  [8
 
- <./Minard.png>] <hourly.png, id=67, 943.525pt x 640.3925pt>
-File: hourly.png Graphic file (type png)
- <use hourly.png>
-Package pdftex.def Info: hourly.png used on input line 163.
-(pdftex.def)             Requested size: 307.28987pt x 208.56482pt.
+ <./cholera.jpg>]
+<Minard.png, id=66, 1447.5681pt x 690.1785pt>
+File: Minard.png Graphic file (type png)
+ <use Minard.png>
+Package pdftex.def Info: Minard.png used on input line 164.
+(pdftex.def)             Requested size: 307.28987pt x 146.51091pt.
  [9
 
- <./hourly.png (PNG copy)>] <income-tract.jpg, id=73, 1359.0775pt x 734.745pt>
+ <./Minard.png>] <hourly.png, id=72, 943.525pt x 640.3925pt>
+File: hourly.png Graphic file (type png)
+ <use hourly.png>
+Package pdftex.def Info: hourly.png used on input line 170.
+(pdftex.def)             Requested size: 307.28987pt x 208.56482pt.
+ [10
+
+ <./hourly.png (PNG copy)>] <income-tract.jpg, id=78, 1359.0775pt x 734.745pt>
 File: income-tract.jpg Graphic file (type jpg)
 
 <use income-tract.jpg>
-Package pdftex.def Info: income-tract.jpg used on input line 169.
+Package pdftex.def Info: income-tract.jpg used on input line 176.
 (pdftex.def)             Requested size: 307.28987pt x 166.11769pt.
- [10
+ [11
 
  <./income-tract.jpg>]
-Overfull \vbox (153.09305pt too high) detected at line 190
- []
-
-[11
-
-]
-Overfull \vbox (219.77217pt too high) detected at line 216
+Overfull \vbox (153.09305pt too high) detected at line 197
  []
 
 [12
 
-] <mercator.jpg, id=90, 2094.81212pt x 1777.23126pt>
-File: mercator.jpg Graphic file (type jpg)
- <use mercator.jpg>
-Package pdftex.def Info: mercator.jpg used on input line 222.
-(pdftex.def)             Requested size: 276.559pt x 234.62779pt.
-
-Overfull \vbox (4.89058pt too high) detected at line 222
+]
+Overfull \vbox (219.77217pt too high) detected at line 223
  []
 
 [13
 
- <./mercator.jpg>] <robinson.jpg, id=97, 2094.81212pt x 1068.7817pt>
+] <mercator.jpg, id=96, 2094.81212pt x 1777.23126pt>
+File: mercator.jpg Graphic file (type jpg)
+ <use mercator.jpg>
+Package pdftex.def Info: mercator.jpg used on input line 229.
+(pdftex.def)             Requested size: 276.559pt x 234.62779pt.
+
+Overfull \vbox (4.89058pt too high) detected at line 229
+ []
+
+[14
+
+ <./mercator.jpg>] <robinson.jpg, id=102, 2094.81212pt x 1068.7817pt>
 File: robinson.jpg Graphic file (type jpg)
 
 <use robinson.jpg>
-Package pdftex.def Info: robinson.jpg used on input line 230.
+Package pdftex.def Info: robinson.jpg used on input line 237.
 (pdftex.def)             Requested size: 307.28987pt x 156.77144pt.
- [14
+ [15
 
  <./robinson.jpg>]
-<projections2.jpg, id=103, 552.0625pt x 385.44pt>
+<projections2.jpg, id=108, 552.0625pt x 385.44pt>
 File: projections2.jpg Graphic file (type jpg)
  <use projections2.jpg>
-Package pdftex.def Info: projections2.jpg used on input line 238.
+Package pdftex.def Info: projections2.jpg used on input line 245.
 (pdftex.def)             Requested size: 307.28987pt x 214.55103pt.
 
-[15
+[16
 
- <./projections2.jpg>] <us.png, id=109, 498.86375pt x 304.13625pt>
+ <./projections2.jpg>] <us.png, id=114, 498.86375pt x 304.13625pt>
 File: us.png Graphic file (type png)
 
 <use us.png>
-Package pdftex.def Info: us.png used on input line 246.
+Package pdftex.def Info: us.png used on input line 253.
 (pdftex.def)             Requested size: 307.28987pt x 187.34665pt.
- [16
+ [17
 
  <./us.png>]
-<census-geographic-hierarchy.png, id=116, 357.335pt x 277.035pt>
+<census-geographic-hierarchy.png, id=121, 357.335pt x 277.035pt>
 File: census-geographic-hierarchy.png Graphic file (type png)
 
 <use census-geographic-hierarchy.png>
-Package pdftex.def Info: census-geographic-hierarchy.png used on input line 260
+Package pdftex.def Info: census-geographic-hierarchy.png used on input line 267
 .
 (pdftex.def)             Requested size: 245.83282pt x 190.59213pt.
- [17
+ [18
 
  <./census-geographic-hierarchy.png (PNG copy)>]
-Overfull \vbox (181.5458pt too high) detected at line 280
+Overfull \vbox (181.5458pt too high) detected at line 287
  []
 
-[18
+[19
 
 ]
 \tf@nav=\write7
@@ -1109,11 +1111,11 @@ Overfull \vbox (181.5458pt too high) detected at line 280
 \tf@snm=\write9
 \openout9 = `Lecture20.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 284.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 284.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 291.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 291.
  (./Lecture20.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 284.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 284.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 291.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 291.
 Package rerunfilecheck Info: File `Lecture20.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
 
@@ -1121,11 +1123,11 @@ Package rerunfilecheck Info: File `Lecture20.out' has not changed.
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 284.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 291.
  ) 
 Here is how much of TeX's memory you used:
- 17913 strings out of 493014
- 341563 string characters out of 6133351
+ 17915 strings out of 493014
+ 341582 string characters out of 6133351
  413170 words of memory out of 5000000
  21005 multiletter control sequences out of 15000+600000
  6358 words of font info for 23 fonts, out of 8000000 for 9000
@@ -1135,10 +1137,10 @@ Here is how much of TeX's memory you used:
 ></usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb>
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></
 usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmssbx10.pfb>
-Output written on Lecture20.pdf (18 pages, 9307817 bytes).
+Output written on Lecture20.pdf (19 pages, 9309094 bytes).
 PDF statistics:
- 154 PDF objects out of 1000 (max. 8388607)
- 106 compressed objects within 2 object streams
- 37 named destinations out of 1000 (max. 500000)
+ 160 PDF objects out of 1000 (max. 8388607)
+ 111 compressed objects within 2 object streams
+ 39 named destinations out of 1000 (max. 500000)
  108 words of extra memory for PDF output out of 10000 (max. 10000000)
 
