@@ -72,6 +72,7 @@ What style guide are you using for this assignment?
 ```{r, message = F, warning = F}
 library(tidyverse)
 library(data.table)
+library(forcats)
 
 #  Simple theme with white background, legend at the bottom
 my_theme <-  theme_bw() +
@@ -414,14 +415,13 @@ ggraph(net_graph, layout = 'kk') +
 ***
 
 
-#  Problem 5
+#  Problem 5 {.tabset}
 
 (4 points each)
 
 **Waffle Charts**
 
-a.  Use the code below creates a "Waffle Chart" with `ggplot()`.  What is the purpose of a waffle chart?   What would you use a waffle chart to visualize?  (I.e. what type of data?  How many dimensions/variables?)
-
+## a. 
 ```{r, warning = FALSE, message = FALSE}
 #  Set up data to create the waffle chart
 library(MASS)
@@ -429,12 +429,13 @@ data(Cars93)
 var <- Cars93$Type  # the categorical variable you want to plot 
 nrows <- 9  #  the number of rows in the resulting waffle chart
 categ_table <- floor(table(var) / length(var) * (nrows*nrows))
+
 temp <- rep(names(categ_table), categ_table)
 df <- expand.grid(y = 1:nrows, x = 1:nrows) %>%
   mutate(category = sort(c(temp, sample(names(categ_table), 
                                         nrows^2 - length(temp), 
-                                        prob = categ_table, 
-                                        replace = T))))
+                                        prob = categ_table))))
+# NOTE: if sum(categ_table) is not nrows^2, it will need adjustment to make the sum = nrows^2.
 
 #  Make the Waffle Chart
 ggplot(df, aes(x = x, y = y, fill = category)) + 
@@ -446,29 +447,105 @@ ggplot(df, aes(x = x, y = y, fill = category)) +
        caption = "Source:  Cars93 Dataset", 
        fill = "Car Type",
        x = NULL, y = NULL) + 
-  theme_bw()  #  Use your theme
+  my_theme  #  Use your theme
+
+
 ```
 
 
-b.  Create a waffle chart for the `content_rating` variable in the `imdb` data from the lab exam.  Use 25 rows.  Then recreate the same graph, but use 50 rows.  Which version of the chart do you prefer?
+Waffle charts are used display the proportions of each category in a more discrete manner for discrete variables. I would use waffle charts to visualize categorical data with a few discrete categories - probably less than 7, that also have a very large sample size. Examples that come to mind include the Federal government budget broken into department categories. With more than 7 or so categories we would have too few blocks for the average class making it hard to visualize proportions. 
 
-e.  Critique these graphs.  What are the issues with waffle charts?  
 
+## b.  
+
+
+```{r, warning = FALSE, message = FALSE}
+movies <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/imdb_test.csv")
+
+rating_order <- c("Not Rated","G", "PG", "PG-13", "R", "NC-17")
+movies <- mutate(movies, content_rating = fct_recode(content_rating,
+                                           "Not Rated" = "N/A or Unrated",
+                                           "G" = "Validated for All Ages (G)"),
+               content_rating = fct_relevel(content_rating, rating_order))
+
+var <- movies$content_rating  # the categorical variable you want to plot 
+nrows <- 25 # the number of rows in the resulting waffle chart
+categ_table <- floor(table(var) / length(var) * (nrows*nrows))
+categ_table <- categ_table[rating_order]
+
+temp <- rep(names(categ_table), categ_table)
+df <- expand.grid(y = 1:nrows, x = 1:nrows) %>%
+  mutate(category = sort(c(temp, sample(names(categ_table), 
+                                        nrows^2 - length(temp), 
+                                        prob = categ_table))),
+         category = factor(category,levels = rating_order),
+         category = category[order(category)])
+
+
+ggplot(df, aes(x = x, y = y, fill = category)) + 
+  geom_tile(color = "black", size = 0.5) +
+  scale_x_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  scale_fill_brewer(palette = "Blues") +
+  labs(title = "Waffle Chart of Imdb Movie Content Rating",
+       caption = "Source:  Imdb Dataset", 
+       fill = "Content Rating",
+       x = NULL, y = NULL) + 
+  my_theme
+
+```
+
+
+```{r, warning = FALSE, message = FALSE}
+nrows <- 50 # the number of rows in the resulting waffle chart
+categ_table <- floor(table(var) / length(var) * (nrows*nrows))
+categ_table <- categ_table[rating_order]
+
+temp <- rep(names(categ_table), categ_table)
+df <- expand.grid(y = 1:nrows, x = 1:nrows) %>%
+  mutate(category = sort(c(temp, sample(names(categ_table), 
+                                        nrows^2 - length(temp), 
+                                        prob = categ_table))),
+         category = factor(category,levels = rating_order),
+         category = category[order(category)])
+
+ggplot(df, aes(x = x, y = y, fill = category)) + 
+  geom_tile(color = "black", size = 0.5) +
+  scale_x_continuous(breaks = NULL) +
+  scale_y_continuous(breaks = NULL) +
+  scale_fill_brewer(palette = "Reds") +
+  labs(title = "Waffle Chart of Imdb Movie Content Rating",
+       subtitle = "Finer Focus",
+       caption = "Source:  Imdb Dataset", 
+       fill = "Content Rating",
+       x = NULL, y = NULL) + 
+  my_theme
+```
+
+
+I slightly prefer the waffle plot with 50 rows since we can see `NC-17` class. Additionally this finer grid more closely reflects true proportions.
+
+## c.  
+
+Although rough proportions might be obtainable for each class, waffle charts have many weaknesses. Waffle charts **(1)**  fail to provide easily identifiable values/ proportions for each group - semi-randomly dispersing the "left-off" blocks, **(2)** don't express sample size, **(3)** potentially eliminate very small classes, and **(4)** have some expectation of the categorizes to be ordered.
+
+**(1-3)** cause distortion.
+
+Problem **(1)** can be corrected with a flipped stacked proportion plot. The other problems can be addressed using a histogram.
 
 ***
 ***
 
 
 
-#  Problem 6
+#  Problem 6 {.tabset}
 
 (1 point each)
 
 **Arc Pie Charts**
 
-Install and load the `ggforce` package.  This package implements several updates and improvements to `ggplot2`.
 
-a.  Create an "arc pie chart" of the `Type` variable in the `Cars93` dataset.  (Code provided.)
+## a.  
 
 ```{r, warning = FALSE, message = FALSE, height = 6, width = 7}
 library(ggforce)
@@ -478,22 +555,75 @@ Cars93 %>% group_by(Type) %>%
          focus_var = 0.2 * (count == max(count))) %>%
   ggplot() + geom_arc_bar(aes(x0 = 0, y0 = 0, r0 = 0.8, r = 1, 
                               fill = Type, amount = count), 
-                          stat = 'pie')
+                          stat = 'pie') +
+  labs(x=NULL,y=NULL,fill = "Type of Car",
+       title = "Proportions of Car Types in Line-up") + 
+  my_theme + 
+  scale_fill_manual(values = my_colors ) + 
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        panel.border = element_blank()) 
+   
 ```
 
-b.  Adjust the `r0` parameter to lower and higher values.  What does this control?  What is the minimum and maximum value?
+## b.  
 
-c.  Recreate the graph from (a), but this time, add `explode = focus_var` into your call to `aes()`.  What does this do?
+`r0` is the radius from the center at which the figure is draw, although you can put any numerical value into the code and it will still run (including negative numbers and values above `r`), a logical constraint would be between 0 and the value of `r`. When `r0` is `0` we have a pie chart.
 
-d.  Recreate the graph from (c), but this time, add focus to the category with the minimum number of observations.
+## c.  
 
-e.  (4 points)  Critique these graphs.  
+```{r warning = FALSE, message = FALSE, height = 6, width = 7}
+Cars93 %>% group_by(Type) %>% 
+  summarize(count = n()) %>% 
+  mutate(max = max(count),
+         focus_var = 0.2 * (count == max(count))) %>%
+  ggplot() + geom_arc_bar(aes(x0 = 0, y0 = 0,  r0 = .8, r = 1, 
+                              fill = Type, amount = count,explode = focus_var), 
+                          stat = 'pie') +
+  labs(x=NULL,y=NULL,fill = "Type of Car",
+       title = "Proportions of Car Types in Line-up") + 
+  my_theme +  scale_fill_manual(values = my_colors ) + 
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        panel.border = element_blank()) 
 
-+  What would you use an arc pie chart to visualize?  (I.e. what type of data?  How many dimensions/variables?)
-+  What are the issues with arc pie charts?  
-+  What are the issues with using `explode` to focus on a particular variable?
+
+```
+
+`explore` shifts specific classes' part of the arc pie chart outward by the amount specified (in this case `.2`). In this case we see that it tries to highlight the proportion to Minvans by removing it from the rest of the arc pie plot. 
+
+## d.  
+
+```{r warning = FALSE, message = FALSE, height = 6, width = 7}
+Cars93 %>% group_by(Type) %>% 
+  summarize(count = n()) %>% 
+  mutate(max = max(count),
+         focus_var = 0.2 * (count == min(count))) %>%
+  ggplot() + geom_arc_bar(aes(x0 = 0, y0 = 0,  r0 = .8, r = 1, 
+                              fill = Type, amount = count,explode = focus_var), 
+                          stat = 'pie') +
+  labs(x=NULL,y=NULL,fill = "Type of Car",
+       title = "Proportions of Car Types in Line-up") + 
+  my_theme + scale_fill_manual(values = my_colors ) + 
+  theme(axis.title = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid = element_blank(),
+        panel.border = element_blank())
+```
 
 
+## e.  
+
+You could use an arc pie chart to visualize the proportions of a variable with a few categories (say no more than 10). 
+
+The issues of arc pie charts are very similar to pie charts, the area of the arc is not directly related to the actual number, as the area is $\text{proportion}\cdot 2\pi (r^2 - r_0^2)$. As such the arc pie chart creates distortion. Similar to waffle charts, we cannot see the sample size. It is also hard to compare different arcs that are not right next to each other / not properly aligned. 
+
+The `explode` attribute does allow us to highlight a particular class, but without additional commentary it might further increase the difficult of comparing the classes. This can be explicitly seen when switching back and forth between **part (a)** and **part (d)**, as **part (d)** actually makes it harder to see that the proportion of `Vans` is less than the proportion of `Large` cars.
 
 
 ***
@@ -501,18 +631,40 @@ e.  (4 points)  Critique these graphs.
 
 
 
-#  Problem 7
+#  Problem 7 {.tabset}
 
 (5 points each)
 
 **Zoom Zoom**
 
-See the Lab Exam solutions for how to use `facet_zoom()`, or [here](https://www.r-bloggers.com/announcing-ggforce-accelerating-ggplot2/), or [here](https://cran.r-project.org/web/packages/ggforce/vignettes/Visual_Guide.html#b-splines).
+## a. 
 
-a.  Recreate any scatterplot that we created throughout the year, and zoom in on a section of the graph via the `facet_zoom()` feature in the newest version of the `ggplot2` package.  Include a title, subtitle, and caption in the resulting graph.  The caption should just state the data source, and the subtitle should explain what area of the plot is being enhanced via zooming.
+```{r, warning=FALSE,message=FALSE}
+library(ggforce)
+library(ggplot2)
 
-b.  Interpret the resulting graph:  Describe some feature of the new version of the graph that you may not have been able to see very well in the previous version of the same graph (without zooming).
 
+profit = movies$gross - movies$budget
+movies$profit = profit
+ggplot(data = movies, 
+       aes(x = jitter(title_year,amount = .3), y = movie_facebook_likes)) + 
+  geom_point(alpha = .2) + 
+  facet_zoom(x = title_year %in% 2004:2017) +
+  scale_color_brewer(palette = "Set3") +
+  labs(x = "Year of Movie Release (Jittered)",
+       y= "Number of Facebook Likes",
+       title = "Facebook Likes Over the Years",
+       subtitle = "Focusing on Movies released after Facebook was created (Starting 2004)",
+       color = "Content Rating",
+       caption = "Imdb Database"
+       ) +
+  my_theme
+```
+
+
+## b.  
+
+We are able to examine the distribution Movies' Facebook like for movies release after Facebook was created. Focus on these years helps highly the increase of Facebook likes for those movies that could get likes directly when they were released and had the most social and media buzz.
 
 ***
 ***
