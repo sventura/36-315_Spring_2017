@@ -1,0 +1,139 @@
+---
+title: "Lecture 25 R Demo -- So Much More"
+author: "Sam Ventura"
+date: "November 30, 2016"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+#  `R` Notebooks
+
+This is one of the reasons why we updated `R` and RStudio this week.  `R` Notebooks are similar to Jupyter notebooks (Python).  
+
+See here for more details:  [https://blog.rstudio.org/2016/10/05/r-notebooks/]
+
+I HIGHLY encourage you to read the info at the above link.  There's a lot of really cool stuff you can do with these.
+
+
+##  Python
+
+Speaking of Python:  Did you know you can use `R` Markdown to run code in other languages?
+
+```{python}
+def fib(n):
+  a, b = 0, 1
+  for _ in xrange(n):
+    yield a
+    a, b = b, a + b
+print(list(fib(11)))
+```
+
+
+##  SQL
+
+You can also run SQL queries within your `R` Notebook:
+
+(Note:  I'm not adding the ` `'s here, because I don't actually have a `SQL` database called `db` or `my_database`)
+
+
+{SQL, connection = db}
+SELECT * FROM my_database
+
+
+
+##  bash
+You can run bash scripts as well:
+
+```{r, engine = 'bash'}
+cd /Users/sam/Desktop/bike/
+ls
+```
+
+
+##  PDF Documents
+
+For those of you who like LaTeX, you can use RMarkdown to generate PDF documents in addition to HTML documents.  Just change:
+
+`output: html_document` to `output: pdf_document`
+
+Be careful though, because you need to have the appropriate LaTeX tools installed on your computer.  RMarkdown with HTML, on the other hand, will work on any computer.
+
+
+
+
+#  Interactive Graphics Packages
+
+##  Flex Dashboard
+
+Flex Dashboard is a really nice way to integrate your RMarkdown konwledge with Shiny.  It creates great-looking dashboard-style outupt that can be used when creating interactive graphics.
+
+I'm going to demo how to create a flex dashboard, and then show a few examples.
+
+Here are some links on the `flexdashboard` package:
+
++  [https://blog.rstudio.org/2016/05/17/flexdashboard-easy-interactive-dashboards-for-r/]
++  [http://rmarkdown.rstudio.com/flexdashboard/]
++  [http://rmarkdown.rstudio.com/flexdashboard/examples.html]
+
+
+##  Shiny Themes
+
+A closely related concept to `flexdashboard` is "Shiny Themes" (`shinythemes`), which allow you to choose different themes for your Shiny apps.
+
+Here are some links on the `shinythemes` package:
+
++  [https://blog.rstudio.org/2016/10/13/shinythemes-1-1-1/]
++  [https://rstudio.github.io/shinythemes/]
+
+
+
+##  Plotly
+
+Plotly is **the best** package to make interactive graphics in `R` both within and outside of `shiny`.  It uses D3.js on the backend, so there's a lot of syntax that you may be unfamiliar with when comparing to `ggplot2` and some of the other `R` packages we've used this year.  Luckily, there's a free online book with a TON of example code (see links below) that should make it fairly easy to integrate into your final project.
+
+You can easily use the `ggplotly()` function to create interactive versions of static graphics that have some features automatically included (e.g. alt-text).
+
+You can also use the `plot_ly()` function to create new interactive graphs.
+
+First, some links:
+
++  This is a comprehensive look into what you can do with Plotly in the form of a (free) book, including a ton of example code:  [https://cpsievert.github.io/plotly_book/index.html]
++  Here's the GitHub page for `plotly`, including a vignette with many examples:  [https://github.com/ropensci/plotly]
+
+
+One nice feature of `plotly` is "linked brushing", which is often also referred to as "ribbons" or "linked views" or "multiple views" or "polygons".  I'll do a demo of this from the book above, and another demo using data from the [2016 Presidential Election](http://rpubs.com/cpsievert/229092).
+
+
+
+##  HTML Widgets
+
+HTML Widgets are a superset of `plotly`. They are in-development additions to the ever-growing list of possibily ways to make awesome charts in `R`.
+
+Because these are being developed, updated, and improved, I don't know how to use all of these.  By the end of your final project, you will certainly know more about some of these topics than I will.
+
+Some links:
+
++  HTML Widgets Showcase:  [http://www.htmlwidgets.org/showcase_metricsgraphics.html]
++  HTML Widgets Gallery:  [http://gallery.htmlwidgets.org/]
+
+
+
+
+##  Custom JavaScript Widgets in Shiny
+
+Create custom JavaScript widgets for Shiny!  Watch the tutorials described here:  [https://blog.rstudio.org/2016/05/06/shiny-javascript-tutorials/]
+
+
+##  Miscellaneous
+
++  Here's a post about how you can use the `ggiraph` pacakge to make interactive graphics relating to the 2016 Olympics:  [http://blog.revolutionanalytics.com/2016/08/interactive-illustrator-quality-graphics-with-r.html]
++  Here's more info on that package:  [https://mran.microsoft.com/package/ggiraph/]
++  Here's the code for that analysis:  [https://github.com/d-qn/2016_08_02_rioOlympicsAthletes]
+
+
+
+
