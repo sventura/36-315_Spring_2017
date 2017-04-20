@@ -716,6 +716,43 @@ loan_words <- description %>%
 
 
 
+library(tidyverse)
+library(dendextend)
+adult <- read_csv("https://raw.githubusercontent.com/chuqwang/315project/master/adult_2.csv")
+country_level_adult <- adult %>%
+  group_by(native.country) %>%
+  summarize(count=n(),
+            hours_per_week = mean(hours.per.week), 
+            capital_gain = mean(capital.gain),
+            capital_loss = mean(capital.loss),
+            age = mean(age))
+country_level_adult %>%
+  select(-native.country) %>%
+  scale %>% dist %>% hclust %>% as.dendrogram %>%
+  set("labels", country_level_adult$native.country, order_value = T) %>%
+  ggplot(horiz = T)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
