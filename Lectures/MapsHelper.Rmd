@@ -1,0 +1,90 @@
+---
+title: "Maps Helper"
+author:  "Jennifer Jin and Sam Ventura"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+#  Load the Data
+
+```{r, warning = FALSE, message = FALSE}
+library(tidyverse)
+library(sp)
+library(ggmap)
+museums <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/museums.csv")
+```
+
+
+#  Choropleth Maps
+
+Create a choropleth map of the United States that shows the number of musuems in each state.
+
+```{r, warning = FALSE, message = FALSE}
+us_data <- map_data("state")
+
+museums_by_state <- museums %>% 
+  group_by(State) %>%
+  summarize(Count = n(),
+            log_mean_income = log(mean(Income, na.rm = T)))
+
+us_data <- us_data %>%
+  left_join(museums_by_state, by = c("region" = "State"))
+
+ggplot(us_data) +
+  geom_polygon(aes(x = long, y = lat, group = group, fill = Count), 
+               color = "black") + 
+  scale_fill_continuous(low = "green", high = "purple") +
+  theme_void() +
+  coord_map("polyconic") + 
+  labs(title = "Number of Museums Per State")
+
+ggplot(us_data) +
+  geom_polygon(aes(x = long, y = lat, group = group, 
+                   fill = log_mean_income), color = "black") + 
+  scale_fill_continuous(low = "green", high = "purple") +
+  theme_void() +
+  coord_map("polyconic") + 
+  labs(title = "Log Mean Income of Museums Per State")
+```
+
+
+#  Layering (Colored) Points
+
+Use `ggmap` to create a map centered on the continental United States. Add points corresponding to the location of each museum, colored by the type of museum.
+
+```{r, warning = FALSE, message = FALSE}
+library(ggmap)
+map <- get_map(location = 'United States', zoom = 4)
+
+#  Visualize the basic map
+ggmap(map) +
+  geom_point(aes(x = Longitude, y = Latitude, color = Type), 
+             data = museums, alpha = .5) + 
+  labs(title = "Museum Locations by Type") + 
+  theme_void()
+```
+
+#  Filtering
+
+Use the same base map in the previous section to create a map centered on the continental United States. Add points corresponding to natural history museums, sized by their income.
+
+```{r, warning = FALSE, message = FALSE}
+nat_hist_museums <- filter(museums, 
+                           Type == "NATURAL HISTORY MUSEUM",
+                           Income != 0)
+
+ggmap(map) +
+  geom_point(aes(x = Longitude, y = Latitude, size = Income), 
+             data = nat_hist_museums, alpha = .5) + 
+  labs(title = "Natural History Museums by Income") + 
+  theme_void()
+```
+
+
+
+
+
