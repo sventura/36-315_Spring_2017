@@ -1,7 +1,7 @@
 ---
 title: "36-315 Homework 11, Spring 2017"
 author: "Your Name Here"
-date: "Due Wednesday, May 2nd, 2017 (12pm ET) on Blackboard"
+date: "Due Wednesday, May 3rd, 2017 (12pm ET) on Blackboard"
 output: 
   html_document:
     toc:  true
