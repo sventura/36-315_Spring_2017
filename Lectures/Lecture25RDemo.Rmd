@@ -12,7 +12,7 @@ output:
 
 #  `R` Notebooks
 
-This is one of the reasons why we updated `R` and RStudio this week.  `R` Notebooks are similar to Jupyter notebooks (Python).  
+This is one of the reasons why we updated `R` and RStudio in December.  `R` Notebooks are similar to Jupyter notebooks (Python).  
 
 See here for more details:  [https://blog.rstudio.org/2016/10/05/r-notebooks/]
 
