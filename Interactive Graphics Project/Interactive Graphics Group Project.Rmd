@@ -1,0 +1,305 @@
+---
+title: "36-315 Interactive Graphics Group Project, Spring 2017"
+author: "See Below for Your Group Members"
+date: "See Due Dates Below"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+#  Task 0:  Choose Your Data
+
+**(part of your Lab 11 Grade; 0% of your Final Grade)**
+
+You get to pick your own dataset again!  
+
+##  Sources
+
+Here are some repositories with many, many datasets to choose from:
+
++  [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets.html)
++  [Kaggle](https://www.kaggle.com/datasets)
++  [Dream To Learn](https://dreamtolearn.com/ryan/1001_datasets)
++  [Google Public Data Explorer](https://www.google.com/publicdata/directory)
++  [The US Government](https://www.data.gov/)
++  [Stanford Statistics](http://statweb.stanford.edu/~sabatti/data.html)
++  [American Psychological Asosciation](http://www.apa.org/research/responsible/data-links.aspx)
++  [GitHub](https://github.com/caesar0301/awesome-public-datasets)
++  [FiveThirtyEight](https://github.com/fivethirtyeight/data)
+
+You do not have to pick a dataset from one of these places.  These are just suggestions.
+
+
+##  Requirements
+
+1.  Your data must be contain a mix of categorical and continuous variables and be complex enough that you can create 8 interesting graphs (so datasets with only a few variables will not work).
+
+2.  You CANNOT use any of the datasets that were used by any group from the static graphics group project.  These datasets were:
+
++  Airline Survey Data
++  2016 Rio Olympics
++  FiveThirtyEight Police Killings
++  UFO Sightings
++  Pokemon
++  1994 US Census Income
++  NBA History Data from FiveThirtyEight
++  NBA Rest API Data
++  NYC Crime Data
++  League of Legends 2016 World Championship Data
++  H1B Visa Dataset
++  Chicago Crime Reports
++  Lending Club Loan Data
++  Kaggle World Development Indicators
++  NYC Weather Data
++  2016 Presidential Election (I may allow this if there is strong interest)
++  Lahman / MLB History (I may allow this if there is strong interest)
++  Yelp Reviews
++  NASA / Astronauts
++  US Homicides
++  World University Rankings
+
+If there is strong interest in using any of these datasets, talk to Sam ASAP.
+
+3.  I'm strongly encouraging groups to pick different datasets, so that no group is using the same dataset.  If you choose a dataset that another group has already chosen, I may ask you to switch.
+
+4.  Be sure to read the guidelines on the graphics below.  These will certainly influence what datasets you choose.
+
+5.  You cannot use a dataset that you have used before in this class or in any other class.
+
+
+##  Submission
+
+All groups must decide what dataset they are using by the end of Lab on Friday, 4/28.
+
+
+***
+***
+
+
+#  Task 1:  Create an Interactive, Web-Based, Data Vizualization Tool via Shiny
+
+**(12% of your Final Grade)**
+
+Your primary task in this project is to design an interactive, web-based, data visualization tool via Shiny to explore and analyze your dataset.
+
+##  App Templates
+
+See [here](http://shiny.rstudio.com/gallery/) for a bunch of really nice Shiny templates.
+
+##  App Set-Up Requirements
+
+1.  Each group is required to use a Shiny theme or to design and use your own Shiny theme from scratch.  For more info, see here: 
+
++  [https://blog.rstudio.org/2016/10/13/shinythemes-1-1-1/]
++  [https://rstudio.github.io/shinythemes/]
+
+2.  Each group is required to use Shiny Dashboard in their Shiny app.  For more information on Shiny Dashboard, see here:
+
++  [https://rstudio.github.io/shinydashboard/]
++  [https://cran.r-project.org/web/packages/shinydashboard/index.html]
+
+3.  Each group's app should be hosted publicly on [RStudio's ShinyApps Website](https://www.shinyapps.io/).  At least one person in your group should create a free account to do this.
+
+
+##  Graph Requirements
+
+1.  Each group member is required to create two graphics.  Each group has four members, so you are required to have eight graphs in your Shiny app.
+
+2.  All graphs must have some interactive (e.g. via Shiny interactivity, Plotly, etc) or dynamic (e.g. animation) aspect to them.
+
+3.  It's the end of the semester, so the graphs you make should be perfect.  Take care to create excellent graphs that are informative and easy to understand.  All graphs should be properly labeled, titled, etc.
+
+4.  Each group can have no more than two graphs that show a single variable (e.g. one-variable bar charts, histograms, density estimates).
+
+5.  Each group is required to make at least three of the following types of graphs:  
+
++  Choropleth maps
++  Other maps
++  Network diagrams
++  Time series plots
++  Dendrograms
++  Graphs relating to text analysis
+
+6.  Each group is required to use Plotly in at least two of their graphs.  For examples on Plotly, see here:
+
++  [https://cpsievert.github.io/plotly_book/index.html]
++  [http://www.htmlwidgets.org/showcase_plotly.html]
++  [https://plot.ly/r/]
+
+
+7.  Each group is required to use an HTML Widget (other than Plotly) in at least one of their graphs.  For examples on HTML Widgets, see here:
+
++  [http://www.htmlwidgets.org/showcase_threejs.html]
++  [http://gallery.htmlwidgets.org/]
+
+##  Submission
+
+1.  Each group is required to visit Sam's office hours (see below) to go over their ideas for their project.  Each group should have a version of all of their graphs completed for this meeting.
+
+Sam's office hours:
+
++  Monday, 5/9, 1-2pm
++  Monday, 5/9, 4-6pm
++  Tuesday, 5/9, 9am-noon
++  Tuesday, 5/9, 2-3pm
++  Tuesday, 5/9, 4-7:30pm
+
+2.  You should design your Shiny apps so that they work on any computer.  Reading data from a public location, or from a location within the directory containing the Shiny app, is the best strategy to ensure that they work on other computers. 
+
+3.  The version of your app that is posted to ShinyApps.io on Wednesday, 5/10 at 9am is the version that will be graded.
+
+
+***
+***
+
+#  Task 2:  Oral Presentation of your Shiny App
+
+**(8% of your Final Grade)**
+
+Each group will present their Shiny apps to Sam, the TAs, other students in the course, other professors, and Statistics graduate students.
+
+##  Presentation Requirements
+
++  Each group member is required to speak about two graphics.  These do not have to be the graphics they created, but it probably makes sense to do so.
+
++  Be professional and courteous to anyone in the audience.  Assume that they do not know anything about your dataset, and be sure to explain the dataset / questions you're trying to answer in a clear and concise way.
+
++  Your group will have 15 minutes to present your entire Shiny app, followed by 5-10 minutes of follow-up questions from anyone in the audience.
+
++  Groups will be graded based on how well they work as a group and describe their data during their presentation.  For example, transitions between graphs, group members, etc should be smooth.  Individuals should refer to other graphics presented by other members of their group when appropriate.
+
++  Individuals will be graded based on their explanations of their graphics.  How well do they describe what's being plotted?  How well do they describe the main takeways of the graph?  How well do they describe any relationships, distributions, associations, patterns, etc in each graph?  Does the individual speak in a professional manner?  Does the individual avoid the overuse of words like "so", "um", "uh", etc?  Does the individual use the interactive features to demonstrate some interesting feature of the dataset / to answer some question that otherwise would not be seen / answered?
+
++  Individuals who do not present at least two graphics will lose a substantial portion of their grade for the presentation portion.  Individuals who do not show up to their group presentation will receive a 0 (except in the case of extreme circumstances / emergency / etc).
+
+
+##  Submission
+
+No submission is required for this task, other than:
+
++  showing up on time with all group members
++  turning in your assignment in Task 1 on time
+
+***
+***
+
+
+#  Task 3:  Class Participation
+
+**(2.5% of your Final Grade)**
+
+Everyone must attend at least two other groups' presentations.
+
+##  Participation Requirements
+
++  Each group is required to be audience members for at least two other groups' presentations.  
+
++  At least one person from each group must ask a follow-up question in another group's presentation.
+
+
+##  Submission
+
+No submission is required for this task, other than:
+
++  showing up to at least one other group's presentation
++  checking in with Sam when you do so
+
+
+***
+***
+
+
+#  Task 4:  Peer, Self, and Course Evaluations
+
+**(2.5% of final grade)**
+
+##  Requirements
+
+Complete the peer and self evaluation form.  This form will be released at a later date.
+
+Complete the course evaluation form.  This form will be released at a later date.
+
+
+##  Submission
+
+These forms must be completed by Saturday, 5/13, at noon.
+
+
+***
+***
+
+
+#  Task 5:  Group Name 
+
+**(0% of final grade)**
+
+Each group should come up with a group name!  Ideally, the group name will relate in some way to the dataset that you choose.
+
+
+###  Requirements
+
+Please keep these appropriate and be respectful of others.
+
+
+###  Submission
+
+Use your group name in all of tasks 1-5.
+
+
+***
+***
+
+
+#  Timeline
+
+##  Thursday, 4/27:  Groups Assigned
+
+Each student will work with a group of 4 people.  Look for an email on Wednesday for more information.
+
+
+##  Friday, 4/28:  Collaborative Lab 11
+
+On Friday, 4/28 in Lab, you will work with your groups to submit the lab assignment.  Each group should designate one person to submit the assignment.  
+
+If you cannot make Lab on Friday, coordinate with your group to ensure that your group members are turning in the assignment, and make plans to make up for the work you missed.  In general, be a good group member.
+
+
+##  Wednesday, 5/3:  HWs 11 and 12 Due
+
+HWs 11 and 12 will be short, include lots of bonus opportunities, and will both be due on Wednesday, 5/3.  Late assignments will not be accepted.
+
+
+##  Friday, 5/5:  Work with your Groups in Lab
+
+Sam and the TAs will come around during lab to check on each group's progress.
+
+**Each group is required to**:
+
++  Have a draft of their Shiny app completed by Friday 5/5 (including draft versions of all graphs)
++  Take notes on Sam's and the TAs' feedback to your group on your app
+
+
+##  Mon-Tue, 5/8 and 5/9:  Review Your Shiny Apps with Sam
+
+At least one member from each group must visit Sam's office hours on 5/8 or 5/9 to review your apps and take suggestions on things to improve.
+
+
+##  Wed-Fri, 5/10-5/12:  Presentations
+
+Each group will present their Shiny apps to Sam, the TAs, other students in the course, other professors, and Statistics graduate students.
+
+Each group member is required to speak about two graphs when presenting the Shiny Apps.
+
+Specific dates and times will scheduled on Friday, 4/28 in Lab.
+
++  Wednesday, 5/10, 5-7pm (if necessary; only choose this if Thursday and Friday both do NOT work for your group)
++  Thursday, 5/11, 9am-9pm
++  Friday, 5/12, 9am-3pm
+
+
+##  Saturday, 5/13, noon:  Peer, Self, and Course Evaluations Due
+
+You are required to submit an evaluation of yourself, your group members, and the course in general.  More details will be available soon.
+
