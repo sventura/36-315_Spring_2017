@@ -191,49 +191,6 @@ a.  (2 points)  Load the Zillow rent prices dataset from Kaggle, located on the 
 
 b.  (20 points)  Create a choropleth map showing the average rent prices (in January 2017) **at the state level.**  Use an appropriate three-color gradient.  Describe the graph, pointing out any interesting features of the spatial distribution of rent prices in January 2017.
 
-```{r}
-library(tidyverse)
-library(ggmap)
-rent <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/price.csv") %>%
-  select(County, State, `January 2017`) %>%
-  rename(jan_2017 = `January 2017`) %>%
-  arrange(State) %>%
-  group_by(State) %>%
-  summarize(mean_rent = mean(jan_2017))
-
-state_data <- data_frame(state.abb, state.name) %>%
-  mutate(state.name = tolower(state.name)) %>%
-  left_join(rent, by = c("state.abb" = "State"))
-
-state_borders <- map_data("state") %>%
-  left_join(state_data, by = c("region" = "state.name"))
-
-ggplot(state_borders, aes(x = long, y = lat, fill = mean_rent)) + 
-  geom_polygon(aes(group = state.abb), color = "black") + 
-  theme_void() + 
-  coord_map("polyconic") + 
-  scale_fill_gradient2(high = "darkred", low = "darkblue", 
-                       mid = "white", midpoint = 1500)
-
-rent <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/price.csv") %>%
-  select(County, State, `January 2017`) %>%
-  rename(jan_2017 = `January 2017`) %>%
-  group_by(County) %>%
-  summarize(mean_rent = mean(jan_2017)) %>%
-  mutate(County = tolower(County))
-
-county_borders <- map_data("county") %>%
-  left_join(rent, by = c("subregion" = "County"))
-
-ggplot(county_borders, aes(x = long, y = lat, fill = mean_rent)) + 
-  geom_polygon(aes(group = group), ) + 
-  theme_void() + 
-  coord_map("polyconic") + 
-  scale_fill_gradient2(high = "darkred", low = "darkblue", 
-                       mid = "white", midpoint = 2000)
-
-```
-
 c.  (18 points)  Create a choropleth map showing the average rent prices (in January 2017) **at the county level.**  Use an appropriate three-color gradient.  Describe the graph, pointing out any interesting features of the spatial distribution of rent prices in January 2017.
 
 Hint:  For parts (b) and (c) above, it may help to use the following:
