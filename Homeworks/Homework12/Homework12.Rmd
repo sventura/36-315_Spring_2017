@@ -289,7 +289,7 @@ get_moving_averages <- function(time_series, ww) {
 
 c.  Use your function in (b) to calculate a moving average vector for the `n_trips` variable in `trips_per_day` (use a window width of 14, or two weeks), and store this in a vector called `bike_moving_average_14`.  Print the first 20 elements of this vector out.  What do you notice about the first 13 observations?  Why is this
 
-d.  Add the `bike_moving_average_14` variable to the `trips_per_day` dataset.  Recreate the plot from part (b) of Problem 1 in Lab 09.  Now, add a second line showing the moving average in blue, with no points on the line.
+d.  Add the `bike_moving_average_14` variable to the `trips_per_day` dataset.  Recreate the plot from part (b) of Problem 2.  Now, add a second line showing the moving average in blue, with no points on the line.
 
 e.  Interpret the plot in (d).  Does the moving average tend to line up closely with the actual observations?  Are there any systematic differences?  Between the moving average and the time series?  Which line is smoother, and why?
 
