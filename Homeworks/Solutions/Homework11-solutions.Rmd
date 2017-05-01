@@ -267,7 +267,6 @@ d.
 lax_airport$change_timezone <- lax_airport$source_timezone - lax_airport$dest_timezone
 lax_airport <- lax_airport[which(abs(lax_airport$change_timezone) <= 3), ]
 
-lax_airport$change_timezone <- factor(lax_airport$change_timezone)
 # Filter by routes that wil be shown on map
 
 ggmap(map) + 
@@ -278,7 +277,7 @@ ggmap(map) +
          title = "Flights To and From Los Angeles",
          color = "Change in \nTime Zone \nin Hours") +
     coord_cartesian() + 
-    scale_color_manual(values = my_colors)
+    scale_color_gradient(low = "blue", high = "red")
 ```
 
 ***
@@ -291,16 +290,16 @@ ggmap(map) +
 
 **Choropleth Maps of Rent Prices**
 
-a.  
+## a.  
 
 ```{r}
 rent <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/price.csv")
 ```
 
 
-b. 
+## b. 
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 rent_jan2017 <- rent %>%
   select(County, State, `January 2017`) %>%
   rename(jan_2017 = `January 2017`) %>%
@@ -327,9 +326,9 @@ ggplot(state_borders, aes(x = long, y = lat, fill = mean_rent)) +
 
 The highest average rent cost states seem to be California, Massachusetts, and New Jersey, while the lowest rent cost states include Oklahoma, West Virginia, and Arkansas. Average rent prices seem to be higher around the Pacific coast and in New England, while they tend to be lower in the Deep South, the Midwest, and the Mountain time zone. 
 
-c.  
+## c.  
 
-```{r}
+```{r, warning = FALSE, message = FALSE}
 rent_jan2017 <- rent %>%
   select(County, State, `January 2017`) %>%
   rename(jan_2017 = `January 2017`) %>%
