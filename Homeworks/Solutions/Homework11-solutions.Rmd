@@ -240,7 +240,7 @@ lax_airport <- lax_routes %>%
     dplyr::select(source_lat, source_lon, source_timezone, lat, lon, timezone) %>%
     dplyr::rename(dest_lat = lat, dest_lon = lon, dest_timezone = timezone)
 
-ggmap(map) + 
+mapPointsLegend + 
     geom_segment(aes(x = source_lon, y = source_lat, xend = dest_lon,
                    yend = dest_lat), data = lax_airport, alpha=.15) +
     labs(x = "Longitude", y = "Latitude",
@@ -252,7 +252,7 @@ ggmap(map) +
 c. 
 
 ```{r, warning=FALSE, message=FALSE}
-ggmap(map) + 
+mapPointsLegend + 
     geom_curve(aes(x = source_lon, y = source_lat, xend = dest_lon,
              yend = dest_lat), data = lax_airport, 
              arrow = arrow(length = unit(0.02, "npc")), alpha=.15) +
@@ -269,7 +269,7 @@ lax_airport <- lax_airport[which(abs(lax_airport$change_timezone) <= 3), ]
 
 # Filter by routes that wil be shown on map
 
-ggmap(map) + 
+mapPointsLegend + 
   geom_curve(aes(x = source_lon, y = source_lat, xend = dest_lon,
                    yend = dest_lat, color = change_timezone), data = lax_airport, 
              arrow = arrow(length = unit(0.02, "npc"))) +
