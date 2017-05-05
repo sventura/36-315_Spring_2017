@@ -369,7 +369,7 @@ For each airline, frequently tweeted words were 'flight' and the name of the air
 ***
 
 
-##  Problem 5
+##  Problem 5 {.tabset}
 
 (4 points each; 32 points total)
 
@@ -414,13 +414,12 @@ get_moving_averages <- function(time_series, ww) {
 
 ```{r, warning = FALSE, message = FALSE}
 # Load in the data
-library(gsheet)
-bike_data <- as.data.frame(gsheet2tbl("https://docs.google.com/spreadsheets/d/143-u41MokWNU6w4_hptUypQ_sIc4ZIfEDsABq4MzDhA/edit?usp=sharing"))
+bike_data <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/big_bike.csv")
 
 #  Add start_date variable to bike_data
-bike_data$start_date <- as.Date(sapply(strsplit(bike_data$starttime, " "), 
-                                       "[[", 1),
-                                format = "%m/%d/%Y")
+bike_data$start_date <- as.Date(sapply(strsplit(as.character(bike_data$starttime), " "), 
+                                       "[[", 1), 
+                                format = "%Y-%m-%d")
 
 library(dplyr)
 library(ggplot2)
@@ -429,26 +428,27 @@ library(ggplot2)
 #  of trips taken on each day
 by_date <- group_by(bike_data, start_date)
 trips_per_day <- summarize(by_date, n_trips = n())
+trips_per_day <- na.omit(trips_per_day)
 
 # Get moving averages for n_trips
-bike_moving_average_3 <- get_moving_averages(trips_per_day$n_trips, 3)
-bike_moving_average_3
+bike_moving_average_14 <- get_moving_averages(trips_per_day$n_trips, 14)
+head(bike_moving_average_14, 20)
 ```
 
-The first 2 observations are NA because the window width is 3, so there is not enough past data to calculate a moving average at these times. 
+The first 13 observations are NA because the window width is 14, so there is not enough past data to calculate a moving average at these times. 
 
 ### d. 
 
 ```{r, warning = FALSE}
 # Add variable to dataset
-trips_per_day$bike_moving_average_3 <- bike_moving_average_3
+trips_per_day$bike_moving_average_14 <- bike_moving_average_14
 
 #  Create a time series plot with the dates on the x-axis and the number of
 #  trips per day on the y-axis
 # Add moving average line 
 ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + geom_line(aes(colour = "Original Data")) + 
   scale_x_date() + geom_point() +
-  geom_line(aes(x = start_date, y = bike_moving_average_3, colour = "Moving Average")) +
+  geom_line(aes(x = start_date, y = bike_moving_average_14, colour = "Moving Average")) +
   scale_colour_manual("", breaks = c("Original Data", "Moving Average"), 
                       values = c("blue", "black")) + 
   ggtitle("Number of Bike Trips in December")+ 
@@ -458,9 +458,9 @@ ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + geom_line(aes(colour =
 
 ###e.  
 
-The moving average always has a lag from the original data. That is, the moving average follows the same pattern as the data, but does so a few days later.  This is because it is looking at the past 3 days of data to calculate its current value, so it is more similar to the past data than the future. 
+The moving average always has a lag from the original data. That is, the moving average follows the same pattern as the data, but does so a few days later.  This is because it is looking at the past 14 days of data to calculate its current value, so it is more similar to the past data than the future. 
 
-We could redefine the moving average to take the 3 (or $w$) closest observations in either direction, rather than the 3 (or $w$) previous observations to eliminate this issue.
+We could redefine the moving average to take the 14 (or $w$) closest observations in either direction, rather than the 14 (or $w$) previous observations to eliminate this issue.
 
 ### f.  
 
@@ -530,7 +530,7 @@ trips_per_day$weight_MA <- weight_MA
 ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + 
   geom_line(aes(colour = "Original Data")) + 
   scale_x_date() + geom_point() +
-  geom_line(aes(x = start_date, y = bike_moving_average_3, colour = "Moving Average")) +
+  geom_line(aes(x = start_date, y = bike_moving_average_14, colour = "Moving Average")) +
   geom_line(aes(x = start_date, y = weight_MA, colour = "Weighted Moving Average"), linetype = 2) +
   scale_color_manual(values = c("Original Data" = "black", "Moving Average" = "blue",
                                 "Weighted Moving Average" = "red")) +
@@ -546,23 +546,13 @@ The weighted moving average is closer to the original data, as it weighted the m
 ***
 ***
 
-##  Problem 6
+##  Problem 6 {.tabset}
 
 (20 points)
 
 **Create `ggplot()` ACF Plots**
 
-Earlier in this assignment, we learned about the `acf()` function and autocorrelation plots.  `acf()` uses base-R graphics.  Your task in this problem is to create a `ggplot()` version of autocorrelation plots.  Specifically, you should:
-
-+  Write a function that takes a time series as input (e.g. the `n_trips` column of `trips_per_day`, or the `rand_ts` from HW12).
-+  The function should compute the autocorrelations for the time series, and store them in a new data frame with one column indicating the lag, and another columns indicating the autocorrelation at that lag.
-+  Use `geom_line()`, `geom_segment()`, `geom_hline()`, and other `ggplot()` geometries to draw a graph that mimics the autocorrelation plots from `acf()`.  That is, you should have vertical lines indicating the autocorrelation at each lag, and blue horizontal lines plotted at the values $0 +/- 1.96 / \sqrt(n)$, where $n$ is the number of rows in the dataset.
-+  The function should output a `ggplot()` object that has the default title and axis labels, so that these can be added to the object after calling the function.
-+  The result should render a graph that looks similar to what you get from `acf()`.
-+  You are allowed (and encouraged!) to use the `acf()` function to calculate the autocorrelations.
-
-Demonstrate that your function works on the `rand_ts` object and the `trips_per_day` dataset.  Compare your graphs to the base-R `acf()` graph. 
-
+### code
 
 ```{r, message = F, warning = F}
 acf_plot <- function(time_series){
@@ -577,18 +567,32 @@ acf_plot <- function(time_series){
     geom_hline(yintercept = line2, color = "blue", linetype = "dashed") + 
     geom_hline(yintercept = 0, color = "black")
   return(acf_graph)}
+```
 
+
+### comparison with acf() in rand_ts
+
+```{r}
 acf_plot(rnorm(1000)) + labs(
   title = "Autocorrelation of random time series - rnorm(1000)",
   x = "Lag",
   y = "Autocorrelation"
 )
 
+acf(rnorm(1000), main = "Autocorrelation of random time series - rnorm(1000)")
+```
+
+### comparison with acf() in bike data
+
+```{r}
 acf_plot(trips_per_day$n_trips) + labs(
   title = "Autocorrelation of number of trips per day from NYC bike dataset",
   x = "Lag",
   y = "Autocorrelation"
 )
+
+acf(trips_per_day$n_trips, main = "Autocorrelation of number of trips per day from NYC bike dataset")
+
 ```
 
 ***
