@@ -274,34 +274,95 @@ The highest significant, positive autocorrelations occur at lags 1, 7, 14, 21, a
 
 #  Hard Problems
 
-##  Problem 4
+##  Problem 4 {.tabset}
 
-(14 points)
+(16 points)
 
-**Word Clouds and Tidy Text Mining**
 
-a.  (2 points)  Read Sections 2, 2.1, and 2.5 of the Tidy Text Mining book from the Lecture 22 R Demo.  What does the `unnest_tokens()` function do?
+### a. 
 
-b.  (4 points)  Load the Airline Tweets dataset from one of the first assignments.  What column contains the text of the tweets?  Run the following code and give an interpretation of the resulting word cloud (you may need to install the `tidytext` and `wordcloud` packages first):
+The `unnest_tokens()` function extracts individual words, or 'tokens', from text and formats it into a tidy data structure which has one token per document per row.  In addition, the function converts words to lowercase and removes punctuation.
+
+### b. 
+
+The column `text` contains the tweets.  As expected with a dataset about airlines, words frequently tweeted were 'flight', 'cancelled', 'hours', 'time', 'delayed', and the names of different airlines.  
+
 
 ```{r, warning = F, message = F}
 #install.packages("tidytext")
 #install.packages("wordcloud")
-library(tidyverse)
 library(tidytext)
 library(wordcloud)
+library(dplyr)
+library(data.table)
 data(stop_words)
 
-airline_tweets <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
+airline_tweets <- fread("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/Tweets.csv")
 
 my_tweets <- dplyr::select(airline_tweets, tweet_id, text) %>%
   unnest_tokens(word, text) %>%
   anti_join(stop_words) %>%
   count(word) %>%
   with(wordcloud(word, n, max.words = 100))
+title(main = list("Word Cloud for Airline Tweets", col = 'blue'))
 ```
 
-c.  (8 points)  Create a separate wordcloud for each airline.  Arrange the results into a 2x3 grid.  Interpret the results:  Are there any words that are more/less common for certain airlines?
+### c.
+
+```{r, warning=FALSE, message=FALSE}
+virgin_america <- filter(airline_tweets, airline == "Virgin America")
+united <- filter(airline_tweets, airline == "United")
+southwest <- filter(airline_tweets, airline == "Southwest")
+delta <- filter(airline_tweets, airline == "Delta")
+us_airways <- filter(airline_tweets, airline == "US Airways")
+american <- filter(airline_tweets, airline == "American")
+
+par(mfrow = c(2,3))
+
+va_wordcloud <- dplyr::select(virgin_america, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main = list("Virgin America", col = 'blue'))
+
+united_wordcloud <- dplyr::select(united, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main = list("United Airlines", col = 'blue'))
+
+southwest_wordcloud <- dplyr::select(southwest, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main = list("Southwest", col = 'blue'))
+
+delta_wordcloud <- dplyr::select(delta, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main = list("Delta Airlines", col = 'blue'))
+
+usairways_wordcloud <- dplyr::select(us_airways, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75))
+title(main =  list("US Airways", col = 'blue'))
+
+american_wordcloud <- dplyr::select(american, tweet_id, text) %>%
+  unnest_tokens(word, text) %>%
+  anti_join(stop_words) %>%
+  count(word) %>%
+  with(wordcloud(word, n, max.words = 75, main = "Title")) 
+title(main = list("American Airlines", col = 'blue'))
+```
+
+For each airline, frequently tweeted words were 'flight' and the name of the airline.  'Cancelled' was more frequently tweeted with regards to Southwest, American Airlines and US Airways.  In addition, 'jetblue' was frequently tweeted with regards to Delta Airlines. 
 
 
 ***
@@ -315,9 +376,7 @@ c.  (8 points)  Create a separate wordcloud for each airline.  Arrange the resul
 **Moving Average Plots**
 
 
-In Problem 2, we created a time series plot of the NYC bike dataset ("Big Bike"), visualizing the number of trips per day as a function of time.  Here, we're going to add a moving average line to the plot.
-
-a.  Moving averages are calculated as follows:  Given a "window width" `ww`, the moving average at time point `tt` in the time series is:  `mean(my_time_series[(tt-ww+1):tt])`.  Write a function, called `moving_average` that calculates the moving average of a time series vector at a single time point.  The function should take three inputs:  the time series, the window width, and the time point at which you want the moving average.  The code is started for you below.
+### a. 
 
 ```{r}
 #  time_series:  A vector containing the time series values
@@ -332,11 +391,11 @@ moving_average <- function(tt, time_series, ww) {
   if (tt < ww)  return(NA)
   
   #  Your code here!
+  return (mean(time_series[(tt-ww+1):tt]))
 }
 ```
 
-
-b.  Write a second function, called `get_moving_averages`, that calculates _all_ moving averages for a given time series vector.  Your function should take two inputs:  the time series and the window width.  This function should call your function from part (a).  The code is started for you below.
+### b.
 
 ```{r}
 #  time_series:  A vector containing the time series values
@@ -347,18 +406,63 @@ get_moving_averages <- function(time_series, ww) {
     stop("Window width is greater than length of time series")
   
   #  Your code here!
+  return (sapply(1:length(time_series), moving_average, time_series, ww))
 }
 ```
 
+### c.  
 
-c.  Use your function in (b) to calculate a moving average vector for the `n_trips` variable in `trips_per_day` (use a window width of 14, or two weeks), and store this in a vector called `bike_moving_average_14`.  Print the first 20 elements of this vector out.  What do you notice about the first 13 observations?  Why is this
+```{r, warning = FALSE, message = FALSE}
+# Load in the data
+library(gsheet)
+bike_data <- as.data.frame(gsheet2tbl("https://docs.google.com/spreadsheets/d/143-u41MokWNU6w4_hptUypQ_sIc4ZIfEDsABq4MzDhA/edit?usp=sharing"))
 
-d.  Add the `bike_moving_average_14` variable to the `trips_per_day` dataset.  Recreate the plot from part (b) of Problem 2.  Now, add a second line showing the moving average in blue, with no points on the line.
+#  Add start_date variable to bike_data
+bike_data$start_date <- as.Date(sapply(strsplit(bike_data$starttime, " "), 
+                                       "[[", 1),
+                                format = "%m/%d/%Y")
 
-e.  Interpret the plot in (d).  Does the moving average tend to line up closely with the actual observations?  Are there any systematic differences?  Between the moving average and the time series?  Which line is smoother, and why?
+library(dplyr)
+library(ggplot2)
 
-f.  Write two new functions, `weighted_moving_average` and `get_weighted_moving_averages`, that mimic the functions in (a) and (b), but use a weighted moving average instead.  Your functions should take the same parameters as their counterparts in parts (a) and (b), plus an additional parameter for the weighting scheme that should be used.  The code is started for you below.
+#  Summarize the bike_data, creating a new data.frame that includes the number 
+#  of trips taken on each day
+by_date <- group_by(bike_data, start_date)
+trips_per_day <- summarize(by_date, n_trips = n())
 
+# Get moving averages for n_trips
+bike_moving_average_3 <- get_moving_averages(trips_per_day$n_trips, 3)
+bike_moving_average_3
+```
+
+The first 2 observations are NA because the window width is 3, so there is not enough past data to calculate a moving average at these times. 
+
+### d. 
+
+```{r, warning = FALSE}
+# Add variable to dataset
+trips_per_day$bike_moving_average_3 <- bike_moving_average_3
+
+#  Create a time series plot with the dates on the x-axis and the number of
+#  trips per day on the y-axis
+# Add moving average line 
+ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + geom_line(aes(colour = "Original Data")) + 
+  scale_x_date() + geom_point() +
+  geom_line(aes(x = start_date, y = bike_moving_average_3, colour = "Moving Average")) +
+  scale_colour_manual("", breaks = c("Original Data", "Moving Average"), 
+                      values = c("blue", "black")) + 
+  ggtitle("Number of Bike Trips in December")+ 
+  labs(x = "Start Date", y = "Number of Trips")
+```
+
+
+###e.  
+
+The moving average always has a lag from the original data. That is, the moving average follows the same pattern as the data, but does so a few days later.  This is because it is looking at the past 3 days of data to calculate its current value, so it is more similar to the past data than the future. 
+
+We could redefine the moving average to take the 3 (or $w$) closest observations in either direction, rather than the 3 (or $w$) previous observations to eliminate this issue.
+
+### f.  
 
 ```{r}
 #  time_series:  A vector containing the time series values
@@ -385,6 +489,7 @@ weighted_moving_average <- function(tt, time_series, ww, weights = NULL) {
   weights <- weights / sum(weights)
   
   #  Your code here!
+  return (sum(weights * time_series[(tt-ww+1):tt]))
 }
 
 
@@ -407,12 +512,35 @@ get_weighted_moving_averages <- function(time_series, ww, weights) {
   weights <- weights / sum(weights)
   
   #  Your code here!
+  return(sapply(1:length(time_series), weighted_moving_average, time_series, ww, weights))
 }
 ```
 
-g.  Calculate the weighted moving average (window width = 7) of the number of trips per day.  Use a weighting scheme that weights the most recent observation 5 times as much as the first 5 observations, and the second most recent observation 3 times as much as the other 5, e.g. `weights = c(1,1,1,1,1,3,5)`.  Add the result to the `trips_per_day` data.frame.  Recreate your plot from (d), and add a red, dashed line (specify `linetype`) showing the weighted moving average on the plot.
 
-h.  Describe the plot from (g).  In paricular, comment on any differences between the two moving averages.
+### g. 
+
+```{r, warning = FALSE, message = FALSE}
+# Calculate weighted moving average of trips per day
+weight_MA <- get_weighted_moving_averages(trips_per_day$n_trips, 3, weights = c(1, 1, 3))
+trips_per_day$weight_MA <- weight_MA
+
+#  Create a time series plot with the dates on the x-axis and the number of
+#  trips per day on the y-axis
+# Add moving average lines
+ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + 
+  geom_line(aes(colour = "Original Data")) + 
+  scale_x_date() + geom_point() +
+  geom_line(aes(x = start_date, y = bike_moving_average_3, colour = "Moving Average")) +
+  geom_line(aes(x = start_date, y = weight_MA, colour = "Weighted Moving Average"), linetype = 2) +
+  scale_color_manual(values = c("Original Data" = "black", "Moving Average" = "blue",
+                                "Weighted Moving Average" = "red")) +
+  ggtitle("Number of Bike Trips in December") + 
+  labs(x = "Start Date", y = "Number of Trips")
+```
+
+### h.  
+
+The weighted moving average is closer to the original data, as it weighted the more recent data higher and so takes less time to react to changes in the data since it puts more weight on them. Both moving averages are also smoother than the original data and do not have as high peaks and valleys since it is averaging over 3 time periods. 
 
 
 ***
@@ -435,6 +563,33 @@ Earlier in this assignment, we learned about the `acf()` function and autocorrel
 
 Demonstrate that your function works on the `rand_ts` object and the `trips_per_day` dataset.  Compare your graphs to the base-R `acf()` graph. 
 
+
+```{r, message = F, warning = F}
+acf_plot <- function(time_series){
+  acf_data = acf(time_series, plot = F)
+  acf_df = data.frame(acf_data$lag, acf_data$acf)
+  colnames(acf_df) = c("lag", "autocorrelation")
+  line1 = 0 + 1.96 / sqrt(length(time_series))
+  line2 = 0 - 1.96 / sqrt(length(time_series))
+  acf_graph <- ggplot(data = acf_df) + 
+    geom_segment(aes(x = lag, y = 0, xend = lag, yend = autocorrelation)) + 
+    geom_hline(yintercept = line1, color = "blue", linetype = "dashed") + 
+    geom_hline(yintercept = line2, color = "blue", linetype = "dashed") + 
+    geom_hline(yintercept = 0, color = "black")
+  return(acf_graph)}
+
+acf_plot(rnorm(1000)) + labs(
+  title = "Autocorrelation of random time series - rnorm(1000)",
+  x = "Lag",
+  y = "Autocorrelation"
+)
+
+acf_plot(trips_per_day$n_trips) + labs(
+  title = "Autocorrelation of number of trips per day from NYC bike dataset",
+  x = "Lag",
+  y = "Autocorrelation"
+)
+```
 
 ***
 ***
