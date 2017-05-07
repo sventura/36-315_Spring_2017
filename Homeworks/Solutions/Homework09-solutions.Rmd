@@ -398,7 +398,7 @@ V(net_graph)$gender <- actor_gender
 ggraph(net_graph, layout = 'kk') + 
   geom_edge_density() +
   geom_edge_diagonal(edge_width = 1.5) +
-  geom_node_label(aes(label = net_names, color = gender),
+  geom_node_label(aes(label = names, color = gender),
                   size = 2.2) +
   my_theme +
   labs(title = "Network of Love Actually Characters",
