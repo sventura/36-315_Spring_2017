@@ -738,30 +738,117 @@ country_level_adult %>%
 
 
 
+spew <- read_csv("/Users/sam/Downloads/people_42049000900.csv")
+spew %>% 
+  filter(!is.na(SCHG)) %>%
+  mutate(college = ifelse(SCHG %in% c(15, 16), "college", "K-12")) %>%
+  ggplot(aes(x = as.integer(AGEP), fill = college)) + geom_bar() + 
+  labs(
+    title = "AGEP by Level of School",
+    subtitle = "SPEW Data for one PA tract",
+    fill = "Level of School"
+  )
+
+acs <- read_csv("/Users/sam/Downloads/csv_ppa/ss13ppa.csv")
+#acs <- ACS
+acs %>%
+  select(AGEP, SCHG) %>%
+  filter(!is.na(SCHG)) %>%
+  mutate(college = ifelse(SCHG %in% c(15, 16), "college", "K-12")) %>%
+  ggplot(aes(x = as.integer(AGEP), fill = college)) + geom_bar() + 
+  labs(
+    title = "AGEP by Level of School",
+    subtitle = "ACS Data for all of PA",
+    fill = "Level of School"
+  )
 
 
 
+#  Static Graphics Poster Grades
+options(tibble.width = Inf)
+library(tidyverse)
+grades <- read_csv("/Users/sam/Downloads/Spring 2017 -- 36-315 Poster Presentation Scoring (Responses) - Form Responses 1.csv")
+names(grades) <- c("time", "group", "name", "data", "graph_explain", 
+                   "graph_takeaways", "poster", "communication", 
+                   "teamwork", "followup", "good", "bad", "comments")
+
+grades <- grades %>%
+  mutate(overall = data + graph_explain + graph_takeaways + poster + 
+           communication + teamwork + followup)
+
+grades %>% 
+  group_by(group) %>%
+  summarize(overall = mean(overall),
+            count = n()) %>%
+  arrange(desc(overall))
+
+grades %>% 
+  group_by(group) %>%
+  summarize(poster = mean(poster),
+            count = n()) %>%
+  arrange(desc(poster))
+
+grades %>% 
+  group_by(group) %>%
+  summarize(graph = mean(graph_explain + graph_takeaways),
+            count = n()) %>%
+  arrange(desc(graph))
+
+grades %>% 
+  group_by(group) %>%
+  summarize(teamwork = mean(teamwork),
+            count = n()) %>%
+  arrange(desc(teamwork))
+
+grades %>% 
+  group_by(group) %>%
+  summarize(followup = mean(followup),
+            count = n()) %>%
+  arrange(desc(followup))
 
 
 
+rents <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/price.csv")
+map_df <- map_data("state")
+names(rents)[names(rents) == "State"] <- "region"
+names(rents)[names(rents) == "January 2017"] <- "price"
+rents <- dplyr::select(rents, region, price)
+rents <- mutate(rents, region = tolower(region))
+full_map_df <- left_join(map_df, rents, by = c("region" = "region"))
+p3 <- ggplot(full_map_df, aes(x = long, y = lat, group = group, fill = price))
+p3 <- p3 + geom_polygon() + labs(title = "Rent by State")+ 
+  scale_fill_gradient2(low = "yellow", high = "red", 
+                       mid = "orange", midpoint = 60, name = "Rent Price") +
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        axis.title.y=element_blank(), legend.position = "bottom")
+p3
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+map <- get_map(location = 'United States', zoom = 4)
+mapPoints <- ggmap(map) +
+  geom_point(aes(x = lon, y = lat, size = flights, color = DST), 
+             data = airportA, alpha = .5)
+mapPointsLegend <- mapPoints +
+  scale_size_area(breaks = sqrt(c(1, 5, 10, 50, 100, 500)), 
+                  labels = c(1, 5, 10, 50, 100, 500), 
+                  name = "arriving routes")
+LAXcode <- "LAX"
+LAX <- filter(routes, 
+              sourceAirport == LAXcode | 
+                destinationAirport == LAXcode) %>%
+  mutate(sourceAirportID = as.integer(sourceAirportID),
+         destinationAirportID = as.integer(destinationAirportID))
+LAXSource <- left_join(LAX, airports, by = c("sourceAirportID" = "ID"))
+LAXDest <- left_join(LAX, airports, by = c("destinationAirportID" = "ID"))
+LAXfull <- left_join(x = LAXSource, y = LAXDest, by = c("sourceAirportID" = "destinationAirportID"))
+mapPointsLegend <- mapPointsLegend + 
+  geom_segment(aes(x = lon.x, y = lat.x, xend = lon.y, 
+                   yend = lat.y), data = LAXfull)
+mapPointsLegend
 
 
 
