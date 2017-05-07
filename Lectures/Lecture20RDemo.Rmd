@@ -131,8 +131,7 @@ mapPoints <- ggmap(map) +
 mapPointsLegend <- mapPoints +
   scale_size_area(breaks = sqrt(c(1, 5, 10, 50, 100, 500)), 
                   labels = c(1, 5, 10, 50, 100, 500), 
-                  name = "departing routes") + 
-  geom_smooth(aes(x = lon, y = lat))
+                  name = "departing routes")
 mapPointsLegend
 ```
 
