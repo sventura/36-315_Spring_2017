@@ -138,7 +138,7 @@ In `ggmap()`, 'extent' specifies how large the map should be relative to the plo
 
 ### Part E
 
-```{r warning=F,message=F}
+```{r warning = F, message = F}
 library(ggmap)
 map_base <- get_map(location = c(lon = -79.944248, lat = 40.4415861),
                     color = "color",
@@ -182,17 +182,17 @@ The latitude and longitude should not change when the zoom is changed. This make
 
 ### Part C
 
-```{r warning=F,message=F}
+```{r warning = F, message = F}
 map_base_NYC <- get_map(location = c(lon = -73.9873197, lat = 40.758899),
-                    color = "bw",
-                    source = "google",
-                    maptype = "roadmap",
-                    zoom = 12)
+                        color = "bw",
+                        source = "google",
+                        maptype = "roadmap",
+                        zoom = 12)
 
 map_object_NYC <- ggmap(map_base_NYC,
-                    extent = "device",
-                    ylab = "Latitude",
-                    xlab = "Longitude")
+                        extent = "device",
+                        ylab = "Latitude",
+                        xlab = "Longitude")
 map_object_NYC
 ```
 
@@ -264,7 +264,7 @@ mapPointsLegend
 
 b. 
 
-```{r, warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE}
 my_airport_code <- "LAX"
 lax_routes <- dplyr::filter(routes, 
                            sourceAirport == my_airport_code | 
@@ -339,7 +339,7 @@ rent <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datase
 
 ```{r, warning = FALSE, message = FALSE}
 rent_jan2017 <- rent %>%
-  select(County, State, `January 2017`) %>%
+  dplyr::select(County, State, `January 2017`) %>%
   rename(jan_2017 = `January 2017`) %>%
   arrange(State) %>%
   group_by(State) %>%
@@ -368,7 +368,7 @@ The highest average rent cost states seem to be California, Massachusetts, and N
 
 ```{r, warning = FALSE, message = FALSE}
 rent_jan2017 <- rent %>%
-  select(County, State, `January 2017`) %>%
+  dplyr::select(County, State, `January 2017`) %>%
   rename(jan_2017 = `January 2017`) %>%
   arrange(County) %>%
   group_by(County) %>%
@@ -386,7 +386,7 @@ ggplot(county_borders, aes(x = long, y = lat, fill = mean_rent)) +
                        mid = "white", midpoint = 2000) +
   labs(title = "Mean Rent per County, Jan. 2017",
        fill = "Mean Rent ($)") +
-  theme_bw()
+  theme_void() 
 ```
 
 
