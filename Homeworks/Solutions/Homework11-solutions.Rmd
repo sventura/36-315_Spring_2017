@@ -1,0 +1,411 @@
+---
+title: "36-315 Homework 11, Spring 2017"
+author: "Solution Key"
+date: "Due Wednesday, May 3rd, 2017 (12pm ET) on Blackboard"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  hide
+---
+
+#  Homework 11:  Maps
+
+***General instructions for all assignments***: 
+
++  Use this file as the template for your submission.  Delete the unnecessary text (e.g. this text, the problem statements, etc).  That said, keep the nicely formatted "Problem 1", "Problem 2", "a.", "b.", etc
++  Upload a single `R` Markdown file (named as:  [AndrewID]-HW09.Rmd -- e.g. "sventura-HW09.Rmd") to the Homework 09 submission section on Blackboard.  You do not need to upload the .html file.
++  The instructor and TAs will run your .Rmd file on their computers.  **If your .Rmd file does not knit on our computers, you will be automatically be deducted 10 points.**
++  Your file should contain the code to answer each question in its own code block.  Your code should produce plots/output that will be automatically embedded in the output (.html) file
++  Each answer must be supported by written statements (unless otherwise specified)
++  Include the name of anyone you collaborated with at the top of the assignment
++  Include the style guide you used below under Problem 0
+
+
+***
+***
+
+#  Easy Problems
+
+##  Problem 0
+
+(4 points)
+
+**Organization, Themes, and HTML Output**
+
+a.  For all problems in this assignment, organize your output as follows:
+
++  Use code folding for all code.  See [here](http://blog.rstudio.org/2016/03/21/rmarkdown-v0-9-5/) for how to do this.
++  Use a floating table of contents.
++  Suppress all warning messages in your output by using `warning = FALSE` and `message = FALSE` in every code block.
++  Use tabs only if you see it fit to do so -- this is your choice.
+
+
+b.  For all problems in this assignment, adhere to the following guidelines for your `ggplot` theme and use of color:
+
++  Do not use the default `ggplot()` color scheme.
++  For any bar chart or histogram, outline the bars (e.g. with `color = "black"`).
++  Do not use both red and green in the same plot, since a large proportion of the population is red-green colorblind.
++  Try to only use three colors (at most) in your themes.  In previous assignments, many students are using different colors for the axes, axis ticks, axis labels, graph titles, grid lines, background, etc.  This is unnecessary and only serves to make your graphs more difficult to read.  Use a more concise color scheme.
++  Make sure you use a white or gray background (preferably light gray if you use gray).
++  Make sure that titles, labels, and axes are in dark colors, so that they contrast well with the light colored background.
++  Only use color when necessary and when it enhances your graph.  For example, if you have a univariate bar chart, there's no need to color the bars different colors, since this is redundant.
++  In general, try to keep your themes (and written answers) professional.  Remember, you should treat these assignments as professional reports.
+
+
+c.  Treat your submission as a formal report:
+
++  Use complete sentences when answering questions.  
++  Answer in the context of the problem.  
++  Treat your submission more as a formal "report", where you are providing details analyses to answer the research questions asked in the problems.
+
+
+d.  What style guide are you using for this assignment?
+
+```{r, message = F, warning = F}
+library(tidyverse)
+library(data.table)
+library(forcats)
+
+#  Simple theme with white background, legend at the bottom
+my_theme <-  theme_bw() +
+  theme(axis.text = element_text(size = 12, color = "indianred4"),
+        text = element_text(size = 14, face = "bold", color = "darkslategrey"))
+
+#  Colorblind-friendly color palette
+my_colors <- c("#000000", "#56B4E9", "#E69F00", "#F0E442", "#009E73", "#0072B2", 
+               "#D55E00", "#CC7947")
+
+```
+
+***
+***
+
+
+##  Problem 1 {.tabset}
+
+(3 points each)
+
+### Part A
+
+Sometimes, seemingly rational methods of data visualization may not be the most effective way of presenting data. Even though dividing up a full range of data for a variable into equally sized bins might seem like a good idea, this method can be misleading if there are several extreme outliers or if a small number of bins has a disproportionately large/small number of observations. When considering how to visualize big distinctions in the data, like positive versus negative growth, it is often useful to use a bivariate color distribution to emphasize the distinction compared to using a single color gradient.
+
+### Part B
+
+The standard Mercator projection map of the world that we use today does not accurately reflect relative sizes of land masses and seas, particularly for Antarctica and Greenland. A new way of visualizing the world map developed by architect and artist Hajime Narukawa known as the AuthaGraph map projection method won the 2016 Good Design Award for its ability to faithfully preserve the relative sizes of 96 different regions of the world. As issues like climate change, melting glaciers in Greenland, and territorial sea claims become more relevant, this new perspective of the world may be helpful in ensuring that all interests of the planet are equally represented.
+
+### Part C
+
+`ggmap` uses a two-step process to create interesting and informative graphics in `ggplot`. First, the `get_map()` function is used to download and format an image for plotting from a variety of online sources given a latitude/longitude pair and some sort of location information such as a zoom or bounding box. Next, `ggmap()` plots the downloaded image as a context layer using `ggplot2`. Since `ggmap()` returns a `ggplot` object, the product of `ggmap()` can act as a base layer for the entire `ggplot2` framework.
+
+### Part D
+
+You can use `stat_density2d(fill = ..level..)` along with `scale_fill_gradient()` to add a heatmap layer to a `ggmap` base.
+
+
+***
+***
+
+
+##  Problem 2 {.tabset}
+
+(2 points each)
+
+
+### Part A
+
+```{r warning=F,message=F}
+library(ggmap)
+```
+
+`get_map()` creates a `ggmap` object for plotting by querying a map server given location and zoom arguments. The different map sources that can be used in `get_map()` are Google Maps, OpenStreetMap, Stamen Maps, and Naver Map.
+
+### Part B
+
+The `zoom` parameter determines the bounds of the viewing window for the map we are plotting. It takes in values between 3 (continent) and 21 (building) with a default value of 10 (city). A viewing window of 1 square mile would require a zoom level of approximately 16-18.
+
+### Part C
+
+We can choose the types "terrain", "terrain-background", "satellite", "roadmap", and "hybrid", "watercolor", and "toner." The "hybrid" type is unique to Google Maps.
+
+### Part D  
+
+The map shows Carnegie Mellon University, Phipps, and part of Schenley Park pulled from Google Maps. The direct center of the map seems to be Baker Hall. 
+
+In `get_map()`, 'location' specifies where the center of the map should be, 'color' specifies that the map should be in color, 'source' specifies that the map should be pulled from Google Maps, 'maptype' specifies that the map should use the "hybrid" map theme, and 'zoom' specifies that the viewing window should be roughly a square mile. 
+
+In `ggmap()`, 'extent' specifies how large the map should be relative to the plotting device, and 'xlab' and 'ylab' label the x and y axes.
+
+### Part E
+
+```{r warning=F,message=F}
+library(ggmap)
+map_base <- get_map(location = c(lon = -79.944248, lat = 40.4415861),
+                    color = "color",
+                    source = "google",
+                    maptype = "hybrid",
+                    zoom = 16)
+
+map_object <- ggmap(map_base,
+                    extent = "device",
+                    ylab = "Latitude",
+                    xlab = "Longitude")
+map_object
+```
+
+Using a non-integer input for the `zoom` parameter returns an error stating that "zoom must be a whole number between 1 and 21".
+
+### Part F
+
+```{r}
+# class(map_object)
+```
+
+`map_object` is a `ggplot` object, which inherits from class `gg`.
+
+
+***
+***
+
+
+##  Problem 3 {.tabset}
+
+(2 points each)
+
+### Part A  
+
+The latitude is 40.7588995, and the longitude is -73.9873197.
+
+### Part B
+
+The latitude and longitude should not change when the zoom is changed. This makes sense since the latitude and longitude specify the center of the viewing window, which does not change as we zoom in or out.
+
+### Part C
+
+```{r warning=F,message=F}
+map_base_NYC <- get_map(location = c(lon = -73.9873197, lat = 40.758899),
+                    color = "bw",
+                    source = "google",
+                    maptype = "roadmap",
+                    zoom = 12)
+
+map_object_NYC <- ggmap(map_base_NYC,
+                    extent = "device",
+                    ylab = "Latitude",
+                    xlab = "Longitude")
+map_object_NYC
+```
+
+The output of `map_object_NYC` is a greyscale map, pulled from Google Maps, which shows road and highway information around the Manhattan, Brooklyn, and Jersey City areas.
+
+
+***
+***
+
+
+
+#  Hard Problems
+
+For both problems below, it may help to look over:
+
++  The Lecture 20 R Demo on Blackboard
++  The Maps Helper R Code file on Blackboard (thanks to TA Jennifer Jin for this!)
+
+Both files are located under Course Content.
+
+
+##  Problem 4
+
+(30 points total)
+
+**Mapping US Flights**
+
+a.
+
+```{r, warning=FALSE, message=FALSE}
+airports <- read_csv("https://raw.githubusercontent.com/jpatokal/openflights/master/data/airports.dat",
+                     col_names = c("ID", "name", "city", "country", "IATA_FAA", 
+                                   "ICAO", "lat", "lon", "altitude", "timezone", "DST"))
+
+routes <- read_csv("https://raw.githubusercontent.com/jpatokal/openflights/master/data/routes.dat",
+                   col_names = c("airline", "airlineID", "sourceAirport", 
+                                 "sourceAirportID", "destinationAirport", 
+                                 "destinationAirportID", "codeshare", "stops",
+                                 "equipment"))
+
+departures <- routes %>%
+  dplyr::group_by(sourceAirportID) %>%
+  dplyr::summarize(flights = n()) %>%
+  mutate(sourceAirportID = as.integer(as.vector(sourceAirportID)))
+
+arrivals <- routes %>%
+  dplyr::group_by(destinationAirportID) %>%
+  dplyr::summarize(flights = n()) %>%
+  mutate(destinationAirportID = as.integer(as.vector(destinationAirportID)))
+
+#  Merge each of the arrivals/departures data.frames with the airports data.frame above
+airportD <- left_join(airports, departures, by = c("ID" = "sourceAirportID"))
+airportA <- left_join(airports, arrivals, by = c("ID" = "destinationAirportID"))
+
+map <- get_map(location = 'United States', zoom = 4)
+
+mapPoints <- ggmap(map) +
+    geom_point(aes(x = lon, y = lat, size = flights), 
+        data = airportA) + 
+    ggtitle("Location of Airports Sized by Number of Arriving Flights")
+
+#  Add a custom legend to the plot
+mapPointsLegend <- mapPoints +
+  scale_size_area(breaks = c(10, 50, 100, 500, 900), 
+                  labels =c(10, 50, 100, 500, 900), 
+                  name = "Number of Arriving Routes")
+mapPointsLegend
+```
+
+b. 
+
+```{r, warning=FALSE, message=FALSE}
+my_airport_code <- "LAX"
+lax_routes <- dplyr::filter(routes, 
+                           sourceAirport == my_airport_code | 
+                            destinationAirport == my_airport_code)
+
+lax_airport <- lax_routes %>%
+    left_join(airports, by = c("sourceAirport" = "IATA_FAA")) %>%
+    dplyr::select(destinationAirport, lat, lon, timezone) %>%
+    dplyr::rename(source_lat = lat, source_lon = lon, source_timezone = timezone) %>%
+    left_join(airports, by = c("destinationAirport" = "IATA_FAA")) %>%
+    dplyr::select(source_lat, source_lon, source_timezone, lat, lon, timezone) %>%
+    dplyr::rename(dest_lat = lat, dest_lon = lon, dest_timezone = timezone)
+
+mapPointsLegend + 
+    geom_segment(aes(x = source_lon, y = source_lat, xend = dest_lon,
+                   yend = dest_lat), data = lax_airport, alpha=.15) +
+    labs(x = "Longitude", y = "Latitude",
+         title = "Flights To and From Los Angeles") +
+    theme_void()
+```
+
+
+c. 
+
+```{r, warning=FALSE, message=FALSE}
+mapPointsLegend + 
+    geom_curve(aes(x = source_lon, y = source_lat, xend = dest_lon,
+             yend = dest_lat), data = lax_airport, 
+             arrow = arrow(length = unit(0.02, "npc")), alpha=.15) +
+    labs(x = "Longitude", y = "Latitude",
+         title = "Flights To and From Los Angeles") + 
+  coord_cartesian()
+```
+
+d.  
+
+```{r, warning=FALSE, message=FALSE}
+lax_airport$change_timezone <- lax_airport$source_timezone - lax_airport$dest_timezone
+lax_airport <- lax_airport[which(abs(lax_airport$change_timezone) <= 3), ]
+
+# Filter by routes that wil be shown on map
+
+mapPointsLegend + 
+  geom_curve(aes(x = source_lon, y = source_lat, xend = dest_lon,
+                   yend = dest_lat, color = change_timezone), data = lax_airport, 
+             arrow = arrow(length = unit(0.02, "npc"))) +
+    labs(x = "Longitude", y = "Latitude", 
+         title = "Flights To and From Los Angeles",
+         color = "Change in \nTime Zone \nin Hours") +
+    coord_cartesian() + 
+    scale_color_gradient(low = "blue", high = "red")
+```
+
+***
+***
+
+
+##  Problem 5
+
+(40 points)
+
+**Choropleth Maps of Rent Prices**
+
+## a.  
+
+```{r}
+rent <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/price.csv")
+```
+
+
+## b. 
+
+```{r, warning = FALSE, message = FALSE}
+rent_jan2017 <- rent %>%
+  select(County, State, `January 2017`) %>%
+  rename(jan_2017 = `January 2017`) %>%
+  arrange(State) %>%
+  group_by(State) %>%
+  summarize(mean_rent = mean(jan_2017))
+
+state_data <- data_frame(state.abb, state.name) %>%
+  mutate(state.name = tolower(state.name)) %>%
+  left_join(rent_jan2017, by = c("state.abb" = "State"))
+
+state_borders <- map_data("state") %>%
+  left_join(state_data, by = c("region" = "state.name"))
+
+ggplot(state_borders, aes(x = long, y = lat, fill = mean_rent)) + 
+  geom_polygon(aes(group = state.abb), color = "black") + 
+  theme_void() + 
+  coord_map("mercator") + 
+  scale_fill_gradient2(high = "darkred", low = "darkblue", 
+                       mid = "white", midpoint = 1500) +
+  labs(title = "Mean Rent per State, Jan. 2017",
+       fill = "Mean Rent ($)")
+```
+
+The highest average rent cost states seem to be California, Massachusetts, and New Jersey, while the lowest rent cost states include Oklahoma, West Virginia, and Arkansas. Average rent prices seem to be higher around the Pacific coast and in New England, while they tend to be lower in the Deep South, the Midwest, and the Mountain time zone. 
+
+## c.  
+
+```{r, warning = FALSE, message = FALSE}
+rent_jan2017 <- rent %>%
+  select(County, State, `January 2017`) %>%
+  rename(jan_2017 = `January 2017`) %>%
+  arrange(County) %>%
+  group_by(County) %>%
+  summarize(mean_rent = mean(jan_2017)) %>%
+  mutate(County = tolower(County))
+
+county_borders <- map_data("county") %>%
+  left_join(rent_jan2017, by = c("subregion" = "County"))
+
+ggplot(county_borders, aes(x = long, y = lat, fill = mean_rent)) + 
+  geom_polygon(aes(group = group)) + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  coord_map("mercator") + 
+  scale_fill_gradient2(high = "darkred", low = "darkblue", 
+                       mid = "white", midpoint = 2000) +
+  labs(title = "Mean Rent per County, Jan. 2017",
+       fill = "Mean Rent ($)") +
+  theme_bw()
+```
+
+
+THe higher end of the county average monthy rents seem to predominantly be on the coasts. The above average monthly rents are concentrated in a few counties in Californa, New York, New Jersey, and Florida. There also seem to be a few high-rent counties states in the Midwest. These are significantly higher than most of the country; the rest of the counties seems to have average monthly rent below 2000 dollars per month, while these counties seem to be 3000 dollars per month and above. There seems to be a lot of missing data from the Great Plains states.
+
+***
+***
+
+
+#  Bonus Problems
+
+See the BonusProblems assignment on Blackboard.
+
+
+***
+***
+***
+***
+***
+***
+
+
