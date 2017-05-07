@@ -1,0 +1,177 @@
+---
+title: "36-315 Bonus Problems, Spring 2017"
+author: "Your Name Here"
+date:  "Due:  Saturday, 5/13, 11:59pm"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+#  Bonus Problems
+
+**Solutions to any of the following problems should be submitted on Blackboard by Saturday, 5/13 at 11:59pm**
+
+
+##  Bonus 1
+
+(15 points added to your 2nd-lowest HW score)
+
+**Create `geom_acf()`**
+
+Create a new `ggplot()` geometry called `geom_acf()` that will create the same graph you made in Problem 6 of Homework 12, but in a more typical `ggplot()` way.
+
+You should first read this vignette from Hadley Wickham on [extending the `ggplot2` package](https://cran.r-project.org/web/packages/ggplot2/vignettes/extending-ggplot2.html), where he demonstrates how to create new geoms and stats.
+
+Write two functions:
+
++  `fortify()`:  This function should take two inputs -- a data.frame (e.g. `trips_per_day`) and a column name specifying the column of the data.frame that contains the time series data (e.g. "n_trips").  It should output a data.frame with two columns -- `lag` and `ac`.  Lag should contain the lag ID number, and `ac` should contain the autocorrelation of the time series at that lag.
++  `geom_acf()` (and, if necessary, `StatACF()`)
+
+Demonstrate that the following code works once you write these functions:
+
++  `ggplot(fortify(trips_per_day, n_trips), aes(x = lag, y = ac)) + geom_acf()`
++  `ggplot(fortify(trips_per_day, n_trips)) + geom_acf(aes(x = lag, y = ac))`
+
+
+***
+***
+
+
+
+##  Bonus 2
+
+(15 points added to your 2nd-lowest HW score)
+
+**Airport Network**
+
+Your task in this problem is to create a network diagram of the airport / flight / route data from the recent HW and from the Lecture 20 R Demo.  To do this, take the following steps:
+
+a.  Create an adjacency matrix for the top 50 airports in the dataset (where "top" is defined as the airports with the most total incoming and outgoing flights), and store it in an object called `airport_adj`.  You should create the matrix so that `airport_adj[ii,jj]` is proportional to the total number of flights between airport `ii` and airport `jj` in the dataset.
+
+b.  Use the `graph_from_adjacency_matrix()` function in the `igraph` package to convert your adjacency matrix to an object of class `igraph`.
+
+c.  Create a `ggplot()` network diagram of the airports data.  In your graph, do all of the following:
+
++  Give the graph an appropriate title, and remove all axis elements (axes, labels, tick marks, etc)
++  Size the edges by the frequency of flights between the two nodes (airports)
++  Color the nodes by their daylight savings time category, and include an appropriate legend; alternatively, color by continent for an extra bonus point
++  Change the line type of the edges so that domestic flights (flights between two airports in the same country) solid lines and international flights (flights between two airports in different countries) have dotted or dashed lines, and include an appropriate legend
+
+d.  Describe the resulting network diagram.  Point out any interesting features you see.
+
+
+***
+***
+
+
+##  Bonus 3
+
+(30 bonus points added to your 2nd-lowest homework assignment score, or roughly 1% added to your final course grade)
+
+**Fix `geom_mosaic()`**
+
+In the `geom_mosaic()` function on the course GitHub page, the x- and y-axis labels are somewhat confusing.  Specifically, they category labels and tick marks do not align with the location of the bars in the categories themselves.  
+
+Your assignment in this problem is to fix the `geom_mosaic()` function so that the category labels and tick marks are aligned in the same way that the resulting graph is the same as what would be obtained via the `graphics::mosaicplot()` function:
+
++  The x-axis category labels and tick marks should be directly underneath the bars, corresponding to the marginal distribution of the first variable
++  The y-axis category labels and tick marks should be directly to the left of where the cells in the first vertical bar, corresponding to the conditional distribution of variable 2 given variable 1, category 1.
+
+
+
+***
+***
+
+
+##  Bonus 4
+
+(2 points each; 10 points total, added to your 2nd-lowest HW score)
+
+**Sentiment Analysis and Word Clouds with `ggplot()`**
+
+Following the example [here](http://mhairihmcneill.com/blog/2016/04/05/wordclouds-in-ggplot.html), create three graphs:
+
+a.  A word cloud with the words colored by airline.
+
+b.  A facetted word cloud (facetting by airline), colored by `user_timezone`.
+
+c.  Interpret the plot in (b).  Are there any interesting features across the airlines?
+
+d.  Follow the example in Section 2.5 of the Tidy Text Mining book to join the **sentiment** of each word to the word counts.  Then create a facetted word cloud (facetting by airline), colored by the `sentiment` of the word.
+
+e.  Interpret the plot in (d).  Are there any interesting features across the airlines?
+
+***
+***
+
+##  Bonus 5
+
+(10 points added to your 2nd-lowest HW score)
+
+**Animated `ggplot` Graphics with `gganimate`**
+
+*WARNING:  Getting all of these necessary packages installed can be extremely frustrating!  To complete this example problem, you'll need the `devtools`, `gganimate`, and `gapminder` packages installed.  Additionally, you need specific graphics software installed on your computer in order to make this package work (ImageMagick).  If you don't have it, you may be able to use the BH 140 Mac cluster.*
+
+The `gganimate` package can be used to create animated graphics.  By specifying the `frame` aesthetic, `gganimate` will cycle through various pieces/subsets/facets of the dataset and show the underlying graph for each piece/subset/facet.  Here is an example:
+
+```{r, warnings = F, message = F}
+library(devtools)
+#install_github("dgrtwo/gganimate")
+library(ggplot2)
+library(gganimate)
+library(gapminder)
+
+test <- ggplot(gapminder, aes(x = gdpPercap, y = lifeExp, size = pop, 
+                              color = continent, frame = year)) +
+  geom_point() + scale_x_log10()
+
+gg_animate(test)
+```
+
+(If the animated plot does not show up correctly in your HTML document, don't worry about it.  It will be helpful to view the plot in RStudio to see the animation in action.)
+
+Pick a dataset that we've used this semester, and create an animated visualization of the dataset, similar to the one above.  For example, your base plot can be a scatterplot (with points sized/colored by different variables), and your `frame` aesthetic should correspond to the variable you want to use to create the animated graphic.
+
+Intepret the graph.  Point out some interesting features that you can see in the animated graph that you would not otherwise see in the static graph.
+
+
+***
+***
+
+##  Bonus 6
+
+(15 points added to your 2nd-lowest HW score)
+
+**Sentiment Analysis of Twitter**
+
+a.  Read [this article](http://varianceexplained.org/r/trump-tweets/) from David Robinson on doing sentiment analysis of Twitter data.
+
+b.  Pick two Twitter accounts that you are interested in.  The accounts should have at least 2000 followers, have at least 500 Tweets, and be "PG" (no obscene language/pictures/etc).
+
+c.  Replicate the time series graph and the facetted sentiment analysis graph in the article above (you don't have to do the Android/iPhone split if your Twitter data does not have this).
+
+
+***
+***
+
+##  Bonus 7
+
+(20 points added to your 2nd-lowest HW score)
+
+**Topic Modeling**
+
+a.  Read Chapter 6 of the [Tidy Text Mining](http://tidytextmining.com/) book on Topic Modeling.
+
+b.  Downlaod the [News Articles](https://www.kaggle.com/asad1m9a9h6mood/news-articles) dataset from Kaggle.
+
+c.  (15 points)  Recreate the analysis in Chapter 6.1.1 using this dataset.
+
+d.  (5 points)  Recreate the same analysis using data from one of your Twitter accounts from Bonus Problem 6.
+
+***
+***
+
+
