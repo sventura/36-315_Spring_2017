@@ -1,6 +1,6 @@
 ---
 title: "36-315 Homework 12, Spring 2017"
-author: "Your Name Here"
+author: "Solutions"
 date: "Due Wednesday, May 3rd, 2017 (12pm ET) on Blackboard"
 output: 
   html_document:
@@ -128,13 +128,13 @@ big_bike <- mutate(big_bike,
 # sort(big_bike$start_date)[nrow(big_bike)]
 ```
 
-There are 105984 rows and 24 columns in the result. The minimum bike trip date is july 1st, 2013 and the maximum bike trip date is september 30th, 2016.
+There are 105984 rows and 24 columns in the result. The minimum bike trip date is July 1st, 2013 and the maximum bike trip date is September 30th, 2016.
 
 
 ### b.
 
 
-```{r, warning = F, message = F, fig.width = 6, fig.height = 2.5}
+```{r, warning = F, message = F, fig.width = 6.5, fig.height = 3.5}
 library(ggplot2)
 
 #  Summarize the big_bike, creating a new data.frame that includes the number 
@@ -148,24 +148,37 @@ trips_per_day <- big_bike %>%
 ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + geom_line() + 
   scale_x_date() + geom_point() + 
   labs(x = "Start Date", y = "Number of Bike Trips", 
-       main = "Number of Bike Trips Begun on Each Start Date") +  
+       title = "Number of Bike Trips Begun on Each Start Date") +  
   theme(plot.title = element_text(size = 18), 
         axis.title = element_text(size = 20)) + 
   my_theme
 ```
 
 ### c.  
-```{r}
-#which row of the start date column is equal to the max of the n_trips column
 
-# trips_per_day$start_date[trips_per_day$n_trips==max(trips_per_day$n_trips)]
+```{r, fig.height = 3.5, fig.width = 6.5}
+#  Create a time series plot with the dates on the x-axis and the number of
+#  trips per day on the y-axis
+ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + geom_line() + 
+  scale_x_date() +
+  labs(x = "Start Date", y = "Number of Bike Trips", 
+       title = "Number of Bike Trips Begun on Each Start Date") +  
+  theme(plot.title = element_text(size = 18), 
+        axis.title = element_text(size = 20)) + 
+  my_theme
+
+#  Max trips
+trips_per_day %>%
+  arrange(desc(n_trips)) %>%
+  head(1)
 ```
+
 Removing geom_point from part b creates removes each point from the tiem series. The start dates are only connected with lines now. The start dates appear rather oscillating. It looks like the number of people who start on a certain day peak during a certain time each year (looks like it is the summer). September 15th, 2016 had the most bike trips. 
 
 
 ### d.
 
-```{r, fig.height = 2.5, fig.width = 6}
+```{r, fig.height = 3.5, fig.width = 6.5}
 #  Summarize the big_bike, creating a new data.frame that includes the number 
 #  of trips taken on each day, split by usertype
 trips_per_day_usertype <- big_bike %>%
@@ -178,8 +191,8 @@ ggplot(trips_per_day_usertype,
        aes(x = start_date, y = n_trips, color = usertype)) + 
   geom_line() + scale_x_date()  + 
   labs(x = "Start Date", y = "Number of Bike Trips", color = "User Type",
-       main = paste0("Number of Bike Trips Begun on Each Start",
-                     " Date Conditioned on User Type")) + 
+       title = "Number of Bike Trips Begun on Each Start Date",
+       subtitle = "Conditioned on User Type") + 
   scale_color_manual(values=c("cornflowerblue", "goldenrod1")) +  
   theme(plot.title = element_text(size = 18),
         axis.title = element_text(size = 20)) + my_theme
@@ -259,8 +272,10 @@ The autocorrelation results contain information on the estimated autocorrelation
 
 ```{r, fig.width=10}
 par(mfrow = c(1, 2))
-acf(filter(trips_per_day_usertype, usertype == "Customer")$n_trips, main = "Autocorrelations of NYC Citi Bike \n Customer Trips per Day")
-acf(filter(trips_per_day_usertype, usertype == "Subscriber")$n_trips, main = "Autocorrelations of NYC Citi Bike \n Subscriber Trips per Day")
+acf(filter(trips_per_day_usertype, usertype == "Customer")$n_trips, 
+    main = "Autocorrelations of NYC Citi Bike \n Customer Trips per Day")
+acf(filter(trips_per_day_usertype, usertype == "Subscriber")$n_trips, 
+    main = "Autocorrelations of NYC Citi Bike \n Subscriber Trips per Day")
 ```
 
 It appears that the time series of subscriber bike trips per day typically has higher autocorrelations, as the vertical lines representing autocorrelation tend to be larger at each lag compared to the customer time series.
@@ -446,13 +461,15 @@ trips_per_day$bike_moving_average_14 <- bike_moving_average_14
 #  Create a time series plot with the dates on the x-axis and the number of
 #  trips per day on the y-axis
 # Add moving average line 
-ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + geom_line(aes(colour = "Original Data")) + 
+ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + 
+  geom_line(aes(colour = "Original Data")) + 
   scale_x_date() + geom_point() +
   geom_line(aes(x = start_date, y = bike_moving_average_14, colour = "Moving Average")) +
   scale_colour_manual("", breaks = c("Original Data", "Moving Average"), 
                       values = c("blue", "black")) + 
   ggtitle("Number of Bike Trips in December")+ 
-  labs(x = "Start Date", y = "Number of Trips")
+  labs(x = "Start Date", y = "Number of Trips") + 
+  my_theme + theme(legend.position = "bottom")
 ```
 
 
@@ -521,7 +538,8 @@ get_weighted_moving_averages <- function(time_series, ww, weights) {
 
 ```{r, warning = FALSE, message = FALSE}
 # Calculate weighted moving average of trips per day
-weight_MA <- get_weighted_moving_averages(trips_per_day$n_trips, 3, weights = c(1, 1, 3))
+weight_MA <- get_weighted_moving_averages(trips_per_day$n_trips, 3, 
+                                          weights = c(1, 1, 3))
 trips_per_day$weight_MA <- weight_MA
 
 #  Create a time series plot with the dates on the x-axis and the number of
@@ -530,12 +548,17 @@ trips_per_day$weight_MA <- weight_MA
 ggplot(trips_per_day, aes(x = start_date, y = n_trips)) + 
   geom_line(aes(colour = "Original Data")) + 
   scale_x_date() + geom_point() +
-  geom_line(aes(x = start_date, y = bike_moving_average_14, colour = "Moving Average")) +
-  geom_line(aes(x = start_date, y = weight_MA, colour = "Weighted Moving Average"), linetype = 2) +
-  scale_color_manual(values = c("Original Data" = "black", "Moving Average" = "blue",
+  geom_line(aes(x = start_date, y = bike_moving_average_14, 
+                colour = "Moving Average")) +
+  geom_line(aes(x = start_date, y = weight_MA, 
+                colour = "Weighted Moving Average"), linetype = 2) +
+  scale_color_manual(values = c("Original Data" = "black", 
+                                "Moving Average" = "blue",
                                 "Weighted Moving Average" = "red")) +
   ggtitle("Number of Bike Trips in December") + 
-  labs(x = "Start Date", y = "Number of Trips")
+  labs(x = "Start Date", y = "Number of Trips", 
+       color = "Time Series Type") + 
+  my_theme + theme(legend.position="bottom")
 ```
 
 ### h.  
@@ -573,11 +596,12 @@ acf_plot <- function(time_series){
 ### comparison with acf() in rand_ts
 
 ```{r}
-acf_plot(rnorm(1000)) + labs(
-  title = "Autocorrelation of random time series - rnorm(1000)",
-  x = "Lag",
-  y = "Autocorrelation"
-)
+acf_plot(rnorm(1000)) + 
+  labs(
+    title = "Autocorrelation of random time series - rnorm(1000)",
+    x = "Lag",
+    y = "Autocorrelation"
+  ) + my_theme
 
 acf(rnorm(1000), main = "Autocorrelation of random time series - rnorm(1000)")
 ```
@@ -585,22 +609,17 @@ acf(rnorm(1000), main = "Autocorrelation of random time series - rnorm(1000)")
 ### comparison with acf() in bike data
 
 ```{r}
-acf_plot(trips_per_day$n_trips) + labs(
-  title = "Autocorrelation of number of trips per day from NYC bike dataset",
-  x = "Lag",
-  y = "Autocorrelation"
-)
+acf_plot(trips_per_day$n_trips) + 
+  labs(
+    title = "Autocorrelation of number of trips per day from NYC bike dataset",
+    x = "Lag",
+    y = "Autocorrelation"
+  ) + my_theme
 
-acf(trips_per_day$n_trips, main = "Autocorrelation of number of trips per day from NYC bike dataset")
+acf(trips_per_day$n_trips, 
+    main = "Autocorrelation of number of trips per day from NYC bike dataset")
 
 ```
-
-***
-***
-
-#  Bonus Problems
-
-See the BonusProblems assignment on Blackboard.
 
 
 ***
