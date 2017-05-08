@@ -183,7 +183,7 @@ ggparcoord(Cars93, columns = cont_cols) +
 
 
 
-#  Problem 2
+#  Problem 2 {.tabset}
 
 (18 points)
 
@@ -193,7 +193,7 @@ We've covered a few ways to visualize datasets that have many continuous variabl
 
 A correlation heat map provides a quick visualization of the bivariate correlations between all pairs of continuous variables in the dataset.
 
-a.  (0 points)  Code is provided for you to do the following tasks:
+## a. 
 
 +  Load the `Cars93` dataset
 +  Create a subset with only the continuous variables
@@ -204,44 +204,99 @@ cars_cont <- dplyr::select(Cars93, Price, MPG.city, MPG.highway, EngineSize,
                            Length, Wheelbase, Width, Turn.circle, Weight)
 ```
 
-b.  (5 points)  Partial code is provided for you to do the following tasks:
+## b.  
 
 +  Follow the example [here](http://www.sthda.com/english/wiki/ggplot2-quick-correlation-matrix-heatmap-r-software-and-data-visualization) to create a correlation heap map of the continuous variables in the `Cars93` dataset
 +  Adjust the color scheme so that correlations of -1 is shown in dark red, a correlation of 0 is shown in light grey, and a correlation of 1 is shown in dark blue.
 +  Rotate the x-axis tickmark label 90 degrees
 +  Add a title and adjust all axis and legend labels appropriately.
 
-```{r, warning = F, message = F}
+```{r, warning = F, message = F, fig.height = 10, fig.width = 11}
 library(reshape2)
 correlation_matrix <- cor(cars_cont)
-melted_cormat <- melt(correlation_matrix)
-ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
-  geom_tile()
+ggplot(data = melt(correlation_matrix), aes(x = Var1, y = Var2, fill = value)) + 
+  scale_fill_gradient2(low = "darkred", high = "darkblue", mid = "lightgrey", 
+                       midpoint = 0, limit = c(-1, 1), space = "Lab", 
+                       name="Pearson\nCorrelation") + 
+  geom_tile() +
+  labs(title = "Correlations between Continuous Variables in the Cars93 Dataset", 
+       x = " ", y = " ") + 
+  my_theme +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
 ```
 
-c.  (5 points)  Interpret the resulting graph:  
+## c.  
 
 +  Which pairs of variables are highly positively correlated?  
+    + `MPG.city` and `MPG.highway`  
+    + `Fuel.tank.capacity` and `Weight`
+    + `EngineSize` and `Width` 
+    + `Wheelbase` and `Weight`
+    + `Width` and `Weight` 
+    + `Width` and `Turn Circle`
+
 +  Which are highly negatively correlated?  
+    + `Price` and `MPG in the city`
+    + `MPG on the highway` and `Engine Size`
+    + `RPM` and `Fuel Tank Capacity`
+    + `Horsepower` and `RPM`
+
 +  Which have approximately no correlation?
+    + `Price` has approximately no correlation with `Passengers` and `RPM`; 
+    + `Horsepower` has approximately no correlation with `Passengers` and `RPM`.
 
-d.  (2 points)  Explain the connection between this plot and a heat map.
 
-e.  (1 point)  Even though they are very different, what plot for examining the associations between categories of two categorical variables does this remind you of?
+## d. 
 
-f.  (5 points)  Recreate the graph in (b), making the following additional adjustments to the correlation matrix:
+The correlation heat map is similar to a heat map as the color of the graph represents the magnitude of the value. In both plots, the values are contained in a matrix and represented as colors. This plot shows the correlations between various variables, while heat maps show the density of the joint distribution of two variables.
+
+## e. 
+
+It reminds me of a mosaic plot. 
+
+## f.  
 
 +  Reorder the variables as you see fit
 +  Add the rounded correlation to the plot via `geom_text()`
 +  Only display the upper or lower triangle of the graph
 
 
+```{r, warning = F, message = F, fig.height = 10, fig.width = 11}
+reorder_cormat <- function(cormat){
+dd <- as.dist((1-cormat)/2)
+hc <- hclust(dd)
+cormat <-cormat[hc$order, hc$order]
+}
+
+ # Get upper triangle of the correlation matrix
+get_upper_tri <- function(cormat){
+  cormat[lower.tri(cormat)]<- NA
+  return(cormat)
+  }
+  
+correlation_matrix <- cor(cars_cont)
+cormat <- reorder_cormat(correlation_matrix)
+upper_tri <- get_upper_tri(cormat)
+melted_cormat <- melt(upper_tri, na.rm = TRUE)
+
+ggplot(data = melted_cormat, aes(x=Var1, y=Var2, fill=value)) + 
+  scale_fill_gradient2(low = "darkred", high = "darkblue", mid = "lightgrey", 
+  midpoint = 0, limit = c(-1,1), space = "Lab", 
+  name="Pearson\nCorrelation") +
+  geom_tile(color = "white") +
+  geom_text(aes(Var1, Var2, label = signif(value, 3)), color = "cyan", size = 4) +
+  ggtitle("Correlations between Continuous Variables in the Cars93 Dataset") +
+  labs(x = " ", y = " ") +
+  my_theme + 
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
+
 ***
 ***
 
 
 
-#  Problem 3
+#  Problem 3 {.tabset}
 
 (20 points)
 
@@ -249,20 +304,41 @@ f.  (5 points)  Recreate the graph in (b), making the following additional adjus
 
 Another way to visually explore potential associations between continuous variables in our dataset is with dendrograms.  
 
-a.  (15 points)  Create a "variable dendrogram" of the continuous variables in the `Cars93` dataset.  To do this:
+## a.  
 
-+  Select the continuous variables from the dataset
-+  Compute the correlation matrix for these variables
-+  Correlations measure similarity and can be negative, while distances measure dissimilarity and cannot be negative.  As such, convert your correlations to instead be one minus the absolute value of the correlations, so that correlations near 1 or -1 will have distances of 0, and correlations near 0 will have distances of 1, e.g.:  `cormat <- 1 - abs(cormat)`
-+  Convert your transformed correlation matrix to a distance matrix with the `as.dist()` function.
-+  Submit this distance matrix to hierarchical clustering (`hclust()`), convert the result to a dendrogram (`as.dendrogram()`), then plot with `ggplot()`.
-+  Color the branches by the four-cluster solution.  See the link in HW08 for how to do this.
-+  Be sure to adjust your axis labels, add a title, etc.
-+  The resulting dendrogram should plot highly correlated variables (positively or negatively correlated) in the same branches / clusters in the dendrogram, while uncorrelated variables will be linked at higher "distances" on the dendrogram.
 
-b.  (5 points)  Examine the four-cluster solution.  Which variables are in the same cluster?  Does it make sense that these are in the same cluster, given both your common-sense understanding of these variables and given the correlation plot you created in Problem 2?
 
-c.  (1 point)  What other measures (other than correlation) could you use to measure similarity / dissimilarity between continuous variables for the purposes of a variable dendrogram?  (There is not necessarily a right or wrong answer here -- just brainstorm ideas.)
+```{r, warning = F, error=F, message=F}
+library(dendextend)
+
+get_colors <- function(x, palette = my_colors) 
+  palette[match(x, unique(x))]
+
+correlation_matrix1 <- cor(cars_cont)
+correlation_matrix <- 1 - abs(correlation_matrix1)
+dist_matrix <- as.dist(correlation_matrix)
+
+dist_matrix %>% hclust %>% as.dendrogram %>% 
+  set("branches_k_color", value = get_colors(c(1,2,3,4)), k = 4) %>% 
+  set("labels_col", value = get_colors(c(1,2,3,4)), k = 4) %>% 
+  ggplot(horiz = TRUE) + ylim(1.1, -0.3) + 
+  labs(title = "Clustering of Continuous Variables of Car93 Data", 
+       y = "Pairwise Euclidean Distance", x = "") + 
+  my_theme
+```
+
+## b. 
+
++ Weight, Fuel Tank Capacity, MPG highway, MPG city, Horsepower Price are in one cluster. Width, EngineSize, Turn Circle, WheelBase and Length are in another cluster. Passenger and RPM make the other two cluster. 
+
++ We see that each respective cluster are highly correlated with each other in the correlation plot of Problem 2. Futhermore we see that RPM and Passengers have insignificant correlation with the other variables hence they are in their own cluster. 
+
+
+## c. 
+
++ Matrix of covariances
+
++ Rescale variables and compute Cosine Similarity
 
 
 ***
@@ -398,7 +474,7 @@ V(net_graph)$gender <- actor_gender
 ggraph(net_graph, layout = 'kk') + 
   geom_edge_density() +
   geom_edge_diagonal(edge_width = 1.5) +
-  geom_node_label(aes(label = net_names, color = gender),
+  geom_node_label(aes(label = names, color = gender),
                   size = 2.2) +
   my_theme +
   labs(title = "Network of Love Actually Characters",
