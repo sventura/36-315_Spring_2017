@@ -428,20 +428,12 @@ get_moving_averages <- function(time_series, ww) {
 ### c.  
 
 ```{r, warning = FALSE, message = FALSE}
-# Load in the data
-bike_data <- read_csv("https://raw.githubusercontent.com/sventura/315-code-and-datasets/master/data/big_bike.csv")
-
-#  Add start_date variable to bike_data
-bike_data$start_date <- as.Date(sapply(strsplit(as.character(bike_data$starttime), " "), 
-                                       "[[", 1), 
-                                format = "%Y-%m-%d")
-
 library(dplyr)
 library(ggplot2)
 
 #  Summarize the bike_data, creating a new data.frame that includes the number 
 #  of trips taken on each day
-by_date <- group_by(bike_data, start_date)
+by_date <- group_by(big_bike, start_date)
 trips_per_day <- summarize(by_date, n_trips = n())
 trips_per_day <- na.omit(trips_per_day)
 
@@ -467,7 +459,7 @@ ggplot(trips_per_day, aes(x = start_date, y = n_trips)) +
   geom_line(aes(x = start_date, y = bike_moving_average_14, colour = "Moving Average")) +
   scale_colour_manual("", breaks = c("Original Data", "Moving Average"), 
                       values = c("blue", "black")) + 
-  ggtitle("Number of Bike Trips in December")+ 
+  ggtitle("Number of Bike Trips")+ 
   labs(x = "Start Date", y = "Number of Trips") + 
   my_theme + theme(legend.position = "bottom")
 ```
@@ -555,7 +547,7 @@ ggplot(trips_per_day, aes(x = start_date, y = n_trips)) +
   scale_color_manual(values = c("Original Data" = "black", 
                                 "Moving Average" = "blue",
                                 "Weighted Moving Average" = "red")) +
-  ggtitle("Number of Bike Trips in December") + 
+  ggtitle("Number of Bike Trips") + 
   labs(x = "Start Date", y = "Number of Trips", 
        color = "Time Series Type") + 
   my_theme + theme(legend.position="bottom")
