@@ -92,7 +92,9 @@ Your assignment in this problem is to fix the `geom_mosaic()` function so that t
 
 **Sentiment Analysis and Word Clouds with `ggplot()`**
 
-Following the example [here](http://mhairihmcneill.com/blog/2016/04/05/wordclouds-in-ggplot.html), create three graphs:
+Load the airline tweets dataset from earlier in the semester.  
+
+Following the example [here](http://mhairihmcneill.com/blog/2016/04/05/wordclouds-in-ggplot.html), create three graphs using the airline tweet text:
 
 a.  A word cloud with the words colored by airline.
 

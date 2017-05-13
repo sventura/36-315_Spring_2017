@@ -851,4 +851,20 @@ mapPointsLegend <- mapPointsLegend +
 mapPointsLegend
 
 
+temp <- my_list %>% unlist %>% as.factor %>% as.integer
+relist(temp, skeleton = my_list)
+
+graph_from_adj_list(relist(as.integer(as.factor(unique(unlist(my_list)))), skeleton = my_list))
+
+list2 <- vector("list", length(unique(temp)))
+for (ii in 1:length(my_list)) {
+  for (jj in 1:length(my_list[[ii]])) {
+    list2[my_list[[ii]][jj]] <- my_list[[ii]]
+  }
+}
+
+
+
+
+
 
