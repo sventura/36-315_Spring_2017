@@ -326,7 +326,7 @@ For the smaller bandwidth, we have too much fluctuation and it is hard to see an
 
 
 
-```{r}
+```{r, fig.width = 7.5, fig.height = 7.5}
 ggplot(student_mds,aes(x = mds_coordinate_1,
                        y = mds_coordinate_2)) +
   geom_point(aes(color = Grade, shape = AbsentDays), size = 5, alpha = .7) +
@@ -334,10 +334,12 @@ ggplot(student_mds,aes(x = mds_coordinate_1,
                      labels = c("Above 7","Under 7")) +
   scale_color_manual(values = my_colors) +
   geom_density2d(h = c(1.25, 1.5), alpha = .7) + basic_labs +
-  labs(subtitle = "bandwidth (1.5,1.25)",
-       shape = "Number of Days Absent",
-       color = "Student Grade / Mark") +
-  my_theme
+  labs(title = "Projection of Student Performance Data",
+       subtitle = "bandwidth (1.5,1.25)",
+       shape = "Days Absent",
+       color = "Student Grade") +
+  my_theme + 
+  theme(legend.position = "bottom")
 ```
 
 Although I really like the default setting for this dataset, I explored a slightly smaller first coordinate bandwidth, as much of the observable group structure seems to come from the first dimension.  This seems to provide contours that made slightly more sense in that they capture the group structure.
