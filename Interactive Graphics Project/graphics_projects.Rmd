@@ -1,0 +1,133 @@
+---
+title: "Statistical Graphics & Visualization"
+author: "Professor Sam Ventura"
+date:  "36-315, Spring 2017"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  hide
+---
+
+Statistical Graphics & Visualization (36-315) is a junior-level undergraduate course in the [Department of Statistics](http://www.stat.cmu.edu/) at [Carnegie Mellon University](http://www.cmu.edu/).  The course was designed by Professor [Rebecca Nugent](http://www.stat.cmu.edu/~rnugent) and was adapted and taught by Professor [Sam Ventura](http://www.stat.cmu.edu/~sventura/) over the past three semesters.
+
+##  Course Materials
+
+The course is taught using `R` and the `ggplot2` package.  All course materials can be found on [GitHub](https://github.com/sventura/36-315_Spring_2017).
+
+##  Course Objectives
+
+The primary objective of the course is to train students in exploratory data analysis via the use of statistical graphics and data visualization.  This is accomplished via the following objectives:
+
+###  Understanding the Fundamentals of Data and Reproducible Data Analysis
+
++  Distinguish between data types
++  Write easily readable and reproducible code to explore datasets graphically
++  Master the use of `R`, RStudio, RMarkdown, and other tools to promote reproducible research and allow others to build from your work
+
+###  Creating Statistical Graphics
+
++  Create easily readable and understandable statistical graphics
++  Master the use of `R`, RStudio, and RMarkdown to explore datasets graphically
++  Incorporate statistical information (e.g. the results of statistical tests) into elegant data visualizations
++  Create both static and interactive graphics for mass public consumption
+
+###  Writing About Statistical Graphics
+
++  Describe statistical graphics and data visualizations in detail, but concisely
++  Incorporate appropriate statistical language into written descriptions of graphics
+
+###  Speaking About Statistical Graphics
+
++  Give eloquent oral presentations of statistical graphics to both technical and non-technical audiences
++  Enhance public speaking skills when presenting data visualizations
++  Demonstrate interesting features of datasets via interactive graphics
+
+###  Critiquing Statistical Graphics
+
++  Review others' statistical graphics objectively and academically
++  Describe the pros and cons of a given graphical choice
++  Give useful critiques, feedback, and suggestions for improvement on others' graphics
+
+
+##  Group Projects
+
+In the course, students complete two group projects:
+
++  **Static Graphics Group Project**:  A mid-semester project where groups of 3-4 students are tasked with identifying a dataset of interest, completing a detailed exploratory data analysis of the data, and creating a static poster to showcase their work in a public forum.
+
++  **Interactive Graphics Group Project**:  A final project where groups of 3-4 students are tasked with creating an interactive, web-based data visualization tool to provide an exploratory analysis of a dataset of interest.  All submissions use Shiny as the base framework, with various `R` packages for interactive graphics built in (e.g. [Plotly](https://cpsievert.github.io/plotly_book/) and various [HTML widgets](http://gallery.htmlwidgets.org/)).
+
+The student submissions from Spring 2017 are below.
+
+
+```{r, warning = FALSE, message = FALSE, include = FALSE}
+library(tidyverse)
+links <- read_csv("https://docs.google.com/spreadsheets/d/1n6EOgY-OJ9nVXkVGp0kEEMHok0hcPbhyqtVA1rxBg54/pub?gid=602346681&single=true&output=csv", 
+                  col_names = c("time", "group", "name", "link"), 
+                  skip = 1)
+```
+
+###  Interactive Graphics Group Projects (Shiny Apps)
+
+The prompt for the Interactive Graphics Group Project can be found [here](https://github.com/sventura/36-315_Spring_2017/blob/master/Interactive%20Graphics%20Project/Interactive%20Graphics%20Group%20Project.Rmd).
+
+The submissions for the Interactive Graphics Group Project are below.
+
++  [`r links$name[1]`](`r links$link[1]`)
++  [Julien and the Boomerangs!](https://cmu-terror-analysis.shinyapps.io/reformated_shiny_/)
++  [`r links$name[3]`](`r links$link[3]`)
++  [`r links$name[4]`](`r links$link[4]`)
++  [`r links$name[5]`](`r links$link[5]`)
++  [`r links$name[6]`](`r links$link[6]`)
++  [`r links$name[7]`](`r links$link[7]`)
++  [`r links$name[8]`](`r links$link[8]`)
++  [`r links$name[9]`](`r links$link[9]`)
++  [`r links$name[10]`](`r links$link[10]`)
++  [`r links$name[11]`](`r links$link[11]`)
++  [`r links$name[12]`](`r links$link[12]`)
++  [`r links$name[13]`](`r links$link[13]`)
++  [`r links$name[14]`](`r links$link[14]`)
++  [`r links$name[15]`](`r links$link[15]`)
++  [`r links$name[16]`](`r links$link[16]`)
++  [`r links$name[17]`](`r links$link[17]`)
++  [`r links$name[18]`](`r links$link[18]`)
++  [`r links$name[19]`](`r links$link[19]`)
++  [`r links$name[20]`](`r links$link[20]`)
++  [`r links$name[21]`](`r links$link[21]`)
++  [`r links$name[22]`](`r links$link[22]`)
++  [`r links$name[23]`](`r links$link[23]`)
++  [`r links$name[24]`](`r links$link[24]`)
++  [`r links$name[25]`](`r links$link[25]`)
+
+###  Static Graphics Group Projects (Posters)
+
+The prompt for the Static Graphics Group Project can be found [here](https://github.com/sventura/36-315_Spring_2017/blob/master/Static%20Graphics%20Project/Static%20Graphics%20Group%20Project.Rmd).
+
+The submissions for the Static Graphics Group Project are below.
+
++  [Group 1](http://www.stat.cmu.edu/36-315/S17/Group1.pdf)
++  [Group 2](http://www.stat.cmu.edu/36-315/S17//Group2.pdf)
++  [Group 3](http://www.stat.cmu.edu/36-315/S17//Group3.pdf)
++  [Group 4](http://www.stat.cmu.edu/36-315/S17//Group4.pdf)
++  [Group 5](http://www.stat.cmu.edu/36-315/S17//Group5.pdf)
++  [Group 6](http://www.stat.cmu.edu/36-315/S17//Group6.pdf)
++  [Group 7](http://www.stat.cmu.edu/36-315/S17//Group7.pdf)
++  [Group 8](http://www.stat.cmu.edu/36-315/S17/Group8.pdf)
++  [Group 9](http://www.stat.cmu.edu/36-315/S17/Group9.pdf)
++  [Group 10](http://www.stat.cmu.edu/36-315/S17/Group10.pdf)
++  [Group 11](http://www.stat.cmu.edu/36-315/S17/Group11.pdf)
++  [Group 12](http://www.stat.cmu.edu/36-315/S17/Group12.pdf)
++  [Group 13](http://www.stat.cmu.edu/36-315/S17/Group13.pdf)
++  [Group 14](http://www.stat.cmu.edu/36-315/S17/Group14.pdf)
++  [Group 15](http://www.stat.cmu.edu/36-315/S17/Group15.pdf)
++  [Group 16](http://www.stat.cmu.edu/36-315/S17/Group16.pdf)
++  [Group 17](http://www.stat.cmu.edu/36-315/S17/Group17.pdf)
++  [Group 18](http://www.stat.cmu.edu/36-315/S17/Group18.pdf)
++  [Group 19](http://www.stat.cmu.edu/36-315/S17/Group19.pdf)
++  [Group 20](http://www.stat.cmu.edu/36-315/S17/Group20.pdf)
++  [Group 21](http://www.stat.cmu.edu/36-315/S17/Group21.pdf)
++  [Group 22](http://www.stat.cmu.edu/36-315/S17/Group22.pdf)
++  [Group 23](http://www.stat.cmu.edu/36-315/S17/Group23.pdf)
++  [Group 24](http://www.stat.cmu.edu/36-315/S17/Group24.pdf)
++  [Group 25](http://www.stat.cmu.edu/36-315/S17/Group25.pdf)
