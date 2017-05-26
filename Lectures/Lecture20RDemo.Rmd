@@ -214,7 +214,7 @@ us_county_map
 
 
 
-```{r}
+```{r, fig.width = 5, fig.height = 3.5}
 library(tidyverse)
 library(ggmap)
 
@@ -238,10 +238,18 @@ state_borders <- state_borders %>%
 #  (Change the color gradient as you see fit)
 ggplot(state_borders) + 
   geom_polygon(aes(x = long, y = lat, group = group,
-                   fill = `HS Grad`), color = "black") + 
-  scale_fill_continuous(low = "green", high = "purple") +
+                   fill = Illiteracy), color = "black") + 
+  scale_fill_gradient2(low = "darkgreen", mid = "lightgrey", 
+                         high = "darkorchid4", midpoint = 1.5) +
   theme_void() +
-  coord_map("polyconic")
+  coord_map("polyconic") + 
+  labs(
+    title = "Spatial Distribution of Illiteracy Percent by State",
+    subtitle = "Percent of Population in State",
+    caption = "U.S. Department of Commerce, Bureau of the Census (1977)",
+    fill = "Illiteracy %"
+  ) + 
+  theme(legend.position = "bottom")
 ```
 
 
